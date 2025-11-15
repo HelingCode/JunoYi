@@ -15,6 +15,7 @@
 
     <properties>
         <!-- 统一依赖版本号 -->
+        <junoyi.version>1.0.0</junoyi.version>
         <spring.boot.version>2.7.18</spring.boot.version>
 
     </properties>
@@ -29,6 +30,11 @@
                 <scope>import</scope>
             </dependency>
 
+            <dependency>
+                <groupId>cn.junoyi.module.system</groupId>
+                <artifactId>junoyi-module-system</artifactId>
+                <version>${junoyi.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

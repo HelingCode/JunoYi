@@ -12,5 +12,10 @@
     <groupId>cn.junoyi.module.system</groupId>
     <artifactId>junoyi-module-system</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
 </project>
