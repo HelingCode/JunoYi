@@ -11,6 +11,10 @@
 
     <groupId>cn.junoyi.module.system</groupId>
     <artifactId>junoyi-module</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>junoyi-module-system</module>
+    </modules>
 
     <dependencies>
         <dependency>

@@ -5,15 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.junoyi</groupId>
-        <artifactId>JunoYI</artifactId>
+        <artifactId>junoyi-module-api</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>junoyi-module-api</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>junoyi-module-system-api</module>
-    </modules>
+    <groupId>cn.junoyi.system</groupId>
+    <artifactId>junoyi-module-system-api</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
