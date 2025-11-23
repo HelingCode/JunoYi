@@ -14,23 +14,36 @@
 
     <!--  依赖  -->
     <dependencies>
-        <!-- Spring Boot Starter -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
         <!-- 功能模块 -->
         <dependency>
             <groupId>cn.junoyi</groupId>
             <artifactId>junoyi-module-system</artifactId>
         </dependency>
 
-        <!-- 框架核心 -->
+        <!-- ==================== 开发工具依赖 ==================== -->
+        <!-- 
+            Spring Boot DevTools - 开发热部署工具
+            功能：
+            1. 自动重启：代码修改后自动重启应用
+            2. LiveReload：浏览器自动刷新
+            3. 配置属性默认值：开发环境优化配置
+            
+            ⚠️ 重要提示：生产环境部署时必须注释掉此依赖！
+            原因：
+            1. 安全风险：DevTools 会暴露应用内部信息
+            2. 性能影响：会占用额外的内存和CPU资源
+            3. 功能冲突：热部署功能在生产环境无意义且可能导致问题
+            
+            生产环境部署前，请将下面的依赖整体注释掉：
+        -->
         <dependency>
-            <groupId>cn.junoyi</groupId>
-            <artifactId>junoyi-framework-web</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
+        <!-- ==================== 开发工具依赖结束 ==================== -->
+
     </dependencies>
 
     <build>

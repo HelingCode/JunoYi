@@ -18,4 +18,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+
+        <!-- web框架核心 -->
+        <dependency>
+            <groupId>cn.junoyi</groupId>
+            <artifactId>junoyi-framework-web</artifactId>
+        </dependency>
+    </dependencies>
 </project>

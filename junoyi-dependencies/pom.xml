@@ -16,7 +16,8 @@
         <!-- 项目版本 -->
         <revision>1.0.0</revision>
         <!-- 统一依赖版本号 -->
-        <spring.boot.version>3.2.0</spring.boot.version>
+        <spring.boot.version>3.3.5</spring.boot.version>
+
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <druid.version>1.2.20</druid.version>
         <mysql.version>8.0.33</mysql.version>
@@ -37,6 +38,15 @@
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Boot DevTools - 开发工具（生产环境禁用） -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-devtools</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>runtime</scope>
+                <optional>true</optional>
             </dependency>
 
             <!-- ========== 内部模块版本管理 ========== -->
