@@ -68,6 +68,16 @@
                 <artifactId>junoyi-framework-web</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>cn.junoyi</groupId>
+                <artifactId>junoyi-framework-log</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.junoyi</groupId>
+                <artifactId>junoyi-framework-stater</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
             <!-- Module API 模块 -->
             <dependency>

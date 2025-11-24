@@ -16,10 +16,9 @@
     <artifactId>junoyi-framework-web</artifactId>
 
     <dependencies>
-        <!-- Spring Boot Starter -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>cn.junoyi</groupId>
+            <artifactId>junoyi-framework-stater</artifactId>
         </dependency>
     </dependencies>
 </project>
