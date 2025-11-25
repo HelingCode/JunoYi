@@ -129,7 +129,7 @@ public class JunoYiLogbackEncoder extends EncoderBase<ILoggingEvent> {
             case ch.qos.logback.classic.Level.WARN_INT:
                 return TerminalColor.BOLD_BLACK_ON_YELLOW;
             case ch.qos.logback.classic.Level.INFO_INT:
-                return TerminalColor.BOLD_WHITE_ON_GREEN;
+                return TerminalColor.BOLD_BLACK_ON_GREEN;
             case ch.qos.logback.classic.Level.DEBUG_INT:
                 return TerminalColor.BOLD_WHITE_ON_BLUE;
             case ch.qos.logback.classic.Level.TRACE_INT:

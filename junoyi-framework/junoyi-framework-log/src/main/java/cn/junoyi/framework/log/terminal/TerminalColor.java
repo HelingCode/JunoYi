@@ -41,6 +41,7 @@ public class TerminalColor {
     public static final String BOLD_WHITE_ON_RED = "\033[1;37;41m";
     public static final String BOLD_BLACK_ON_YELLOW = "\033[1;30;43m";
     public static final String BOLD_WHITE_ON_GREEN = "\033[1;37;42m";
+    public static final String BOLD_BLACK_ON_GREEN = "\033[1;30;42m";
     public static final String BOLD_WHITE_ON_BLUE = "\033[1;37;44m";
     public static final String BOLD_WHITE_ON_PURPLE = "\033[1;37;45m";
 }
