@@ -14,6 +14,8 @@ import cn.junoyi.framework.log.config.JunoYiLogProperties;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 /**
  * Logback配置类
  * 配置控制台和文件输出的Appender
@@ -41,6 +43,26 @@ public class JunoYiLogbackConfig {
         // 配置文件输出
         if (logProperties.getFile().isEnabled()) {
             setupFileAppender(context);
+        }
+    }
+    
+    /**
+     * 确保日志目录存在
+     */
+    private void ensureLogDirectoryExists(String filePath) {
+        try {
+            File file = new File(filePath);
+            File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                boolean created = parentDir.mkdirs();
+                if (created) {
+                    JunoYiLogger.info("JUNOYI", "创建日志目录: {}", parentDir.getAbsolutePath());
+                } else {
+                    JunoYiLogger.warn("JUNOYI", "无法创建日志目录: {}", parentDir.getAbsolutePath());
+                }
+            }
+        } catch (Exception e) {
+            JunoYiLogger.error("JUNOYI", "创建日志目录时发生错误", e);
         }
     }
 
@@ -88,8 +110,12 @@ public class JunoYiLogbackConfig {
             filePath = OptionHelper.substVars(filePath, context);
         } catch (Exception e) {
             // 如果变量替换失败，使用原始路径
-            JunoYiLogger.warn("日志文件路径变量替换失败，使用原始路径: {}", filePath);
+            JunoYiLogger.warn("JUNOYI", "日志文件路径变量替换失败，使用原始路径: {}", filePath);
         }
+        
+        // 确保日志目录存在
+        ensureLogDirectoryExists(filePath);
+        
         appender.setFile(filePath);
 
         // 配置滚动策略

@@ -1,55 +1,81 @@
+# JunoYi框架配置
 junoyi:
+  # 框架版本号
   version: 1.0.0
+  # 框架名称（可选）
 #  name: JunoYi
+  # 版权年份（可选）
 #  copyrightYear: 2025
 
-  # 日志配置
+  # 日志配置模块
   log:
     # 控制台输出配置
     console:
+      # 是否启用控制台日志输出
       enabled: true
-      # 是否启动彩色日志输出
+      # 是否启用彩色日志输出（true=彩色，false=黑白）
       color-enabled: true
+      # 是否显示线程名称
       show-thread-name: true
+      # 是否显示MDC（Mapped Diagnostic Context）上下文信息
       show-mdc: true
+      # 是否显示类名
       show-class-name: true
+      # 类名显示的最大长度（超出部分会被截断）
       max-class-name-length: 20
 
     # 文件输出配置
     file:
+      # 是否启用文件日志输出
       enabled: true
-      path: /temp/logs/junoyi.log
+      # 日志文件存储路径（修改为用户目录下，避免权限问题）
+      path: ./logs/junoyi.log
+      # 单个日志文件的最大大小（支持KB、MB、GB单位）
       max-size: 100MB
+      # 保留的历史日志文件数量（超过数量的旧文件会被删除）
       max-history: 30
+      # 所有日志文件的总大小上限（超过后会删除最旧的文件）
       total-size-cap: 1GB
+      # 是否压缩历史日志文件（true=压缩为.gz格式，false=不压缩）
       compress: true
+      # 日志文件编码格式
       encoding: UTF-8
 
     # 日志格式配置
     format:
+      # 日期时间显示格式（遵循Java SimpleDateFormat格式）
       date-time-pattern: "yyyy-MM-dd HH:mm:ss.SSS"
+      # 异常堆栈跟踪显示的最大行数（0=显示全部，>0=限制行数）
       max-stack-trace-lines: 5
+      # MDC属性显示的最大数量（超出部分会被截断）
       max-mdc-properties: 3
+      # 线程名称显示的最大长度（超出部分会被截断）
       max-thread-name-length: 15
+      # 是否简化包名显示（true=简化，false=显示完整包名）
       simplify-package-names: true
+      # 包名简化映射配置（将长包名简化为短字符）
       package-simplifications:
-        "cn.junoyi": "j"
-        "org.springframework": "s"
-        "com.baomidou": "m"
-        "org.apache": "a"
-        "java.lang": "j.l"
-        "java.util": "j.u"
+        "cn.junoyi": "j"           # JunoYi框架包简化为"j"
+        "org.springframework": "s" # Spring框架包简化为"s"
+        "com.baomidou": "m"        # MyBatis Plus包简化为"m"
+        "org.apache": "a"          # Apache包简化为"a"
+        "java.lang": "j.l"         # Java基础包简化为"j.l"
+        "java.util": "j.u"         # Java工具包简化为"j.u"
 
     # 异步日志配置
     async:
+      # 是否启用异步日志（true=异步，false=同步）
       enabled: true
+      # 异步日志队列大小（超过队列容量的日志会根据策略处理）
       queue-size: 256
+      # 队列满时的丢弃策略（DISCARD=丢弃新日志，BLOCK=阻塞等待）
       discarding-threshold: DISCARD
+      # 是否包含调用者信息（类名、方法名、行号，true=包含但影响性能，false=不包含）
       include-caller-data: false
+      # 异步日志线程池大小（建议设置为CPU核心数的1-2倍）
       thread-pool-size: 1
 
-
-
-# 服务器配置
+# Spring Boot服务器配置
 server:
+  # 应用服务端口
   port: 7588
