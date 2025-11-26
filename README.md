@@ -1,9 +1,13 @@
 # JunoYi 钧逸后台管理框架 （开发中。。。）
 
+<div align="center">
+
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![MyBatis Plus](https://img.shields.io/badge/MyBatis%20Plus-3.5.5-blue.svg)](https://baomidou.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+</div>
 
 ## 📖 项目介绍
 
@@ -140,6 +144,7 @@ java -jar target/junoyi-server.jar
 ### junoyi-framework
 对 Spring Boot、MyBatis Plus 等框架进行二次封装：
 - **framework-core** - 统一返回结果、全局异常处理、基础配置
+- **framework-log** - 日志封装
 - **framework-web** - Web 配置、跨域、接口文档、安全认证
 
 ### junoyi-module-api
