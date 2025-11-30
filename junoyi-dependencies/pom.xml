@@ -24,6 +24,8 @@
         <mysql.version>8.0.33</mysql.version>
         <lombok.version>1.18.30</lombok.version>
         <hutool.version>5.8.23</hutool.version>
+        <!-- Apache Commons Compress 版本 -->
+        <commons-compress.version>1.26.2</commons-compress.version>
         <fastjson2.version>2.0.43</fastjson2.version>
         <knife4j.version>4.3.0</knife4j.version>
         <jwt.version>0.12.3</jwt.version>
@@ -139,6 +141,13 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- Apache Commons Compress -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
             </dependency>
 
             <!-- FastJson2 -->
