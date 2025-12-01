@@ -20,6 +20,7 @@
         <module>junoyi-framework-log</module>
         <module>junoyi-framework-stater</module>
         <module>junoyi-framework-security</module>
+        <module>junoyi-framework-datasource</module>
     </modules>
 
 

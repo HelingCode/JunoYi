@@ -24,6 +24,7 @@
         <mysql.version>8.0.33</mysql.version>
         <lombok.version>1.18.30</lombok.version>
         <hutool.version>5.8.23</hutool.version>
+        <dynamic-datasource.version>4.2.0</dynamic-datasource.version>
         <!-- Apache Commons Compress 版本 -->
         <commons-compress.version>1.26.2</commons-compress.version>
         <fastjson2.version>2.0.43</fastjson2.version>
@@ -81,6 +82,11 @@
                 <artifactId>junoyi-framework-stater</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>cn.junoyi</groupId>
+                <artifactId>junoyi-framework-datasource</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
             <!-- Module API 模块 -->
             <dependency>
@@ -113,6 +119,13 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- MyBatis Plus 动态数据源 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
             </dependency>
 
             <!-- Druid 数据库连接池 -->
