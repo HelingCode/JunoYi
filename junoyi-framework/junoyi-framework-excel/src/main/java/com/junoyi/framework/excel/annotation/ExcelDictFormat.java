@@ -6,6 +6,8 @@ import java.lang.annotation.*;
 
 /**
  * 字典格式化
+ *
+ * @author Fan
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
