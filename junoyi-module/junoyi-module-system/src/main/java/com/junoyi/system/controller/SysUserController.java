@@ -1,8 +1,8 @@
 package com.junoyi.system.controller;
 
 import com.junoyi.framework.core.domain.R;
-import com.junoyi.framework.log.core.JunoLog;
-import com.junoyi.framework.log.core.JunoLogFactory;
+import com.junoyi.framework.log.core.JunoYiLog;
+import com.junoyi.framework.log.core.JunoYiLogFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/system/user")
 @RequiredArgsConstructor
 public class SysUserController {
-    private final JunoLog log = JunoLogFactory.getLogger(SysUserController.class);
+    private final JunoYiLog log = JunoYiLogFactory.getLogger(SysUserController.class);
 
     /**
      * 获取用户列表（分页）
