@@ -87,3 +87,11 @@ junoyi:
 server:
   # 应用服务端口
   port: 7588
+
+# Spring Boot 日志配置
+logging:
+  level:
+    # 屏蔽 BeanPostProcessor 相关警告
+    org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR
+    # 屏蔽 Netty DNS 警告
+    io.netty.resolver.dns: ERROR

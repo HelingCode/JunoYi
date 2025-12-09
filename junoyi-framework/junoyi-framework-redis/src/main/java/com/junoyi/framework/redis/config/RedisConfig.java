@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,10 @@ import org.springframework.context.annotation.Bean;
  * @author Fan
  */
 @AutoConfiguration
+@AutoConfigureAfter(name = {
+    "com.baomidou.lock.spring.boot.autoconfigure.LockAutoConfiguration",
+    "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration"
+})
 @EnableCaching
 @EnableConfigurationProperties(RedissonProperties.class)
 @RequiredArgsConstructor
