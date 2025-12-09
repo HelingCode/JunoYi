@@ -12,6 +12,7 @@ import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 
 /**
  * redis 配置
@@ -39,6 +40,7 @@ public class RedisConfig {
      *
      * @return RedissonAutoConfigurationCustomizer 实例，用于自定义 Redisson 配置
      */
+    @Bean
     public RedissonAutoConfigurationCustomizer redissonAutoConfigurationCustomizer() {
         log.info("Start initializing redis configuration.");
         return config -> {
