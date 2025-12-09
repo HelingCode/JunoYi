@@ -1,4 +1,4 @@
-package com.junoyi.framework.redis.config.properties;
+package com.junoyi.framework.redis.properties;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

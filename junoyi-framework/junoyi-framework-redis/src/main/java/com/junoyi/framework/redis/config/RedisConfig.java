@@ -4,7 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
-import com.junoyi.framework.redis.config.properties.RedissonProperties;
+import com.junoyi.framework.redis.properties.RedissonProperties;
 import com.junoyi.framework.redis.handler.KeyPrefixHandler;
 import lombok.RequiredArgsConstructor;
 import org.redisson.codec.JsonJacksonCodec;

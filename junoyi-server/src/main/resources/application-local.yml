@@ -5,7 +5,6 @@ spring:
     dynamic:
       primary: master
       strict: true
-      
       # 数据源列表
       datasource:
         # 主库配置
@@ -80,6 +79,19 @@ spring:
       timeout: 10s
       # password: 123456
 
+# ==================== Redisson 配置 ====================
+redisson:
+  keyPrefix:
+  threads: 4
+  nettyThreads: 8
+  singleServerConfig:
+    clientName: junoyi-local
+    connectionMinimumIdleSize: 8
+    connectionPoolSize: 32
+    idleConnectionTimeout: 10000
+    timeout: 3000
+    subscriptionConnectionPoolSize: 50
+
 # ==================== MyBatis Plus 配置 ====================
 mybatis-plus:
   configuration:
@@ -93,15 +105,3 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-# ==================== Redisson 配置 ====================
-redisson:
-  keyPrefix:
-  threads: 4
-  nettyThreads: 8
-  singleServerConfig:
-    clientName: junoyi-local
-    connectionMinimumIdleSize: 8
-    connectionPoolSize: 32
-    idleConnectionTimeout: 10000
-    timeout: 3000
-    subscriptionConnectionPoolSize: 50
