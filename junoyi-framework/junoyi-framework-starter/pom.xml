@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>junoyi-framework-stater</artifactId>
+    <artifactId>junoyi-framework-starter</artifactId>
     <description>
         框架启动核心封装模块
     </description>
