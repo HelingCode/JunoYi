@@ -15,8 +15,7 @@ public class DemoController {
     @GetMapping("/event")
     public void testEvent(){
 
-        // 手动注册事件监听器
-        EventBus.get().registerListener(new TestEventListener());
+
 
 
         // 触发事件
