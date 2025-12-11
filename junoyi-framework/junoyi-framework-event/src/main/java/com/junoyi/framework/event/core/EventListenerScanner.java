@@ -7,6 +7,4 @@ package com.junoyi.framework.event.core;
  * @author Fan
  */
 public class EventListenerScanner {
-
-
 }
