@@ -171,7 +171,7 @@ public class JunoYiLogbackEncoder extends EncoderBase<ILoggingEvent> {
         }
         String base = applyPackageSimplifications(loggerName);
         if (simplifyPackageNames) {
-            String tmp = base.replace("com.junoyi.", "");
+            String tmp = base;
             if (tmp.length() > 28) {
                 String[] parts = tmp.split("\\.");
                 if (parts.length > 2) {
