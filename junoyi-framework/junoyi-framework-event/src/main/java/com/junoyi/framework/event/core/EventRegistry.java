@@ -1,6 +1,8 @@
 package com.junoyi.framework.event.core;
 
 import com.junoyi.framework.event.annotation.EventHandler;
+import com.junoyi.framework.log.core.JunoYiLog;
+import com.junoyi.framework.log.core.JunoYiLogFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -12,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Fan
  */
 public class EventRegistry {
+
+    private final JunoYiLog log = JunoYiLogFactory.getLogger(EventRegistry.class);
 
     private final Map<Class<? extends Event>, List<RegisteredHandler>> handlers = new ConcurrentHashMap<>();
 
@@ -27,8 +31,10 @@ public class EventRegistry {
                 continue;
 
             Class<?>[] params = method.getParameterTypes();
-            if (params.length != 1 || !Event.class.isAssignableFrom(params[0]))
-                throw new RuntimeException("The event listening method must have only one event parameter！");
+            if (params.length != 1 || !Event.class.isAssignableFrom(params[0])){
+                log.error("The event listening method must have only one event parameter and this parameter must be a subclass of the Event class");
+                throw new RuntimeException("The event listening method must have only one event parameter and this parameter must be a subclass of the Event class");
+            }
 
             @SuppressWarnings("unchecked")
             Class<? extends Event> eventType = (Class<? extends Event>)  params[0];

@@ -12,7 +12,7 @@ import com.junoyi.system.event.TestEvent;
  * Test事件监听器
  */
 @EventListener
-public class TestEventListener{
+public class TestEventListener implements Listener{
     private final JunoYiLog log = JunoYiLogFactory.getLogger(TestEventListener.class);
 
     /**
