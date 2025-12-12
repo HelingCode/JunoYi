@@ -67,6 +67,12 @@ public class EventListenerScanner implements BeanPostProcessor, Ordered, Applica
         return bean;
     }
 
+    /**
+     * 应用上下文刷新事件回调方法
+     * 当Spring应用上下文刷新完成时触发此方法，用于输出已注册的事件监听器信息
+     *
+     * @param event 上下文刷新事件对象，包含应用上下文刷新的相关信息
+     */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (registeredListenerClasses.isEmpty()) {
