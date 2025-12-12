@@ -26,7 +26,7 @@ public class EventBusAutoConfiguration {
      */
     @Bean
     public EventBus eventBus() {
-        log.info("The event bus has been registered as a Bean !");
+        log.info("The event bus has been registered as a Bean.");
         return eventBus;
     }
 
@@ -36,6 +36,6 @@ public class EventBusAutoConfiguration {
     @PreDestroy
     public void destroy() {
         eventBus.shutdown();
-        log.info("Event bus asynchronous thread pool resources have been released!");
+        log.info("Event bus asynchronous thread pool resources have been released.");
     }
 }

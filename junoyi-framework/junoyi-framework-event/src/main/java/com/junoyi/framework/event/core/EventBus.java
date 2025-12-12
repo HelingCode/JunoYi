@@ -77,8 +77,8 @@ public class EventBus {
     public <T extends Event> void callEvent(T event){
         // 获取该事件类型对应的所有已注册处理器
         List<RegisteredHandler> handlers = registry.getHandlers(event.getClass());
-        int listenerCount = handlers.size();
-        log.info("EventTrigger", "Event="+event.getClass().getSimpleName() + " | " + "ListenerCount=" + listenerCount );
+        int handlerCount = handlers.size();
+        log.info("EventTrigger", "Event="+event.getClass().getSimpleName() + " | " + "HandlerCount=" + handlerCount );
         // 按优先级顺序遍历并调用每个处理器的方法
         for (RegisteredHandler handler : handlers){
             if (handler.async()) {
