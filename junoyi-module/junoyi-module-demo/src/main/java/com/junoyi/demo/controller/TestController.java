@@ -1,22 +1,21 @@
-package com.junoyi.system;
+package com.junoyi.demo.controller;
 
+import com.junoyi.demo.event.TestEvent;
 import com.junoyi.framework.event.core.EventBus;
-import com.junoyi.system.event.TestEvent;
+import com.junoyi.framework.log.core.JunoYiLog;
+import com.junoyi.framework.log.core.JunoYiLogFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/demo")
-public class DemoController {
+public class TestController {
+
+    private final JunoYiLog log = JunoYiLogFactory.getLogger(TestController.class);
 
     @GetMapping("/event")
     public void testEvent(){
-
-        // 执行某些逻辑
-
-
-        // 触发事件
         EventBus.get().callEvent(new TestEvent("测试事件"));
     }
 }

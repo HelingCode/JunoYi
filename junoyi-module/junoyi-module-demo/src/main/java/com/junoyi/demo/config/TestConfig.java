@@ -1,14 +1,12 @@
-package com.junoyi.system.config;
+package com.junoyi.demo.config;
 
+import com.junoyi.demo.listener.Test2EventListener;
+import com.junoyi.demo.listener.TestEventListener;
 import com.junoyi.framework.event.core.EventBus;
-import com.junoyi.system.listener.Test2EventListener;
-import com.junoyi.system.listener.TestEventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TestConfig {
-
-
     public TestConfig(){
         // 手动注册事件监听器
         EventBus.get().registerListener(new TestEventListener());

@@ -1,10 +1,9 @@
-package com.junoyi.system.listener;
+package com.junoyi.demo.listener;
 
+import com.junoyi.demo.event.TestEvent;
 import com.junoyi.framework.event.annotation.EventHandler;
 import com.junoyi.framework.event.core.Listener;
 import com.junoyi.framework.event.enums.EventPriority;
-import com.junoyi.system.event.Test2Event;
-import com.junoyi.system.event.TestEvent;
 
 public class Test2EventListener implements Listener {
 

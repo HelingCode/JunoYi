@@ -1,12 +1,12 @@
-package com.junoyi.system.listener;
+package com.junoyi.demo.listener;
 
+import com.junoyi.demo.event.TestEvent;
 import com.junoyi.framework.event.annotation.EventHandler;
 import com.junoyi.framework.event.annotation.EventListener;
 import com.junoyi.framework.event.core.Listener;
 import com.junoyi.framework.event.enums.EventPriority;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
-import com.junoyi.system.event.TestEvent;
 
 /**
  * Test事件监听器
@@ -56,5 +56,14 @@ public class TestEventListener implements Listener{
         System.out.println("优先级：高");
     }
 
+
+    @EventHandler(priority = EventPriority.MONITOR, async = true)
+    public void onTest7Event(TestEvent event){
+
+        String eventName = event.getEventName();
+
+        log.info(eventName, "其中 test 值为: " + event.getTest());
+
+    }
 
 }

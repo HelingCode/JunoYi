@@ -26,6 +26,12 @@
             <artifactId>junoyi-module-system</artifactId>
         </dependency>
 
+        <!--   Demo演示模块 （可随时删除）     -->
+        <dependency>
+            <groupId>com.junoyi</groupId>
+            <artifactId>junoyi-module-demo</artifactId>
+        </dependency>
+
 
         <!-- ==================== 开发工具依赖 ==================== -->
         <!-- 

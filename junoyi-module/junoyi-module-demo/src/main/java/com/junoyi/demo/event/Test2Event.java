@@ -1,4 +1,4 @@
-package com.junoyi.system.event;
+package com.junoyi.demo.event;
 
 import com.junoyi.framework.event.core.Event;
 
