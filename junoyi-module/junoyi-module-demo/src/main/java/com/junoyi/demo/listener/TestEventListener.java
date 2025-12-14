@@ -3,6 +3,7 @@ package com.junoyi.demo.listener;
 import com.junoyi.demo.event.TestEvent;
 import com.junoyi.framework.event.annotation.EventHandler;
 import com.junoyi.framework.event.annotation.EventListener;
+import com.junoyi.framework.event.domain.SpringWrappedEvent;
 import com.junoyi.framework.event.enums.EventPriority;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
@@ -15,8 +16,17 @@ public class TestEventListener {
     private final JunoYiLog log = JunoYiLogFactory.getLogger(TestEventListener.class);
 
     /**
+     * 当Spring Wrapped Event被触发时候
+     * @param event SpringWrappedEvent
+     */
+    @EventHandler
+    public void onSpringWrappedEvent(SpringWrappedEvent event){
+
+
+    }
+
+    /**
      * 事件监听器
-     * @param event
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void onTestEvent(TestEvent event){
