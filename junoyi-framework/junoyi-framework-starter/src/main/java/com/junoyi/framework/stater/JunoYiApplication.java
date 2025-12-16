@@ -15,9 +15,9 @@ public class JunoYiApplication {
      * @param primarySource 应用程序的主配置类或组件扫描的根类
      * @param args 命令行参数
      */
-    public static void run(Class<?> primarySource, String[] args){
+    public static void run(Class<?> primarySource, String[] args) {
         SpringApplication springApplication = new SpringApplication(primarySource);
-        
+
         // JunoYi框架始终启用，始终显示启动横幅
         springApplication.setBanner(new JunoYiBanner());
         springApplication.run(args);
