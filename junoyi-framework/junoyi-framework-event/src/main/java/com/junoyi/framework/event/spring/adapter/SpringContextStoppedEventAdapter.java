@@ -4,6 +4,7 @@ import com.junoyi.framework.event.core.Event;
 import com.junoyi.framework.event.domain.spring.SpringContextStoppedEvent;
 import com.junoyi.framework.event.spring.SpringEventAdapter;
 import org.springframework.context.event.ContextStoppedEvent;
+import org.springframework.stereotype.Component;
 
 /**
  * SpringContextStoppedEventAdapter类用于适配Spring上下文停止事件
@@ -11,6 +12,7 @@ import org.springframework.context.event.ContextStoppedEvent;
  *
  * @author Fan
  */
+@Component
 public class SpringContextStoppedEventAdapter implements SpringEventAdapter<ContextStoppedEvent> {
 
     /**
@@ -20,7 +22,7 @@ public class SpringContextStoppedEventAdapter implements SpringEventAdapter<Cont
      */
     @Override
     public boolean supports(Object springEvent) {
-        return false;
+        return springEvent instanceof ContextStoppedEvent;
     }
 
     /**
