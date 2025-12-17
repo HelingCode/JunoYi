@@ -15,9 +15,9 @@ public class TokenHelper {
 
     private final JunoYiLog log = JunoYiLogFactory.getLogger(TokenHelper.class);
 
-    @Value("${junoyi.auth.token.header}")
+    @Value("${junoyi.security.token.header}")
     private String header;
 
-    @Value("${junoyi.auth.token.secret")
+    @Value("${junoyi.security.token.secret")
     private String secret;
 }

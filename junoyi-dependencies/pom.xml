@@ -34,7 +34,7 @@
         <commons-compress.version>1.26.2</commons-compress.version>
         <fastjson2.version>2.0.43</fastjson2.version>
         <knife4j.version>4.3.0</knife4j.version>
-        <jwt.version>0.12.3</jwt.version>
+        <jjwt.version>0.13.0</jjwt.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
     </properties>
 
@@ -256,17 +256,19 @@
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
-                <version>${jwt.version}</version>
+                <version>${jjwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-impl</artifactId>
-                <version>${jwt.version}</version>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-jackson</artifactId>
-                <version>${jwt.version}</version>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- MapStruct 对象转换 -->

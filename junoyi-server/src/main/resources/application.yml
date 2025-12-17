@@ -109,17 +109,12 @@ junoyi:
     whitelist:
       - /auth/login
       - /auth/register
-
-
-  # ==================== 验证配置 ====================
-  auth:
     token:
       header: Authorization
       # 令牌密钥
       secret: abcdefghijklmnopqrstuvwxyz
       # 令牌有效期（默认30分钟）
       expireTime: 30
-
 
 
 # Spring Boot服务器配置
