@@ -99,6 +99,11 @@
             </dependency>
             <dependency>
                 <groupId>com.junoyi</groupId>
+                <artifactId>junoyi-framework-permission</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junoyi</groupId>
                 <artifactId>junoyi-framework-redis</artifactId>
                 <version>${revision}</version>
             </dependency>
