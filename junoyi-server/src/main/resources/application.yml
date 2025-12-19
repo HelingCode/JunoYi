@@ -104,7 +104,7 @@ junoyi:
   event:
 
   # ==================== 安全验证配置 ====================
-  sucurity:
+  security:
     # 白名单路径
     whitelist:
       - /auth/login
@@ -135,3 +135,9 @@ logging:
 spring:
   profiles:
     active: local
+  
+  # DevTools 配置
+  devtools:
+    livereload:
+      # 禁用 LiveReload 服务器（避免端口占用警告）
+      enabled: false

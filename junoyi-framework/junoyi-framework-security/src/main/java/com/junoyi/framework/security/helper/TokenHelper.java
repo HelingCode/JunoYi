@@ -15,10 +15,10 @@ public class TokenHelper {
 
     private final JunoYiLog log = JunoYiLogFactory.getLogger(TokenHelper.class);
 
-    @Value("${junoyi.security.token.header}")
+    @Value("${junoyi.security.token.header:Authorization}")
     private String header;
 
-    @Value("${junoyi.security.token.secret")
+    @Value("${junoyi.security.token.secret:}")
     private String secret;
 
 
