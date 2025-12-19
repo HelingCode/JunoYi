@@ -37,6 +37,19 @@ junoyi:
       show-class-name: true
       # 类名显示的最大长度（超出部分会被截断）
       max-class-name-length: 25
+    
+    # 日志级别配置
+    level:
+      # 根日志级别
+      root: INFO
+      # JunoYi 框架日志级别（设置为 DEBUG 以查看所有日志）
+      junoyi: INFO
+      # Spring 框架日志级别
+      spring: WARN
+      # MyBatis 日志级别
+      mybatis: WARN
+      # SQL 日志级别
+      sql: DEBUG
 
     # 文件输出配置
     file:
@@ -145,6 +158,8 @@ logging:
   level:
     # 屏蔽 BeanPostProcessor 相关警告
     org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR
+    # 屏蔽 Tomcat 内嵌 Servlet 容器初始化日志
+    org.apache.catalina.core: WARN
     # 屏蔽 Netty DNS 警告
     io.netty.resolver.dns: ERROR
 #    com.junoyi: DEBUG

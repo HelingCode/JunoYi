@@ -76,14 +76,58 @@ public class JunoYiLog {
     // === 增强功能方法 ===
 
     /**
-     * 带分类的日志
+     * 带分类的 DEBUG 日志
+     */
+    public void debug(String category, String msg) {
+        delegate.debug("[{}] {}", category, msg);
+    }
+
+    /**
+     * 带分类的 INFO 日志
      */
     public void info(String category, String msg) {
         delegate.info("[{}] {}", category, msg);
     }
+    
+    /**
+     * 带分类的 WARN 日志
+     */
+    public void warn(String category, String msg) {
+        delegate.warn("[{}] {}", category, msg);
+    }
+    
+    /**
+     * 带分类的 ERROR 日志
+     */
+    public void error(String category, String msg) {
+        delegate.error("[{}] {}", category, msg);
+    }
+    
+    /**
+     * 带分类和异常的 ERROR 日志
+     */
+    public void error(String category, String msg, Throwable t) {
+        delegate.error("[{}] {}", category, msg, t);
+    }
 
     /**
-     * 带分类和上下文的日志
+     * 带分类和上下文的 DEBUG 日志
+     */
+    public void debug(String category, String msg, Map<String, String> context) {
+        try {
+            if (context != null) {
+                context.forEach(MDC::put);
+            }
+            delegate.debug("[{}] {}", category, msg);
+        } finally {
+            if (context != null) {
+                context.keySet().forEach(MDC::remove);
+            }
+        }
+    }
+
+    /**
+     * 带分类和上下文的 INFO 日志
      */
     public void info(String category, String msg, Map<String, String> context) {
         try {
@@ -97,9 +141,69 @@ public class JunoYiLog {
             }
         }
     }
+    
+    /**
+     * 带分类和上下文的 WARN 日志
+     */
+    public void warn(String category, String msg, Map<String, String> context) {
+        try {
+            if (context != null) {
+                context.forEach(MDC::put);
+            }
+            delegate.warn("[{}] {}", category, msg);
+        } finally {
+            if (context != null) {
+                context.keySet().forEach(MDC::remove);
+            }
+        }
+    }
+    
+    /**
+     * 带分类和上下文的 ERROR 日志
+     */
+    public void error(String category, String msg, Map<String, String> context) {
+        try {
+            if (context != null) {
+                context.forEach(MDC::put);
+            }
+            delegate.error("[{}] {}", category, msg);
+        } finally {
+            if (context != null) {
+                context.keySet().forEach(MDC::remove);
+            }
+        }
+    }
 
     /**
-     * 在MDC上下文中记录日志
+     * 在MDC上下文中记录 DEBUG 日志
+     */
+    public void debugWithMDC(String key, String value, String msg) {
+        try {
+            MDC.put(key, value);
+            debug(msg);
+        } finally {
+            MDC.remove(key);
+        }
+    }
+
+    /**
+     * 在MDC上下文中记录 DEBUG 日志（多个键值对）
+     */
+    public void debugWithMDC(Map<String, String> mdcContext, String msg) {
+        try {
+            if (mdcContext != null) {
+                mdcContext.forEach(MDC::put);
+            }
+            debug(msg);
+        } finally {
+            if (mdcContext != null) {
+                mdcContext.keySet().forEach(MDC::remove);
+            }
+        }
+    }
+
+    /**
+     * 在MDC上下文中记录 INFO 日志
      */
     public void infoWithMDC(String key, String value, String msg) {
         try {
@@ -111,7 +215,7 @@ public class JunoYiLog {
     }
 
     /**
-     * 在MDC上下文中记录日志（多个键值对）
+     * 在MDC上下文中记录 INFO 日志（多个键值对）
      */
     public void infoWithMDC(Map<String, String> mdcContext, String msg) {
         try {
@@ -119,6 +223,62 @@ public class JunoYiLog {
                 mdcContext.forEach(MDC::put);
             }
             info(msg);
+        } finally {
+            if (mdcContext != null) {
+                mdcContext.keySet().forEach(MDC::remove);
+            }
+        }
+    }
+    
+    /**
+     * 在MDC上下文中记录 WARN 日志
+     */
+    public void warnWithMDC(String key, String value, String msg) {
+        try {
+            MDC.put(key, value);
+            warn(msg);
+        } finally {
+            MDC.remove(key);
+        }
+    }
+
+    /**
+     * 在MDC上下文中记录 WARN 日志（多个键值对）
+     */
+    public void warnWithMDC(Map<String, String> mdcContext, String msg) {
+        try {
+            if (mdcContext != null) {
+                mdcContext.forEach(MDC::put);
+            }
+            warn(msg);
+        } finally {
+            if (mdcContext != null) {
+                mdcContext.keySet().forEach(MDC::remove);
+            }
+        }
+    }
+    
+    /**
+     * 在MDC上下文中记录 ERROR 日志
+     */
+    public void errorWithMDC(String key, String value, String msg) {
+        try {
+            MDC.put(key, value);
+            error(msg);
+        } finally {
+            MDC.remove(key);
+        }
+    }
+
+    /**
+     * 在MDC上下文中记录 ERROR 日志（多个键值对）
+     */
+    public void errorWithMDC(Map<String, String> mdcContext, String msg) {
+        try {
+            if (mdcContext != null) {
+                mdcContext.forEach(MDC::put);
+            }
+            error(msg);
         } finally {
             if (mdcContext != null) {
                 mdcContext.keySet().forEach(MDC::remove);
