@@ -20,20 +20,27 @@ public class TokenHelper {
 
     private SecurityProperties securityProperties;
 
-    /**
-     * 生成AccessToken
-     * @return 返回AccessToken
-     */
-    public String createAccessToken(LoginUser loginUser){
+    public String createAccessToken(LoginUser loginUser) {
         return null;
     }
 
-    /**
-     * 生成RefreshToken
-     * @return 返回RefreshToken
-     */
-    public String createRefreshToken(){
-
+    public LoginUser paresAccessToken(String accessToken) {
         return null;
+    }
+
+    public boolean validateAccessToken(String accessToken) {
+        return false;
+    }
+
+    public String createRefreshToken(LoginUser loginUser) {
+        return null;
+    }
+
+    public LoginUser pareRefreshToken(String refreshToken) {
+        return null;
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        return false;
     }
 }

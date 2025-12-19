@@ -158,3 +158,4 @@ spring:
     livereload:
       # 禁用 LiveReload 服务器（避免端口占用警告）
       enabled: false
+
