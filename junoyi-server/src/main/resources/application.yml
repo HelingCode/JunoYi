@@ -120,9 +120,9 @@ junoyi:
   security:
     # api 接口加密 (建议: 开发环境将接口加密关闭方便调试，生产环境开启保证安全)
     api-encrypt:
-      enable: false
+      enable: true
       # 是否加密请求体
-      request: true
+      request: false
       # 是否加密响应体
       response: true
     # 白名单路径

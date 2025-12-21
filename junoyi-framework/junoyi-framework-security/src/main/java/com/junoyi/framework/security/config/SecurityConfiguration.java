@@ -2,6 +2,7 @@ package com.junoyi.framework.security.config;
 
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
+import com.junoyi.framework.security.crypto.RsaCryptoHelper;
 import com.junoyi.framework.security.filter.ApiEncryptFilter;
 import com.junoyi.framework.security.filter.TokenAuthenticationTokenFilter;
 import com.junoyi.framework.security.properties.SecurityProperties;
@@ -29,6 +30,7 @@ public class SecurityConfiguration {
     private final JwtTokenHelper tokenService;
     private final SessionHelper sessionHelper;
     private final SecurityProperties securityProperties;
+    private final RsaCryptoHelper rsaCryptoHelper;
 
     /**
      * 注册 API 加密过滤器
@@ -38,7 +40,7 @@ public class SecurityConfiguration {
      */
     @Bean
     public FilterRegistrationBean<ApiEncryptFilter> apiEncryptFilter() {
-        ApiEncryptFilter filter = new ApiEncryptFilter(securityProperties);
+        ApiEncryptFilter filter = new ApiEncryptFilter(securityProperties, rsaCryptoHelper);
         
         FilterRegistrationBean<ApiEncryptFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(filter);
