@@ -9,7 +9,6 @@
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![MyBatis Plus](https://img.shields.io/badge/MyBatis%20Plus-3.5.9-blue.svg)](https://baomidou.com/)
-[![Sa-Token](https://img.shields.io/badge/Sa--Token-1.34.0-red.svg)](https://sa-token.cc/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.0-success.svg)](https://github.com/yourusername/JunoYi)
 
@@ -95,7 +94,6 @@ JunoYi（钧逸）是一个基于 **Spring Boot 3.3.5** 和 **Java 21** 打造�
 
 | 技术 | 版本 | 说明 |
 |-----|------|------|
-| Sa-Token | 1.34.0 | 认证授权框架 |
 | JJWT | 0.13.0 | JWT 实现 |
 
 ### 工具库
