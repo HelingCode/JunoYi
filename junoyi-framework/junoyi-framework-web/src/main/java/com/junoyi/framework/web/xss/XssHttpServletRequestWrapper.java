@@ -11,6 +11,8 @@ import java.io.IOException;
  * XSS防护的HTTP请求包装器类
  * 该类继承自HttpServletRequestWrapper，用于包装原始的HttpServletRequest对象，
  * 提供XSS攻击防护功能，主要通过重写相关方法来实现输入数据的过滤和验证
+ *
+ * @author Fan
  */
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
