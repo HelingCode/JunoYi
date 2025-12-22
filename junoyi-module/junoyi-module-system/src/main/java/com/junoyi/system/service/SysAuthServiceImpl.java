@@ -2,8 +2,13 @@ package com.junoyi.system.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.junoyi.framework.core.domain.base.BaseException;
+import com.junoyi.framework.core.exception.auth.LoginAccountIsNullException;
+import com.junoyi.framework.core.exception.auth.LoginFailedAccountLockedException;
 import com.junoyi.framework.core.exception.auth.LoginPasswordIsNullException;
 import com.junoyi.framework.core.exception.auth.LoginPasswordWrongException;
+import com.junoyi.framework.core.exception.user.UserNotExistException;
+import com.junoyi.framework.core.exception.user.UserStatusIsDisableException;
+import com.junoyi.framework.core.exception.user.UserStatusIsLockedException;
 import com.junoyi.framework.core.utils.ServletUtils;
 import com.junoyi.framework.core.utils.StringUtils;
 import com.junoyi.framework.security.enums.PlatformType;
@@ -80,7 +85,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
             // 登录失败，记录失败次数
             boolean locked = authHelper.onLoginFail(loginIdentity.getAccount(), platformType, loginIp);
             if (locked) {
-                throw new RuntimeException("登录失败次数过多，账号已被锁定，请稍后再试");
+                throw new LoginFailedAccountLockedException("登录失败次数过多，账号已被锁定，请稍后再试");
             }
             throw e;
         }
@@ -99,7 +104,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
         if (StringUtils.isNotBlank(request.getUsername()))
             return new LoginIdentity(LoginType.USERNAME, request.getUsername());
 
-        throw new RuntimeException("登录账号不能为空");
+        throw new LoginAccountIsNullException("登录账号不能为空");
     }
 
     /**
@@ -118,7 +123,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
         SysUser user = sysUserMapper.selectOne(wrapper);
 
         if (user == null)
-            throw new RuntimeException("用户不存在或已被删除");
+            throw new UserNotExistException("用户不存在或已被删除");
 
         return user;
     }
@@ -128,13 +133,13 @@ public class SysAuthServiceImpl implements ISysAuthService {
      */
     private void validateUser(SysUser user) {
         if (user.isDelFlag())
-            throw new RuntimeException("用户已被删除");
+            throw new UserNotExistException("用户已被删除");
 
         if (user.getStatus() == SysUserStatus.DISABLED.getCode())
-            throw new RuntimeException("用户已被禁用");
+            throw new UserStatusIsDisableException("用户已被禁用");
 
         if (user.getStatus() == SysUserStatus.LOCKED.getCode())
-            throw new RuntimeException("用户已被锁定");
+            throw new UserStatusIsLockedException("用户已被锁定");
 
     }
 
