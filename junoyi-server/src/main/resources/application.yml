@@ -118,6 +118,10 @@ junoyi:
 
   # ==================== Web 配置 ====================
   web:
+    # 跨域
+    cors:
+
+    # XSS 攻击防护
     xss:
       # 过滤模式: clean（清理危险内容) / escape(转义特殊字符) / reject(拒绝请求)
       # 生产环境建议使用 reject模式，clean模式会清除xss攻击内容，但是请求任何会传给controller继续执行，
@@ -137,6 +141,18 @@ junoyi:
       # 排除的请求方法（如 GET)
       exclude-methods:
         - GET
+
+    # SQL 注入严格防护
+    sql-injection:
+      enable: true
+      mode: detect  # detect(检测并拒绝) / clean(清理)
+      filter-parameter: true
+      filter-header: false
+      filter-body: true
+      exclude-urls:
+        - /api/report/**
+      custom-keywords:
+        - xp_cmdshell
 
 
   # ==================== 安全验证配置 ====================
