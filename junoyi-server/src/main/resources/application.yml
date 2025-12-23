@@ -148,12 +148,16 @@ junoyi:
       enable: true
       # 防护模式：detect(检测并拒绝) / clean(清理)
       mode: detect
-      # 排除的 URL 路径（支持 Ant 风格）
+      # 是否过滤参数
       filter-parameter: true
+      # 是否过滤请求头
       filter-header: false
+      # 是否过滤请求体
       filter-body: true
+      # 排除的 URL 路径（支持 Ant 风格）
       exclude-urls:
         - /api/report/**
+      # 自定义危险关键词（追加到默认列表）
       custom-keywords:
         - xp_cmdshell
 
