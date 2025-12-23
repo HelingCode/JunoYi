@@ -1,5 +1,6 @@
 package com.junoyi.framework.web.xss;
 
+import com.junoyi.framework.web.properties.XssProperties;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * XSS 防护的 HTTP 请求包装器
@@ -18,76 +21,78 @@ import java.nio.charset.StandardCharsets;
  */
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
-    private byte[] body;
+    private final byte[] body;
+    private final XssProperties xssProperties;
 
-    /**
-     * 构造函数，创建XSS防护的HTTP请求包装器
-     *
-     * @param request 原始HTTP请求对象
-     * @throws IOException 读取请求体时可能抛出的IO异常
-     */
-    public XssHttpServletRequestWrapper(HttpServletRequest request) throws IOException {
+    public XssHttpServletRequestWrapper(HttpServletRequest request, XssProperties xssProperties) throws IOException {
         super(request);
+        this.xssProperties = xssProperties;
         // 缓存请求体
-        body = request.getInputStream().readAllBytes();
+        if (xssProperties.isFilterBody()) {
+            this.body = request.getInputStream().readAllBytes();
+        } else {
+            this.body = null;
+        }
     }
 
-    /**
-     * 获取经过XSS过滤的请求参数值
-     *
-     * @param name 参数名称
-     * @return 经过XSS清理的参数值
-     */
     @Override
     public String getParameter(String name) {
+        if (!xssProperties.isFilterParameter()) return super.getParameter(name);
         String value = super.getParameter(name);
-        return XssUtils.clean(value);
+        return filterValue(value);
     }
 
-    /**
-     * 获取经过XSS过滤的请求参数值数组
-     *
-     * @param name 参数名称
-     * @return 经过XSS清理的参数值数组
-     */
     @Override
     public String[] getParameterValues(String name) {
+        if (!xssProperties.isFilterParameter()) return super.getParameterValues(name);
         String[] values = super.getParameterValues(name);
         if (values == null) return null;
 
-        String[] cleanValues = new String[values.length];
+        String[] filteredValues = new String[values.length];
         for (int i = 0; i < values.length; i++) {
-            cleanValues[i] = XssUtils.clean(values[i]);
+            filteredValues[i] = filterValue(values[i]);
         }
-        return cleanValues;
+        return filteredValues;
     }
 
-    /**
-     * 获取经过XSS过滤的请求头值
-     *
-     * @param name 请求头名称
-     * @return 经过XSS清理的请求头值
-     */
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        if (!xssProperties.isFilterParameter()) return super.getParameterMap();
+        Map<String, String[]> originalMap = super.getParameterMap();
+        Map<String, String[]> filteredMap = new HashMap<>(originalMap.size());
+
+        for (Map.Entry<String, String[]> entry : originalMap.entrySet()) {
+            String[] values = entry.getValue();
+            if (values != null) {
+                String[] filteredValues = new String[values.length];
+                for (int i = 0; i < values.length; i++) {
+                    filteredValues[i] = filterValue(values[i]);
+                }
+                filteredMap.put(entry.getKey(), filteredValues);
+            } else {
+                filteredMap.put(entry.getKey(), null);
+            }
+        }
+        return filteredMap;
+    }
+
     @Override
     public String getHeader(String name) {
+        if (!xssProperties.isFilterHeader()) return super.getHeader(name);
         String value = super.getHeader(name);
-        return XssUtils.clean(value);
+        return filterValue(value);
     }
 
-    /**
-     * 获取经过XSS过滤的输入流
-     *
-     * @return 经过XSS清理的Servlet输入流
-     * @throws IOException IO异常
-     */
     @Override
     public ServletInputStream getInputStream() throws IOException {
+        if (!xssProperties.isFilterBody() || body == null) return super.getInputStream();
+
         // 过滤请求体中的 XSS
         String bodyStr = new String(body, StandardCharsets.UTF_8);
-        String cleanBody = XssUtils.clean(bodyStr);
-        byte[] cleanBytes = cleanBody.getBytes(StandardCharsets.UTF_8);
+        String filteredBody = filterValue(bodyStr);
+        byte[] filteredBytes = filteredBody.getBytes(StandardCharsets.UTF_8);
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(cleanBytes);
+        ByteArrayInputStream bais = new ByteArrayInputStream(filteredBytes);
         return new ServletInputStream() {
             @Override
             public boolean isFinished() {
@@ -111,35 +116,40 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         };
     }
 
-    /**
-     * 获取经过XSS过滤的字符读取器
-     *
-     * @return 经过XSS清理的字符读取器
-     * @throws IOException IO异常
-     */
     @Override
     public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(getInputStream(), StandardCharsets.UTF_8));
     }
 
-    /**
-     * 获取请求体内容长度
-     *
-     * @return 请求体内容长度
-     */
     @Override
     public int getContentLength() {
+        if (body == null) return super.getContentLength();
+        return body.length;
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        if (body == null) return super.getContentLengthLong();
         return body.length;
     }
 
     /**
-     * 获取请求体内容长度（长整型）
-     *
-     * @return 请求体内容长度
+     * 根据配置的模式过滤值
      */
-    @Override
-    public long getContentLengthLong() {
-        return body.length;
+    private String filterValue(String value) {
+        if (value == null) return null;
+
+        return switch (xssProperties.getMode()) {
+            case CLEAN -> XssUtils.clean(value);
+            case ESCAPE -> XssUtils.escape(value);
+            case REJECT -> value; // REJECT 模式在 Filter 中处理
+        };
+    }
+
+    /**
+     * 获取原始请求体（用于 REJECT 模式检测）
+     */
+    public byte[] getOriginalBody() {
+        return body;
     }
 }
-

@@ -119,6 +119,14 @@ junoyi:
   # ==================== Web 配置 ====================
   web:
     xss:
+      # 过滤模式: clean（清理危险内容) / escape(转义特殊字符) / reject(拒绝请求)
+      mode: clean  # clean / escape / reject
+      # 是否过滤参数
+      filter-parameter: true
+      # 是否过滤请求头
+      filter-header: true
+      # 是否过滤请求体
+      filter-body: true
       # 是否启用 XSS 过滤
       enable: true
       # 排除的 URL 路径（支持 Ant 风格）
