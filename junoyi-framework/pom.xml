@@ -25,6 +25,7 @@
         <module>junoyi-framework-redis</module>
         <module>junoyi-framework-event</module>
         <module>junoyi-framework-permission</module>
+        <module>junoyi-framework-captcha</module>
     </modules>
 
 </project>
