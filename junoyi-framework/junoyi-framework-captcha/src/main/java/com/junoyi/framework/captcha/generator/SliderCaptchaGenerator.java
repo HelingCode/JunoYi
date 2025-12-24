@@ -20,34 +20,17 @@ public class SliderCaptchaGenerator implements CaptchaGenerator {
     private final CaptchaStore captchaStore;
     private final CaptchaService captchaService;
 
-    /**
-     * 构造滑块验证码生成器
-     *
-     * @param properties 验证码配置属性
-     * @param captchaStore 验证码存储服务
-     * @param captchaService 验证码服务
-     */
     public SliderCaptchaGenerator(CaptchaProperties properties, CaptchaStore captchaStore, CaptchaService captchaService) {
         this.properties = properties;
         this.captchaStore = captchaStore;
         this.captchaService = captchaService;
     }
 
-    /**
-     * 获取验证码类型
-     *
-     * @return 验证码类型，固定返回滑块类型
-     */
     @Override
     public CaptchaType getType() {
         return CaptchaType.SLIDER;
     }
 
-    /**
-     * 生成滑块验证码
-     *
-     * @return 验证码结果对象，包含验证码ID、类型、背景图片、滑块图片和过期时间
-     */
     @Override
     public CaptchaResult generate() {
         CaptchaVO captchaVO = new CaptchaVO();
@@ -64,30 +47,16 @@ public class SliderCaptchaGenerator implements CaptchaGenerator {
         // 存储AJ-Captcha的token，用于后续验证
         captchaStore.save(captchaId, data.getToken(), properties.getExpireSeconds());
 
-        // 获取滑块Y坐标（从point中提取）
-        Integer sliderY = null;
-        if (data.getPoint() != null) {
-            sliderY = data.getPoint().y;
-        }
-
         return new CaptchaResult()
                 .setCaptchaId(captchaId)
                 .setType(CaptchaType.SLIDER)
                 .setBackgroundImage(data.getOriginalImageBase64())
                 .setSliderImage(data.getJigsawImageBase64())
-                .setSliderY(sliderY)
                 .setBackgroundWidth(properties.getSlider().getWidth())
                 .setBackgroundHeight(properties.getSlider().getHeight())
                 .setExpireSeconds(properties.getExpireSeconds());
     }
 
-    /**
-     * 验证滑块验证码
-     *
-     * @param captchaId 验证码ID
-     * @param params 验证参数，包含滑块位置信息
-     * @return 验证结果，true表示验证通过，false表示验证失败
-     */
     @Override
     public boolean validate(String captchaId, Object params) {
         if (params == null) return false;

@@ -34,9 +34,6 @@ public class CaptchaConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(CaptchaConfiguration.class);
 
-    /**
-     * 验证码存储 - Redis实现
-     */
     @Bean
     @ConditionalOnMissingBean(CaptchaStore.class)
     public CaptchaStore captchaStore(RedissonClient redissonClient) {
@@ -44,25 +41,18 @@ public class CaptchaConfiguration {
         return new RedisCaptchaStore(redissonClient);
     }
 
-    /**
-     * 图片验证码生成器
-     */
     @Bean
     public ImageCaptchaGenerator imageCaptchaGenerator(CaptchaProperties properties, CaptchaStore captchaStore) {
         log.info("[Captcha] Image captcha generator initialized, code type: {}", properties.getImage().getCodeType());
         return new ImageCaptchaGenerator(properties, captchaStore);
     }
 
-    /**
-     * AJ-Captcha 服务 (用于滑块/点选验证码)
-     * 从 junoyi.captcha.slider 配置读取参数
-     */
     @Bean
     @ConditionalOnMissingBean(CaptchaService.class)
     public CaptchaService captchaService(CaptchaProperties captchaProperties) {
         CaptchaProperties.SliderCaptcha slider = captchaProperties.getSlider();
-        log.info("[Captcha] AJ-Captcha service initialized, waterMark: {}, tolerance: {}, size: {}x{}",
-                slider.getWaterMark(), slider.getTolerance(), slider.getWidth(), slider.getHeight());
+        log.info("[Captcha] AJ-Captcha service initialized, size: {}x{}, tolerance: {}",
+                slider.getWidth(), slider.getHeight(), slider.getTolerance());
 
         Properties props = new Properties();
         props.setProperty("captcha.type", "blockPuzzle");
@@ -70,25 +60,16 @@ public class CaptchaConfiguration {
         props.setProperty("captcha.slip.offset", String.valueOf(slider.getTolerance()));
         props.setProperty("captcha.aes.status", String.valueOf(slider.isAesStatus()));
         props.setProperty("captcha.interference.options", String.valueOf(slider.getInterferenceOptions()));
-        // 设置背景图尺寸
-        props.setProperty("captcha.image.width", String.valueOf(slider.getWidth()));
-        props.setProperty("captcha.image.height", String.valueOf(slider.getHeight()));
 
         return CaptchaServiceFactory.getInstance(props);
     }
 
-    /**
-     * 滑块验证码生成器
-     */
     @Bean
     public SliderCaptchaGenerator sliderCaptchaGenerator(CaptchaProperties properties, CaptchaStore captchaStore, CaptchaService captchaService) {
         log.info("[Captcha] Slider captcha generator initialized");
         return new SliderCaptchaGenerator(properties, captchaStore, captchaService);
     }
 
-    /**
-     * 验证码帮助类
-     */
     @Bean
     @ConditionalOnMissingBean(CaptchaHelper.class)
     public CaptchaHelper captchaHelper(CaptchaProperties properties, List<CaptchaGenerator> generators) {
