@@ -20,6 +20,8 @@ public class SysCaptchaController {
 
     /**
      * 获取图形验证码
+     *
+     * @return R<CaptchaResult> 包含图形验证码结果的响应对象
      */
     @GetMapping("/image")
     public R<CaptchaResult> getImageCaptcha() {
@@ -28,11 +30,23 @@ public class SysCaptchaController {
     }
 
     /**
-     * 校验验证码
+     * 获取滑块验证码
+     *
+     * @return R<CaptchaResult> 包含滑块验证码结果的响应对象
      */
-    @PostMapping("/validate")
-    public R<Boolean> validate(@RequestParam("captchaId") String captchaId, @RequestParam("code") String code) {
-        boolean valid = captchaService.validate(captchaId, code);
-        return R.ok(valid);
+    @GetMapping("/slider")
+    public R<CaptchaResult> getSliderCaptcha(){
+
+        return R.ok();
+    }
+
+    /**
+     * 获取点击验证码
+     *
+     * @return R<CaptchaResult> 包含点击验证码结果的响应对象
+     */
+    @GetMapping("/click")
+    public R<CaptchaResult> getClickCaptcha(){
+        return R.ok();
     }
 }
