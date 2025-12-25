@@ -1,7 +1,11 @@
 package com.junoyi.framework.permission.config;
 
+import com.junoyi.framework.permission.aspect.PermissionAspect;
 import com.junoyi.framework.permission.properties.PermissionProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
@@ -16,5 +20,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(PermissionProperties.class)
 public class PermissionConfiguration {
 
-
+    /**
+     * 权限校验切面
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "junoyi.permission", name = "enable", havingValue = "true", matchIfMissing = true)
+    public PermissionAspect permissionAspect(PermissionProperties properties) {
+        return new PermissionAspect(properties);
+    }
 }
