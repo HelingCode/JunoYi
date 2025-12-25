@@ -272,6 +272,20 @@ junoyi:
         app: 30d            # App
         desktop: 90d        # 桌面应用
 
+  # ==================== Permission 配置 ====================
+  permission:
+    enable: true
+    cache:
+      enable: true
+      expire: 3600
+    super-admin:
+      enable: true
+      user-ids: [1]
+      permission: *
+    # 默认权限组(新用户默认权限组)
+    default-groups:
+      - guest
+
 
 # Spring Boot服务器配置
 server:

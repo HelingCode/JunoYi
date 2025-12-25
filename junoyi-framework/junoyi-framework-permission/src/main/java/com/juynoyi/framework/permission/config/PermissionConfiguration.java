@@ -1,5 +1,7 @@
 package com.juynoyi.framework.permission.config;
 
+import com.juynoyi.framework.permission.properties.PermissionProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Fan
  */
 @Configuration
+@EnableConfigurationProperties(PermissionProperties.class)
 public class PermissionConfiguration {
 
 
