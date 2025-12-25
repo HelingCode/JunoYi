@@ -36,7 +36,6 @@
         <knife4j.version>4.3.0</knife4j.version>
         <jjwt.version>0.13.0</jjwt.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <aj-captcha.version>1.4.0</aj-captcha.version>
     </properties>
 
     <dependencyManagement>
@@ -294,12 +293,6 @@
                 <version>${mapstruct.version}</version>
             </dependency>
 
-            <!--     AJ-Captcha       -->
-            <dependency>
-                <groupId>com.anji-plus</groupId>
-                <artifactId>captcha-spring-boot-starter</artifactId>
-                <version>${aj-captcha.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
