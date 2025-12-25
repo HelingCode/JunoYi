@@ -1,7 +1,14 @@
 package com.junoyi.framework.web.config;
 
+import com.junoyi.framework.web.interceptor.AccessLogInterceptor;
+import com.junoyi.framework.web.properties.AccessLogProperties;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -10,17 +17,26 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * <p>该类实现了WebMvcConfigurer接口，可以重写其中的方法来自定义Spring MVC的各种配置，
  * 如拦截器、视图解析器、静态资源处理等。</p>
  *
- * <p>使用{@link @AutoConfiguration}注解标识这是一个自动配置类，
- * Spring Boot会自动加载此类来配置Web MVC相关功能。</p>
- *
- * <p>使用{@link @RequiredArgsConstructor}注解自动生成包含所有final字段的构造函数，
- * 用于依赖注入。</p>
- *
  * @author Fan
  */
 @AutoConfiguration
 @RequiredArgsConstructor
-public class WebMvcConfiguration implements WebMvcConfigurer  {
+@EnableConfigurationProperties(AccessLogProperties.class)
+public class WebMvcConfiguration implements WebMvcConfigurer {
 
+    private static final Logger log = LoggerFactory.getLogger(WebMvcConfiguration.class);
 
+    private final AccessLogProperties accessLogProperties;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册访问日志拦截器
+        if (accessLogProperties.isEnable()) {
+            log.info("[Access Log] Access log interceptor enabled, slow threshold: {}ms",
+                    accessLogProperties.getSlowRequestThreshold());
+            registry.addInterceptor(new AccessLogInterceptor(accessLogProperties))
+                    .addPathPatterns("/**")
+                    .order(Integer.MIN_VALUE); // 最先执行
+        }
+    }
 }

@@ -43,7 +43,7 @@ junoyi:
       # 根日志级别
       root: INFO
       # JunoYi 框架日志级别（设置为 DEBUG 以查看所有日志）
-      junoyi: INFO
+      junoyi: DEBUG
       # Spring 框架日志级别
       spring: WARN
       # MyBatis 日志级别
@@ -178,6 +178,15 @@ junoyi:
       # 自定义危险关键词（追加到默认列表）
       custom-keywords:
         - xp_cmdshell
+    # 访问日志
+    access-log:
+      enable: true                    # 是否启用
+      slow-request-threshold: 3000    # 慢请求阈值（毫秒）
+      log-request-params: true        # 是否记录请求参数
+      log-request-headers: false      # 是否记录请求头
+      exclude-paths: # 排除路径
+        - /actuator/**
+        - /favicon.ico
 
   # ==================== 验证码配置 ====================
   captcha:
