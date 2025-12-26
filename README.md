@@ -62,6 +62,7 @@ JunoYi（钧逸）是一个基于 **Spring Boot 3.5.0** 和 **Java 21** 打造�
 
 ---
 
+[![Star History Chart](https://api.star-history.com/svg?repos=Juno-Yi/JunoYi&type=date&legend=top-left)](https://www.star-history.com/#Juno-Yi/JunoYi&type=date&legend=top-left)
 
 ---
 
