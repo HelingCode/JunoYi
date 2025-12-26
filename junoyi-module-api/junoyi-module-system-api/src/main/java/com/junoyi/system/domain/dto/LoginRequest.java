@@ -39,7 +39,7 @@ public class LoginRequest {
      * 唯一标识符
      * 用于设备或会话的唯一性标识
      */
-    private String uuid;
+    private String captchaId;
 
     /**
      * 验证码
