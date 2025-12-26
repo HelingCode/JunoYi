@@ -3,6 +3,9 @@ package com.junoyi.framework.web.exception;
 import com.junoyi.framework.core.constant.HttpStatus;
 import com.junoyi.framework.core.domain.base.BaseException;
 import com.junoyi.framework.core.domain.module.R;
+import com.junoyi.framework.permission.exception.NoPermissionException;
+import com.junoyi.framework.permission.exception.NotLoginException;
+import com.junoyi.framework.permission.exception.PermissionException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +37,44 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BaseException.class)
     public R<?> handleBaseException(BaseException e, HttpServletRequest request) {
-        log.warn("[业务异常] 请求地址: {}, 异常信息: {}", request.getRequestURI(), e.getMessage());
+        log.warn("[业务异常] 请求地址: {}, 领域: {}, 异常信息: {}", request.getRequestURI(), e.getFullDomain(), e.getMessage());
         return R.fail(e.getCode(), e.getMessage());
     }
 
     /**
-     * 权限校验异常
+     * 未登录异常
+     */
+    @ExceptionHandler(NotLoginException.class)
+    public R<?> handleNotLoginException(NotLoginException e, HttpServletRequest request) {
+        log.warn("[未登录] 请求地址: {}", request.getRequestURI());
+        return R.fail(e.getCode(), e.getMessage());
+    }
+
+    /**
+     * 无权限异常
+     */
+    @ExceptionHandler(NoPermissionException.class)
+    public R<?> handleNoPermissionException(NoPermissionException e, HttpServletRequest request) {
+        String[] permissions = e.getRequiredPermissions();
+        if (permissions != null && permissions.length > 0) {
+            log.warn("[无权限] 请求地址: {}, 缺少权限: {}", request.getRequestURI(), String.join(", ", permissions));
+        } else {
+            log.warn("[无权限] 请求地址: {}", request.getRequestURI());
+        }
+        return R.fail(e.getCode(), "没有访问权限");
+    }
+
+    /**
+     * 权限异常（兜底）
+     */
+    @ExceptionHandler(PermissionException.class)
+    public R<?> handlePermissionException(PermissionException e, HttpServletRequest request) {
+        log.warn("[权限异常] 请求地址: {}, 领域: {}, 异常信息: {}", request.getRequestURI(), e.getFullDomain(), e.getMessage());
+        return R.fail(e.getCode(), e.getMessage());
+    }
+
+    /**
+     * 权限校验异常（Spring Security）
      * TODO:
      */
     @ExceptionHandler(AccessDeniedException.class)
