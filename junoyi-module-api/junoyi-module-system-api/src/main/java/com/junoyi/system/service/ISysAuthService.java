@@ -1,6 +1,6 @@
 package com.junoyi.system.service;
 
-import com.junoyi.system.domain.dto.LoginRequest;
+import com.junoyi.system.domain.bo.LoginBO;
 import com.junoyi.system.domain.vo.AuthVo;
 
 /**
@@ -11,5 +11,5 @@ import com.junoyi.system.domain.vo.AuthVo;
 public interface ISysAuthService {
 
 
-    AuthVo login(LoginRequest loginRequest);
+    AuthVo login(LoginBO loginBO);
 }

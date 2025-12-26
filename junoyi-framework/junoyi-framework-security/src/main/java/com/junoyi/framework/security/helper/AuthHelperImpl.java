@@ -98,6 +98,20 @@ public class AuthHelperImpl implements AuthHelper {
     }
 
     /**
+     * 用户登出（从当前上下文获取 Token）
+     *
+     * @return boolean 登出是否成功
+     */
+    @Override
+    public boolean logout() {
+        LoginUser loginUser = com.junoyi.framework.security.context.SecurityContext.get();
+        if (loginUser == null || loginUser.getTokenId() == null) {
+            return false;
+        }
+        return sessionHelper.kickOut(loginUser.getTokenId());
+    }
+
+    /**
      * 刷新访问令牌
      *
      * @param refreshToken 刷新令牌

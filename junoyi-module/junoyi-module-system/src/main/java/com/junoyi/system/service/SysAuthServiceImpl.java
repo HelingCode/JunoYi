@@ -1,7 +1,6 @@
 package com.junoyi.system.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.junoyi.framework.core.domain.base.BaseException;
 import com.junoyi.framework.core.exception.auth.LoginAccountIsNullException;
 import com.junoyi.framework.core.exception.auth.LoginFailedAccountLockedException;
 import com.junoyi.framework.core.exception.auth.LoginPasswordIsNullException;
@@ -16,7 +15,7 @@ import com.junoyi.framework.security.module.LoginUser;
 import com.junoyi.framework.security.helper.AuthHelper;
 import com.junoyi.framework.security.module.TokenPair;
 import com.junoyi.framework.security.utils.PasswordUtils;
-import com.junoyi.system.domain.dto.LoginRequest;
+import com.junoyi.system.domain.bo.LoginBO;
 import com.junoyi.system.domain.po.LoginIdentity;
 import com.junoyi.system.domain.po.SysUser;
 import com.junoyi.system.domain.vo.AuthVo;
@@ -42,17 +41,17 @@ public class SysAuthServiceImpl implements ISysAuthService {
     private final SysUserMapper sysUserMapper;
 
     @Override
-    public AuthVo login(LoginRequest loginRequest) {
+    public AuthVo login(LoginBO loginBO) {
         // 解析登录账号类型
-        LoginIdentity loginIdentity = parseIdentity(loginRequest);
+        LoginIdentity loginIdentity = parseIdentity(loginBO);
 
         // 获取请求信息
         String loginIp = ServletUtils.getClientIp();
         String userAgent = ServletUtils.getUserAgent();
         
         // 获取平台类型
-        PlatformType platformType = loginRequest.getPlatformType() != null 
-                ? loginRequest.getPlatformType() 
+        PlatformType platformType = loginBO.getPlatformType() != null
+                ? loginBO.getPlatformType()
                 : PlatformType.ADMIN_WEB;
 
         try {
@@ -63,7 +62,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
             validateUser(user);
 
             // 校验密码
-            validatePassword(loginRequest.getPassword(), user.getSalt(), user.getPassword());
+            validatePassword(loginBO.getPassword(), user.getSalt(), user.getPassword());
 
             // 构建 LoginUser
             LoginUser loginUser = buildLoginUser(user);
@@ -94,7 +93,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
     /**
      * 解析登录账号类型
      */
-    private LoginIdentity parseIdentity(LoginRequest request) {
+    private LoginIdentity parseIdentity(LoginBO request) {
         if (StringUtils.isNotBlank(request.getPhonenumber()))
             return new LoginIdentity(LoginType.PHONENUMBER, request.getPhonenumber());
 

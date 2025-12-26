@@ -84,6 +84,13 @@ public interface AuthHelper {
     boolean logout(String token);
 
     /**
+     * 用户登出（从当前上下文获取 Token）
+     * 
+     * @return true=登出成功
+     */
+    boolean logout();
+
+    /**
      * 刷新 Token
      * 
      * @param refreshToken 刷新令牌
