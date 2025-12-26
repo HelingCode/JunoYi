@@ -89,14 +89,43 @@ junoyi-framework-permission/
 ├── handler/
 │   └── PermissionLoader.java    # 权限加载器接口
 ├── exception/
-│   └── PermissionException.java # 权限异常
+│   ├── PermissionException.java # 权限异常基类（继承 BaseException）
+│   ├── NotLoginException.java   # 未登录异常（401）
+│   └── NoPermissionException.java # 无权限异常（403）
 ├── config/
 │   └── PermissionConfiguration.java
 └── properties/
     └── PermissionProperties.java
 ```
 
-### 3.2 与 Security 模块集成
+### 3.2 异常体系
+
+权限模块的异常继承自 `BaseException`，属于 `permission` 领域：
+
+```
+BaseException (core 模块)
+    └── PermissionException (permission 领域基类)
+            ├── NotLoginException   (未登录，HTTP 401)
+            └── NoPermissionException (无权限，HTTP 403)
+```
+
+异常处理在 `GlobalExceptionHandler` 中统一处理：
+
+```java
+// 未登录异常 → 401
+@ExceptionHandler(NotLoginException.class)
+public R<?> handleNotLoginException(NotLoginException e) {
+    return R.fail(401, e.getMessage());
+}
+
+// 无权限异常 → 403
+@ExceptionHandler(NoPermissionException.class)
+public R<?> handleNoPermissionException(NoPermissionException e) {
+    return R.fail(403, e.getMessage());
+}
+```
+
+### 3.3 与 Security 模块集成
 
 权限信息存储在 `SecurityContext` 的 `LoginUser` 中，统一管理认证和授权：
 

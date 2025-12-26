@@ -2,7 +2,8 @@ package com.junoyi.framework.permission.aspect;
 
 import com.junoyi.framework.permission.annotation.Permission;
 import com.junoyi.framework.permission.enums.Logical;
-import com.junoyi.framework.permission.exception.PermissionException;
+import com.junoyi.framework.permission.exception.NoPermissionException;
+import com.junoyi.framework.permission.exception.NotLoginException;
 import com.junoyi.framework.permission.helper.PermissionHelper;
 import com.junoyi.framework.permission.properties.PermissionProperties;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,7 @@ public class PermissionAspect {
         if (permission.requireLogin()) {
             Long userId = PermissionHelper.getCurrentUserId();
             if (userId == null) {
-                throw PermissionException.notLogin();
+                throw new NotLoginException();
             }
         }
 
@@ -105,7 +106,7 @@ public class PermissionAspect {
 
         if (!hasPermission) {
             log.warn("权限校验失败，需要权限: {}, 逻辑: {}", requiredPermissions, logical);
-            throw new PermissionException(permission.message(), requiredPermissions);
+            throw new NoPermissionException(requiredPermissions);
         }
     }
 }

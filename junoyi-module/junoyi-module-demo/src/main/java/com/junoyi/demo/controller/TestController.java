@@ -5,6 +5,7 @@ import com.junoyi.framework.core.domain.module.R;
 import com.junoyi.framework.event.core.EventBus;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
+import com.junoyi.framework.permission.annotation.Permission;
 import com.junoyi.framework.security.annotation.PlatformScope;
 import com.junoyi.framework.security.enums.PlatformType;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +60,9 @@ public class TestController {
         return R.ok();
     }
 
-
+    @GetMapping("/permission")
+    @Permission("system.demo.permission")
+    public R<String> testPermission(){
+        return R.ok("Hello World");
+    }
 }
