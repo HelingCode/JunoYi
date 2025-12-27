@@ -11,7 +11,7 @@
  Target Server Version : 80404 (8.4.4)
  File Encoding         : 65001
 
- Date: 26/12/2025 09:09:03
+ Date: 27/12/2025 20:35:13
 */
 
 SET NAMES utf8mb4;
@@ -28,6 +28,64 @@ CREATE TABLE `sys_dept` (
 
 -- ----------------------------
 -- Records of sys_dept
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for sys_menu
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_menu`;
+CREATE TABLE `sys_menu` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `parent_id` bigint DEFAULT '0' COMMENT '父菜单ID ( 0 表示顶级）',
+  `name` varchar(100) DEFAULT NULL COMMENT '路由名称',
+  `path` varchar(200) DEFAULT NULL COMMENT '路由路径',
+  `component` varchar(200) DEFAULT NULL COMMENT '组件路径',
+  `title` varchar(100) DEFAULT NULL COMMENT '菜单标题（支持 i18n key)',
+  `icon` varchar(100) DEFAULT NULL COMMENT '菜单图标',
+  `menu_type` tinyint DEFAULT NULL COMMENT '菜单类型( 0目录 1菜单 2按钮)',
+  `sort` int DEFAULT NULL COMMENT '排序号',
+  `is_hide` tinyint DEFAULT '0' COMMENT '是否隐藏菜单（0否 1是）',
+  `is_hide_tab` tinyint DEFAULT '0' COMMENT '是否隐藏标签页（0否 1是）',
+  `keep_alive` tinyint DEFAULT '1' COMMENT '是否缓存（0 否 1是）',
+  `is_iframe` tinyint DEFAULT '0' COMMENT '是否iframe：0=否, 1=是',
+  `link` varchar(500) DEFAULT NULL COMMENT '外部链接地址',
+  `is_full_page` tinyint DEFAULT '0' COMMENT '是否全屏页面：0=否, 1=是',
+  `fixed_tab` int DEFAULT '0' COMMENT '是否固定标签页0=否, 1=是',
+  `active_path` varchar(200) DEFAULT NULL COMMENT '激活菜单路径（详情页用）',
+  `show_badge` tinyint DEFAULT '0' COMMENT '是否显示徽章',
+  `show_text_badge` varchar(50) DEFAULT NULL COMMENT '文本徽章内容（如 New）',
+  `status` tinyint DEFAULT '1' COMMENT '状态：0=禁用, 1=启用',
+  `create_by` varchar(64) DEFAULT NULL COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT NULL COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统菜单表';
+
+-- ----------------------------
+-- Records of sys_menu
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for sys_menu_auth
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_menu_auth`;
+CREATE TABLE `sys_menu_auth` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `menu_id` bigint DEFAULT NULL COMMENT '关联菜单ID',
+  `title` varchar(50) DEFAULT NULL COMMENT '按钮名称',
+  `auth_permission` varchar(200) DEFAULT NULL COMMENT '权限标识符',
+  `sort` int DEFAULT NULL COMMENT '排序号',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统菜单按钮权限表';
+
+-- ----------------------------
+-- Records of sys_menu_auth
 -- ----------------------------
 BEGIN;
 COMMIT;
@@ -85,6 +143,23 @@ CREATE TABLE `sys_role` (
 BEGIN;
 INSERT INTO `sys_role` (`id`, `role_name`, `role_key`, `sort`, `data_scope`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, '超级管理员', 'super_admin', 1, '1', 1, 0, 'system', '2025-12-05 08:25:15', 'system', '2025-12-05 08:25:23', '超级管理员');
 INSERT INTO `sys_role` (`id`, `role_name`, `role_key`, `sort`, `data_scope`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, '管理员', 'admin', 2, '2', 1, 0, 'super_admin', '2025-12-05 08:26:57', 'super_admin', '2025-12-05 08:27:08', '管理员');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for sys_role_menu
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_role_menu`;
+CREATE TABLE `sys_role_menu` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `role_id` bigint DEFAULT NULL COMMENT '角色ID',
+  `menu_id` bigint DEFAULT NULL COMMENT '菜单ID',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统角色菜单关联表';
+
+-- ----------------------------
+-- Records of sys_role_menu
+-- ----------------------------
+BEGIN;
 COMMIT;
 
 -- ----------------------------
