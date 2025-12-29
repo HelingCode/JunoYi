@@ -29,7 +29,7 @@ public class SysRouterController extends BaseController {
      * 获取路由信息
      * 该接口用于获取系统的路由配置信息
      *
-     * @return R<?> 通用响应结果，包含路由数据
+     * @return R<RouterVo> 路由响应结果，包含路由数据
      */
     @GetMapping
     @PlatformScope(PlatformType.ADMIN_WEB)

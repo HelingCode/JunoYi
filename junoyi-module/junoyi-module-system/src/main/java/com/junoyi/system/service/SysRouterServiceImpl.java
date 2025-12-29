@@ -13,7 +13,7 @@ public class SysRouterServiceImpl implements ISysRouterService {
 
         // 获取所有的可用菜单
 
-        // 用权限过滤菜单
+        // 用权限过滤菜单 （如果菜单没有设置权限，就可见）
 
         // 最后构建权限树
 
