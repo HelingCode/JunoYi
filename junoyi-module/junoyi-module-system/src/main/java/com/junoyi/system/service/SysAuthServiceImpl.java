@@ -252,7 +252,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
         Set<Long> groupIds = new HashSet<>();
         Date now = new Date();
 
-        // 1. 用户直接绑定的权限组
+        // 用户直接绑定的权限组
         List<SysUserGroup> userGroups = sysUserGroupMapper.selectList(
                 new LambdaQueryWrapper<SysUserGroup>()
                         .select(SysUserGroup::getGroupId)
@@ -263,7 +263,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
         userGroups.forEach(ug -> groupIds.add(ug.getGroupId()));
         log.debug("[权限组查询] 用户直绑权限组: {}", userGroups.stream().map(SysUserGroup::getGroupId).collect(Collectors.toList()));
 
-        // 2. 用户角色绑定的权限组
+        // 用户角色绑定的权限组
         Set<Long> roleIds = getUserRoles(userId);
         log.debug("[权限组查询] 用户角色: {}", roleIds);
         if (!roleIds.isEmpty()) {
@@ -278,7 +278,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
             log.debug("[权限组查询] 角色绑定权限组: {}", roleGroups.stream().map(SysRoleGroup::getGroupId).collect(Collectors.toList()));
         }
 
-        // 3. 用户部门绑定的权限组
+        // 用户部门绑定的权限组
         Set<Long> deptIds = getUserDept(userId);
         log.debug("[权限组查询] 用户部门: {}", deptIds);
         if (!deptIds.isEmpty()) {
