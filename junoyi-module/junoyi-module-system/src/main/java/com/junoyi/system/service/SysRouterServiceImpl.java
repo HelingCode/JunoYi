@@ -1,23 +1,125 @@
 package com.junoyi.system.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.junoyi.framework.log.core.JunoYiLog;
+import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.security.module.LoginUser;
-import com.junoyi.system.domain.vo.RouterVo;
+import com.junoyi.system.domain.po.SysMenu;
+import com.junoyi.system.domain.vo.RouterItemVo;
+import com.junoyi.system.domain.vo.RouterMetaVo;
+import com.junoyi.system.mapper.SysMenuMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * 系统路由服务实现
+ *
+ * @author Fan
+ */
 @Service
+@RequiredArgsConstructor
 public class SysRouterServiceImpl implements ISysRouterService {
 
+    private final JunoYiLog log = JunoYiLogFactory.getLogger(SysRouterServiceImpl.class);
+
+    private final SysMenuMapper sysMenuMapper;
 
     @Override
-    public RouterVo getUserRouter(LoginUser loginUser) {
+    public List<RouterItemVo> getUserRouter(LoginUser loginUser) {
+        log.debug("[路由加载] 开始加载用户路由, userId={}", loginUser.getUserId());
+        
+        // 查询所有启用的菜单（目录+菜单，不含按钮）
+        List<SysMenu> allMenus = sysMenuMapper.selectList(
+                new LambdaQueryWrapper<SysMenu>()
+                        .eq(SysMenu::getStatus, 1)
+                        .in(SysMenu::getMenuType, 0, 1)
+                        .orderByAsc(SysMenu::getSort)
+        );
+        
+        log.debug("[路由加载] 查询到菜单总数: {}", allMenus.size());
+        
+        List<SysMenu> userMenus;
+        
+        // 超级管理员获取所有菜单
+        if (loginUser.isSuperAdmin()) {
+            log.debug("[路由加载] 超级管理员, 返回所有菜单");
+            userMenus = allMenus;
+        } else {
+            // 普通用户根据权限过滤菜单
+            // 菜单的 permission 字段为空表示公开菜单，所有人可见
+            // 菜单的 permission 字段不为空时，需要用户拥有该权限
+            Set<String> userPermissions = loginUser.getPermissions();
+            if (userPermissions == null) {
+                userPermissions = new HashSet<>();
+            }
+            
+            final Set<String> permissions = userPermissions;
+            userMenus = allMenus.stream()
+                    .filter(menu -> {
+                        String perm = menu.getPermission();
+                        // 无权限标识的菜单对所有登录用户可见
+                        if (perm == null || perm.isBlank()) {
+                            return true;
+                        }
+                        // 有权限标识的菜单需要用户拥有该权限
+                        return permissions.contains(perm);
+                    })
+                    .collect(Collectors.toList());
+            
+            log.debug("[路由加载] 用户权限过滤后菜单数量: {}", userMenus.size());
+        }
+        
+        // 构建树形结构
+        List<RouterItemVo> routes = buildRouterTree(userMenus, 0L);
 
-        // 获取所有的可用菜单
+        log.debug("[路由加载] 完成, 顶级路由数量: {}", routes.size());
+        return routes;
+    }
 
-        // 用权限过滤菜单 （如果菜单没有设置权限，就可见）
+    /**
+     * 构建路由树
+     */
+    private List<RouterItemVo> buildRouterTree(List<SysMenu> menus, Long parentId) {
+        return menus.stream()
+                .filter(menu -> Objects.equals(menu.getParentId(), parentId))
+                .map(menu -> {
+                    RouterItemVo item = new RouterItemVo();
+                    item.setName(menu.getName());
+                    item.setPath(menu.getPath());
+                    item.setComponent(menu.getComponent());
+                    item.setMeta(buildMeta(menu));
+                    
+                    // 递归构建子路由
+                    List<RouterItemVo> children = buildRouterTree(menus, menu.getId());
+                    if (!children.isEmpty()) {
+                        item.setChildren(children);
+                    }
+                    
+                    return item;
+                })
+                .collect(Collectors.toList());
+    }
 
-        // 最后构建权限树
-
-
-        return null;
+    /**
+     * 构建路由元信息
+     */
+    private RouterMetaVo buildMeta(SysMenu menu) {
+        RouterMetaVo meta = new RouterMetaVo();
+        meta.setTitle(menu.getTitle());
+        meta.setIcon(menu.getIcon());
+        meta.setHidden(menu.getIsHide() != null && menu.getIsHide() == 1);
+        meta.setHideTab(menu.getIsHideTab() != null && menu.getIsHideTab() == 1);
+        meta.setKeepAlive(menu.getKeepAlive() != null && menu.getKeepAlive() == 1);
+        meta.setIframe(menu.getIsIframe() != null && menu.getIsIframe() == 1);
+        meta.setLink(menu.getLink());
+        meta.setFullPage(menu.getIsFullPage() != null && menu.getIsFullPage() == 1);
+        meta.setFixedTab(menu.getFixedTab() != null && menu.getFixedTab() == 1);
+        meta.setActivePath(menu.getActivePath());
+        meta.setShowBadge(menu.getShowBadge() != null && menu.getShowBadge() == 1);
+        meta.setBadgeText(menu.getShowTextBadge());
+        return meta;
     }
 }

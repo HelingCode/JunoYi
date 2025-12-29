@@ -1,20 +1,22 @@
 package com.junoyi.system.service;
 
 import com.junoyi.framework.security.module.LoginUser;
-import com.junoyi.system.domain.vo.RouterVo;
+import com.junoyi.system.domain.vo.RouterItemVo;
+
+import java.util.List;
 
 /**
- * 系统路由业务接口类
+ * 系统路由服务接口
  *
  * @author Fan
  */
 public interface ISysRouterService {
 
     /**
-     * 获取用户路由信息
+     * 获取用户路由
      *
-     * @param loginUser 登录用户信息，包含用户身份和权限等相关数据
-     * @return RouterVo 路由视图对象，封装了用户的路由配置信息
+     * @param loginUser 登录用户信息
+     * @return 路由信息
      */
-    RouterVo getUserRouter(LoginUser loginUser);
+    List<RouterItemVo> getUserRouter(LoginUser loginUser);
 }

@@ -5,12 +5,14 @@ import com.junoyi.framework.web.domain.BaseController;
 import com.junoyi.framework.core.domain.module.R;
 import com.junoyi.framework.security.annotation.PlatformScope;
 import com.junoyi.framework.security.enums.PlatformType;
-import com.junoyi.system.domain.vo.RouterVo;
+import com.junoyi.system.domain.vo.RouterItemVo;
 import com.junoyi.system.service.ISysRouterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 系统路由控制器
@@ -33,7 +35,7 @@ public class SysRouterController extends BaseController {
      */
     @GetMapping
     @PlatformScope(PlatformType.ADMIN_WEB)
-    public R<RouterVo> getRouter(){
+    public R<List<RouterItemVo>> getRouter(){
         // 通过用户来获取不同路由
         LoginUser loginUser = getLoginUser();
         return R.ok(sysRouterService.getUserRouter(loginUser));

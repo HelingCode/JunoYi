@@ -114,6 +114,11 @@ public class SysMenu extends BaseEntity {
     private String showTextBadge;
 
     /**
+     * 权限标识（用于控制菜单访问权限）
+     */
+    private String permission;
+
+    /**
      * 状态（0禁用 1启用）
      */
     private Integer status;
