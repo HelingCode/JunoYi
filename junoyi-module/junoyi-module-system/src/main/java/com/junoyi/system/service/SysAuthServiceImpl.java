@@ -40,7 +40,6 @@ import com.junoyi.system.mapper.SysUserMapper;
 import com.junoyi.system.mapper.SysUserPermMapper;
 import com.junoyi.system.mapper.SysUserRoleMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
