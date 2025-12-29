@@ -192,6 +192,14 @@ public class SysAuthServiceImpl implements ISysAuthService {
             return permissions;
         }
         // TODO: 从数据库查询用户权限（合并权限组的 permissions）
+        // 计算用户最终权限合集
+
+        // 权限合并
+        // 1 用户直绑的权限组
+        // 2 角色绑定的权限组
+        // 3 部门绑定的权限组
+
+        // 最后得到一个权限的集合
         // return sysPermissionMapper.selectPermissionsByUserId(userId);
         return new HashSet<>();
     }
