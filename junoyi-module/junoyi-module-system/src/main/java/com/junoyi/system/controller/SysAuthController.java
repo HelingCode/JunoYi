@@ -1,6 +1,8 @@
 package com.junoyi.system.controller;
 
 import com.junoyi.framework.captcha.helper.CaptchaHelper;
+import com.junoyi.framework.log.core.JunoYiLog;
+import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.web.domain.BaseController;
 import com.junoyi.framework.core.domain.module.R;
 import com.junoyi.framework.core.exception.captcha.CaptchaExpiredException;
@@ -17,7 +19,6 @@ import com.junoyi.system.domain.vo.UserInfoVO;
 import com.junoyi.system.service.ISysAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -29,8 +30,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Slf4j
 public class SysAuthController extends BaseController {
+
+    private final JunoYiLog log = JunoYiLogFactory.getLogger(SysAuthController.class);
 
     private final ISysAuthService sysAuthService;
     private final CaptchaHelper captchaHelper;

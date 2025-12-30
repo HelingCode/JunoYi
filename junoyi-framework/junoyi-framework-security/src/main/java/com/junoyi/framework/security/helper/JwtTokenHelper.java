@@ -82,6 +82,35 @@ public class JwtTokenHelper implements TokenHelper {
     }
 
     /**
+     * 只创建新的 AccessToken（用于刷新场景，保持原有 tokenId）
+     * 
+     * @param loginUser 登录用户信息
+     * @param tokenId 原有的 tokenId
+     * @return 新的 AccessToken 字符串
+     */
+    public String createAccessToken(LoginUser loginUser, String tokenId) {
+        Date now = new Date();
+        Duration accessDuration = getAccessExpireDuration(loginUser.getPlatformType());
+        Date accessExpiration = new Date(now.getTime() + accessDuration.toMillis());
+        
+        String accessToken = buildAccessToken(loginUser, tokenId, now, accessExpiration);
+        
+        log.info("AccessTokenRefreshed", "刷新 AccessToken 成功 | 用户: " + loginUser.getUserName() 
+                + " | tokenId: " + tokenId.substring(0, 8) + "..."
+                + " | 新有效期: " + accessDuration.toMinutes() + "分钟");
+        
+        return accessToken;
+    }
+
+    /**
+     * 获取 AccessToken 过期时间（毫秒时间戳）
+     */
+    public long getAccessExpireTimeMillis(PlatformType platformType) {
+        Duration accessDuration = getAccessExpireDuration(platformType);
+        return System.currentTimeMillis() + accessDuration.toMillis();
+    }
+
+    /**
      * 构建 AccessToken（独立生成）
      */
     private String buildAccessToken(LoginUser loginUser, String tokenId, Date now, Date expiration) {

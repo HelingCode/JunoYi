@@ -273,59 +273,77 @@ public class SessionHelperImpl implements SessionHelper {
     }
 
     /**
-     * 使用刷新令牌重新生成一对新的访问与刷新令牌，并替换旧的会话
+     * 使用刷新令牌重新生成新的访问令牌（固定有效期模式）
+     * 只刷新 AccessToken，RefreshToken 保持不变，到期必须重新登录
      *
      * @param refreshToken 刷新令牌字符串
-     * @return TokenPair 新的一对访问与刷新令牌
+     * @return TokenPair 新的访问令牌（refreshToken 保持原值）
      * @throws IllegalArgumentException 若刷新令牌无效、已过期或已被撤销时抛出异常
      */
     @Override
     public TokenPair refreshToken(String refreshToken) {
         // 验证 RefreshToken
         if (!tokenService.validateRefreshToken(refreshToken))
-            throw new IllegalArgumentException("RefreshToken 无效或已过期");
+            throw new IllegalArgumentException("RefreshToken 无效或格式错误");
 
         // 获取 tokenId
-        String oldTokenId = tokenService.getTokenId(refreshToken);
-        if (StringUtils.isBlank(oldTokenId))
+        String tokenId = tokenService.getTokenId(refreshToken);
+        if (StringUtils.isBlank(tokenId))
             throw new IllegalArgumentException("无法解析 RefreshToken");
 
         // 检查 RefreshToken 是否在白名单中（是否被主动失效）
-        String refreshKey = REFRESH_TOKEN + oldTokenId;
+        String refreshKey = REFRESH_TOKEN + tokenId;
         if (!RedisUtils.isExistsObject(refreshKey))
             throw new IllegalArgumentException("RefreshToken 已被撤销");
 
-        // 获取旧会话
-        UserSession oldSession = getSessionByTokenId(oldTokenId);
-        if (oldSession == null)
+        // 获取会话
+        UserSession session = getSessionByTokenId(tokenId);
+        if (session == null)
             throw new IllegalArgumentException("会话不存在或已过期");
+
+        // 检查 RefreshToken 是否已过期（固定有效期）
+        if (session.getRefreshExpireTime() < System.currentTimeMillis())
+            throw new IllegalArgumentException("RefreshToken 已过期，请重新登录");
 
         // 构建 LoginUser
         LoginUser loginUser = LoginUser.builder()
-                .userId(oldSession.getUserId())
-                .userName(oldSession.getUserName())
-                .nickName(oldSession.getNickName())
-                .platformType(oldSession.getPlatformType())
-                .permissions(oldSession.getPermissions())
-                .groups(oldSession.getGroups())
-                .depts(oldSession.getDepts())
-                .superAdmin(oldSession.isSuperAdmin())
-                .roles(oldSession.getRoles())
-                .loginIp(oldSession.getLoginIp())
-                .loginTime(oldSession.getLoginTime())
+                .userId(session.getUserId())
+                .userName(session.getUserName())
+                .nickName(session.getNickName())
+                .platformType(session.getPlatformType())
+                .permissions(session.getPermissions())
+                .groups(session.getGroups())
+                .depts(session.getDepts())
+                .superAdmin(session.isSuperAdmin())
+                .roles(session.getRoles())
+                .loginIp(session.getLoginIp())
+                .loginTime(session.getLoginTime())
                 .build();
 
-        // 删除旧会话
-        doLogout(oldTokenId);
+        // 只生成新的 AccessToken（保持原有 tokenId）
+        String newAccessToken = tokenService.createAccessToken(loginUser, tokenId);
+        long newAccessExpireTime = tokenService.getAccessExpireTimeMillis(session.getPlatformType());
 
-        // 创建新会话
-        TokenPair newTokenPair = login(loginUser, oldSession.getLoginIp(), oldSession.getUserAgent());
+        // 更新会话中的 AccessToken 过期时间
+        session.setAccessExpireTime(newAccessExpireTime);
+        session.setLastAccessTime(new Date());
+        
+        // 保存更新后的会话（保留原 TTL）
+        String sessionKey = SESSION + tokenId;
+        RedisUtils.setCacheObject(sessionKey, session, true);
 
-        log.info("TokenRefreshed", "Token 刷新成功 | 用户: " + loginUser.getUserName()
-                + " | 旧tokenId: " + oldTokenId.substring(0, 8) + "..."
-                + " | 新tokenId: " + newTokenPair.getTokenId().substring(0, 8) + "...");
+        log.info("TokenRefreshed", "AccessToken 刷新成功 | 用户: " + loginUser.getUserName()
+                + " | tokenId: " + tokenId.substring(0, 8) + "..."
+                + " | RefreshToken 剩余有效期: " + ((session.getRefreshExpireTime() - System.currentTimeMillis()) / 1000 / 60 / 60) + "小时");
 
-        return newTokenPair;
+        // 返回新的 AccessToken，RefreshToken 保持原值
+        return TokenPair.builder()
+                .tokenId(tokenId)
+                .accessToken(newAccessToken)
+                .refreshToken(refreshToken)  // 保持原有的 refreshToken
+                .accessExpireTime(newAccessExpireTime)
+                .refreshExpireTime(session.getRefreshExpireTime())  // 保持原有的过期时间
+                .build();
     }
 
     /**
@@ -366,6 +384,7 @@ public class SessionHelperImpl implements SessionHelper {
 
     /**
      * 查询某个用户的所有活跃会话列表
+     * 同时清理已过期的会话索引（懒清理）
      *
      * @param userId 用户ID
      * @return List<UserSession> 该用户的所有活跃会话集合
@@ -381,10 +400,36 @@ public class SessionHelperImpl implements SessionHelper {
         if (tokenIds == null || tokenIds.isEmpty())
             return Collections.emptyList();
 
-        return tokenIds.stream()
-                .map(this::getSessionByTokenId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<UserSession> activeSessions = new ArrayList<>();
+        Set<String> expiredTokenIds = new HashSet<>();
+
+        for (String tokenId : tokenIds) {
+            UserSession session = getSessionByTokenId(tokenId);
+            if (session != null) {
+                activeSessions.add(session);
+            } else {
+                // 会话已过期，标记为待清理
+                expiredTokenIds.add(tokenId);
+            }
+        }
+
+        // 懒清理：移除已过期的 tokenId
+        if (!expiredTokenIds.isEmpty()) {
+            Set<String> remainingTokenIds = new HashSet<>(tokenIds);
+            remainingTokenIds.removeAll(expiredTokenIds);
+            
+            if (remainingTokenIds.isEmpty()) {
+                RedisUtils.deleteObject(userSessionsKey);
+            } else {
+                RedisUtils.deleteObject(userSessionsKey);
+                RedisUtils.setCacheSet(userSessionsKey, remainingTokenIds);
+            }
+            
+            log.debug("SessionIndexCleaned", "清理过期会话索引 | userId: " + userId 
+                    + " | 清理数量: " + expiredTokenIds.size());
+        }
+
+        return activeSessions;
     }
 
     /**
