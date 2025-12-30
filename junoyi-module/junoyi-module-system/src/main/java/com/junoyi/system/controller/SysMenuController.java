@@ -1,12 +1,11 @@
 package com.junoyi.system.controller;
 
-import com.junoyi.framework.web.domain.BaseController;
 import com.junoyi.framework.core.domain.module.R;
 import com.junoyi.framework.security.annotation.PlatformScope;
 import com.junoyi.framework.security.enums.PlatformType;
-import com.junoyi.system.convert.SysMenuConverter;
+import com.junoyi.framework.web.domain.BaseController;
 import com.junoyi.system.domain.dto.SysMenuDTO;
-import com.junoyi.system.domain.po.SysMenu;
+import com.junoyi.system.domain.dto.SysMenuQueryDTO;
 import com.junoyi.system.domain.vo.SysMenuVO;
 import com.junoyi.system.service.ISysMenuService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import java.util.List;
 
 /**
  * 系统菜单控制器
- * 提供菜单的增删改查等操作接口
  *
  * @author Fan
  */
@@ -27,52 +25,66 @@ public class SysMenuController extends BaseController {
 
     private final ISysMenuService sysMenuService;
 
-    private final SysMenuConverter sysMenuConverter;
+    /**
+     * 获取菜单树形列表
+     */
+    @GetMapping("/tree")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    public R<List<SysMenuVO>> getMenuTree(SysMenuQueryDTO queryDTO) {
+        return R.ok(sysMenuService.getMenuTree(queryDTO));
+    }
 
     /**
-     * 获取菜单列表
-     * 用于查询系统中所有的菜单信息
-     *
-     * @param queryDTO 菜单查询数据参数
-     * @return R<List<MenuVO> 菜单列表响应结果，包含菜单列表数据
+     * 获取菜单列表（平铺）
      */
     @GetMapping("/list")
     @PlatformScope(PlatformType.ADMIN_WEB)
-    public R<List<SysMenuVO>> getMenuList(@RequestBody SysMenuDTO queryDTO){
+    public R<List<SysMenuVO>> getMenuList(SysMenuQueryDTO queryDTO) {
+        return R.ok(sysMenuService.getMenuList(queryDTO));
+    }
 
-        SysMenu sysMenu = sysMenuConverter.toEntity(queryDTO);
-
-
-        return R.ok();
+    /**
+     * 获取菜单详情
+     */
+    @GetMapping("/{id}")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    public R<SysMenuVO> getMenuById(@PathVariable Long id) {
+        return R.ok(sysMenuService.getMenuById(id));
     }
 
     /**
      * 添加菜单
-     * 用于向系统中新增菜单项
-     *
-     * @return R<?> 通用响应结果，表示添加操作的执行结果
      */
-    @PostMapping()
+    @PostMapping
     @PlatformScope(PlatformType.ADMIN_WEB)
-    public R<?> addMenu(){
-        return R.ok();
+    public R<Long> addMenu(@RequestBody SysMenuDTO menuDTO) {
+        return R.ok(sysMenuService.addMenu(menuDTO));
     }
 
     /**
      * 更新菜单
-     * 用于修改系统中已存在的菜单信息
-     *
-     * @return R<?> 通用响应结果，表示更新操作的执行结果
      */
     @PutMapping
     @PlatformScope(PlatformType.ADMIN_WEB)
-    public R<?> updateMenu(){
-        return R.ok();
+    public R<?> updateMenu(@RequestBody SysMenuDTO menuDTO) {
+        return sysMenuService.updateMenu(menuDTO) ? R.ok() : R.fail("更新失败");
     }
 
-    @DeleteMapping
+    /**
+     * 删除菜单
+     */
+    @DeleteMapping("/{id}")
     @PlatformScope(PlatformType.ADMIN_WEB)
-    public R<?> deleteMenu(){
-        return R.ok();
+    public R<?> deleteMenu(@PathVariable Long id) {
+        return sysMenuService.deleteMenu(id) ? R.ok() : R.fail("删除失败");
+    }
+
+    /**
+     * 批量删除菜单
+     */
+    @DeleteMapping("/batch")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    public R<?> deleteMenuBatch(@RequestBody List<Long> ids) {
+        return sysMenuService.deleteMenuBatch(ids) ? R.ok() : R.fail("删除失败");
     }
 }
