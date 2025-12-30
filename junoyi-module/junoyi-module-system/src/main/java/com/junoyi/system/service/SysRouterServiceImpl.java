@@ -81,6 +81,9 @@ public class SysRouterServiceImpl implements ISysRouterService {
 
     /**
      * 构建路由树
+     * @param menus 菜单列表
+     * @param parentId 父级ID
+     * @return 路由列表
      */
     private List<RouterItemVo> buildRouterTree(List<SysMenu> menus, Long parentId) {
         return menus.stream()
@@ -100,6 +103,23 @@ public class SysRouterServiceImpl implements ISysRouterService {
                     }
                     
                     return item;
+                })
+                // 过滤：目录类型(menuType=0)且没有子菜单的不返回
+                .filter(item -> {
+                    // 查找对应的菜单获取类型
+                    SysMenu menu = menus.stream()
+                            .filter(m -> Objects.equals(m.getId(), item.getId()))
+                            .findFirst()
+                            .orElse(null);
+                    if (menu == null) {
+                        return true;
+                    }
+                    // 如果是目录类型且没有子菜单，则过滤掉
+                    if (menu.getMenuType() == 0 && (item.getChildren() == null || item.getChildren().isEmpty())) {
+                        log.debug("[路由加载] 过滤空目录: {}", menu.getTitle());
+                        return false;
+                    }
+                    return true;
                 })
                 .collect(Collectors.toList());
     }
