@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.exception.menu.MenuHasChildrenException;
+import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.core.utils.StringUtils;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
@@ -110,6 +111,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
             menu.setSort(0);
         if (menu.getStatus() == null)
             menu.setStatus(1);
+        menu.setCreateTime(DateUtils.getNowDate());
         sysMenuMapper.insert(menu);
         return menu.getId();
     }
