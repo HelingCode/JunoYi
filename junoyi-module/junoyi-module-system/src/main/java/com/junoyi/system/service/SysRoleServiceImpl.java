@@ -11,6 +11,7 @@ import com.junoyi.system.domain.dto.SysRoleDTO;
 import com.junoyi.system.domain.dto.SysRoleQueryDTO;
 import com.junoyi.system.domain.po.SysRole;
 import com.junoyi.system.domain.vo.SysRoleVO;
+import com.junoyi.system.enums.SysRoleStatus;
 import com.junoyi.system.mapper.SysRoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,7 @@ public class SysRoleServiceImpl implements ISysRoleService{
         // 构建查询条件：查询未删除且状态为启用的角色，按排序字段升序排列
         LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysRole::isDelFlag, false)
-                .eq(SysRole::getStatus, 1)
+                .eq(SysRole::getStatus, SysRoleStatus.ENABLE.getCode())
                 .orderByAsc(SysRole::getSort);
         List<SysRole> sysRoles = sysRoleMapper.selectList(wrapper);
         return sysRoleConverter.toVoList(sysRoles);
@@ -94,7 +95,7 @@ public class SysRoleServiceImpl implements ISysRoleService{
     @Override
     public void addRole(SysRoleDTO roleDTO) {
         SysRole sysRole = sysRoleConverter.toPo(roleDTO);
-        sysRole.setStatus(1);
+        sysRole.setStatus(SysRoleStatus.ENABLE.getCode());
         sysRole.setDelFlag(false);
         sysRole.setCreateBy(SecurityUtils.getUserName());
         sysRole.setCreateTime(DateUtils.getNowDate());
