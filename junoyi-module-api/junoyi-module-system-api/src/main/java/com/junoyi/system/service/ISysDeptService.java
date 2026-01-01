@@ -1,5 +1,6 @@
 package com.junoyi.system.service;
 
+import com.junoyi.system.domain.dto.SysDeptDTO;
 import com.junoyi.system.domain.dto.SysDeptQueryDTO;
 import com.junoyi.system.domain.vo.SysDeptVO;
 
@@ -25,4 +26,10 @@ public interface ISysDeptService {
      * @return 部门信息
      */
     SysDeptVO getDeptById(Long id);
+
+    /**
+     * 添加部门
+     * @param deptDTO 部门信息
+     */
+    void addDept(SysDeptDTO deptDTO);
 }

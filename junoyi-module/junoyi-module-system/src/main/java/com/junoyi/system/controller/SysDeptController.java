@@ -7,6 +7,7 @@ import com.junoyi.framework.permission.annotation.Permission;
 import com.junoyi.framework.security.annotation.PlatformScope;
 import com.junoyi.framework.security.enums.PlatformType;
 import com.junoyi.framework.web.domain.BaseController;
+import com.junoyi.system.domain.dto.SysDeptDTO;
 import com.junoyi.system.domain.dto.SysDeptQueryDTO;
 import com.junoyi.system.domain.vo.SysDeptVO;
 import com.junoyi.system.service.ISysDeptService;
@@ -61,8 +62,8 @@ public class SysDeptController extends BaseController {
     @Permission(
             value = {"system.ui.dept.view", "system.api.dept.add"}
     )
-    public R<Void> addDept(){
-
+    public R<Void> addDept(@RequestBody SysDeptDTO sysDeptDTO){
+        sysDeptService.addDept(sysDeptDTO);
         return R.ok();
     }
 }

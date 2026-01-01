@@ -3,8 +3,7 @@ package com.junoyi.system.domain.dto;
 import lombok.Data;
 
 /**
- * 系统部门数据传输对象
- * 用于封装系统部门相关的信息，提供部门数据的传输和存储功能
+ * 系统部门传输数据
  *
  * @author Fan
  */
@@ -12,12 +11,12 @@ import lombok.Data;
 public class SysDeptDTO {
 
     /**
-     * 部门ID，唯一标识一个部门
+     * 部门ID（修改时必填）
      */
     private Long id;
 
     /**
-     * 父部门ID，用于构建部门层级关系
+     * 父部门ID
      */
     private Long parentId;
 
@@ -27,27 +26,32 @@ public class SysDeptDTO {
     private String name;
 
     /**
-     * 排序号，用于部门列表的排序显示
+     * 排序
      */
     private Integer sort;
 
     /**
-     * 部门负责人姓名
+     * 负责人名称
      */
     private String leader;
 
     /**
-     * 负责人联系电话
+     * 联系电话
      */
     private String phonenumber;
 
     /**
-     * 负责人邮箱地址
+     * 部门邮箱
      */
     private String email;
 
     /**
-     * 备注信息，用于存储部门相关的额外说明
+     * 部门状态（0-正常，1-禁用）
+     */
+    private Integer status;
+
+    /**
+     * 备注
      */
     private String remark;
 }

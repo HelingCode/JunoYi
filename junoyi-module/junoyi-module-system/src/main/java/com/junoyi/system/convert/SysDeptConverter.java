@@ -1,6 +1,7 @@
 package com.junoyi.system.convert;
 
 import com.junoyi.framework.core.convert.MapStructConfig;
+import com.junoyi.system.domain.dto.SysDeptDTO;
 import com.junoyi.system.domain.po.SysDept;
 import com.junoyi.system.domain.vo.SysDeptVO;
 import org.mapstruct.Mapper;
@@ -21,4 +22,6 @@ public interface SysDeptConverter {
     SysDeptVO toVo(SysDept sysDept);
 
     List<SysDeptVO> toVoList(List<SysDept> sysDeptList);
+
+    SysDept toPo(SysDeptDTO dto);
 }
