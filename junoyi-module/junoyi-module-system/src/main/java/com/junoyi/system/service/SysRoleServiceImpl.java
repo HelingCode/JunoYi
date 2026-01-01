@@ -36,7 +36,7 @@ public class SysRoleServiceImpl implements ISysRoleService{
         wrapper.like(StringUtils.hasText(queryDTO.getRoleName()), SysRole::getRoleName, queryDTO.getRoleName())
                .like(StringUtils.hasText(queryDTO.getRoleKey()), SysRole::getRoleKey, queryDTO.getRoleKey())
                .eq(queryDTO.getStatus() != null, SysRole::getStatus, queryDTO.getStatus())
-               .eq(queryDTO.getDelFlag() != null, SysRole::isDelFlag, queryDTO.getDelFlag())
+               .eq(SysRole::isDelFlag, false)
                .orderByAsc(SysRole::getSort);
 
         Page<SysRole> resultPage = sysRoleMapper.selectPage(page, wrapper);
