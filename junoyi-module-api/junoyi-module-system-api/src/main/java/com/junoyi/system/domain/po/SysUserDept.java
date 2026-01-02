@@ -1,5 +1,6 @@
 package com.junoyi.system.domain.po;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @author Fan
  */
 @Data
+@TableName("sys_user_dept")
 public class SysUserDept {
 
     private Long id;
