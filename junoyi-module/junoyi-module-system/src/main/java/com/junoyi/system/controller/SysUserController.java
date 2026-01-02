@@ -12,6 +12,7 @@ import com.junoyi.framework.security.enums.PlatformType;
 import com.junoyi.framework.web.domain.BaseController;
 import com.junoyi.system.domain.dto.SysUserDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
+import com.junoyi.system.domain.vo.SysDeptVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.domain.vo.SysUserVO;
 import com.junoyi.system.service.ISysUserService;
@@ -134,6 +135,31 @@ public class SysUserController extends BaseController {
     )
     public R<Void> updateUserRoles(@PathVariable("id") Long id, @RequestBody List<Long> roleIds){
         sysUserService.updateUserRoles(id, roleIds);
+        return R.ok();
+    }
+
+    /**
+     * 获取用户已绑定的部门
+     */
+    @GetMapping("/{id}/depts")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.user.view","system.api.user.get"}
+    )
+    public R<List<SysDeptVO>> getUserDepts(@PathVariable("id") Long id){
+        return R.ok(sysUserService.getUserDepts(id));
+    }
+
+    /**
+     * 更新用户绑定的部门
+     */
+    @PutMapping("/{id}/depts")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.user.view", "system.api.user.update"}
+    )
+    public R<Void> updateUserDepts(@PathVariable("id") Long id, @RequestBody List<Long> deptIds){
+        sysUserService.updateUserDepts(id, deptIds);
         return R.ok();
     }
 }

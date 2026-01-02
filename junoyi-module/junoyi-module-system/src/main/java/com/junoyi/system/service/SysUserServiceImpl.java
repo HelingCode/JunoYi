@@ -6,17 +6,21 @@ import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.security.utils.PasswordUtils;
 import com.junoyi.framework.security.utils.SecurityUtils;
+import com.junoyi.system.convert.SysDeptConverter;
 import com.junoyi.system.convert.SysRoleConverter;
 import com.junoyi.system.convert.SysUserConverter;
 import com.junoyi.system.domain.dto.SysUserDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
+import com.junoyi.system.domain.po.SysDept;
 import com.junoyi.system.domain.po.SysRole;
 import com.junoyi.system.domain.po.SysUser;
 import com.junoyi.system.domain.po.SysUserDept;
 import com.junoyi.system.domain.po.SysUserRole;
+import com.junoyi.system.domain.vo.SysDeptVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.domain.vo.SysUserVO;
 import com.junoyi.system.enums.SysUserStatus;
+import com.junoyi.system.mapper.SysDeptMapper;
 import com.junoyi.system.mapper.SysRoleMapper;
 import com.junoyi.system.mapper.SysUserDeptMapper;
 import com.junoyi.system.mapper.SysUserMapper;
@@ -42,8 +46,10 @@ public class SysUserServiceImpl implements ISysUserService {
     private final SysUserDeptMapper sysUserDeptMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
     private final SysRoleMapper sysRoleMapper;
+    private final SysDeptMapper sysDeptMapper;
     private final SysUserConverter sysUserConverter;
     private final SysRoleConverter sysRoleConverter;
+    private final SysDeptConverter sysDeptConverter;
 
     /**
      * 获取用户列表，支持分页和多条件查询
@@ -237,6 +243,61 @@ public class SysUserServiceImpl implements ISysUserService {
                 userRole.setUserId(userId);
                 userRole.setRoleId(roleId);
                 sysUserRoleMapper.insert(userRole);
+            }
+        }
+    }
+
+    /**
+     * 获取用户绑定的部门列表
+     *
+     * @param userId 用户ID
+     * @return 部门列表
+     */
+    @Override
+    public List<SysDeptVO> getUserDepts(Long userId) {
+        // 查询用户部门关联
+        List<SysUserDept> userDepts = sysUserDeptMapper.selectList(
+                new LambdaQueryWrapper<SysUserDept>()
+                        .eq(SysUserDept::getUserId, userId));
+
+        if (userDepts.isEmpty()) {
+            return List.of();
+        }
+
+        // 获取部门ID列表
+        List<Long> deptIds = userDepts.stream()
+                .map(SysUserDept::getDeptId)
+                .collect(Collectors.toList());
+
+        // 查询部门信息
+        List<SysDept> depts = sysDeptMapper.selectList(
+                new LambdaQueryWrapper<SysDept>()
+                        .in(SysDept::getId, deptIds)
+                        .eq(SysDept::isDelFlag, false));
+
+        return sysDeptConverter.toVoList(depts);
+    }
+
+    /**
+     * 更新用户部门绑定
+     *
+     * @param userId 用户ID
+     * @param deptIds 部门ID列表
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserDepts(Long userId, List<Long> deptIds) {
+        // 先删除原有的用户部门关联
+        sysUserDeptMapper.delete(new LambdaQueryWrapper<SysUserDept>()
+                .eq(SysUserDept::getUserId, userId));
+
+        // 批量插入新的用户部门关联
+        if (deptIds != null && !deptIds.isEmpty()) {
+            for (Long deptId : deptIds) {
+                SysUserDept userDept = new SysUserDept();
+                userDept.setUserId(userId);
+                userDept.setDeptId(deptId);
+                sysUserDeptMapper.insert(userDept);
             }
         }
     }
