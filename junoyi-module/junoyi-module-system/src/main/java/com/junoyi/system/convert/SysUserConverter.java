@@ -37,14 +37,6 @@ public interface SysUserConverter extends BaseConverter<SysUserDTO, SysUser, Sys
     /**
      * Entity 转 VO
      * <p>
-     * 可以在这里添加自定义映射规则
      */
-    @Override
-    @Mappings({
-            // 示例：如果字段名不同，可以这样映射
-            // @Mapping(source = "phonenumber", target = "phone"),
-            // 示例：忽略某个字段
-            // @Mapping(target = "password", ignore = true)
-    })
     SysUserVO toVo(SysUser entity);
 }
