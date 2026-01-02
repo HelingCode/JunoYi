@@ -77,4 +77,11 @@ public interface ISysUserService {
      * @param deptIds 部门ID列表
      */
     void updateUserDepts(Long userId, List<Long> deptIds);
+
+    /**
+     * 重置用户密码
+     * @param userId 用户ID
+     * @param newPassword 新密码
+     */
+    void resetPassword(Long userId, String newPassword);
 }

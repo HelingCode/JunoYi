@@ -8,6 +8,7 @@ import com.junoyi.framework.permission.annotation.Permission;
 import com.junoyi.framework.security.annotation.PlatformScope;
 import com.junoyi.framework.security.enums.PlatformType;
 import com.junoyi.framework.web.domain.BaseController;
+import com.junoyi.system.domain.dto.ResetPasswordDTO;
 import com.junoyi.system.domain.dto.SysUserDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
 import com.junoyi.system.domain.vo.SysDeptVO;
@@ -160,4 +161,20 @@ public class SysUserController extends BaseController {
         sysUserService.updateUserDepts(id, deptIds);
         return R.ok();
     }
+
+
+    /**
+     * 重置密码（仅超级管理员可操作）
+     */
+    @PutMapping("/{id}/password")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission("*")
+    public R<Void> resetUserPassword(@PathVariable("id") Long id, @RequestBody ResetPasswordDTO resetPasswordDTO){
+        if (!getLoginUser().isSuperAdmin()) {
+            return R.fail("仅超级管理员可重置密码");
+        }
+        sysUserService.resetPassword(id, resetPasswordDTO.getNewPassword());
+        return R.ok();
+    }
+
 }

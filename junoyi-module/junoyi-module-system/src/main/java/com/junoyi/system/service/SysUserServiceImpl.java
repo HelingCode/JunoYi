@@ -1,6 +1,7 @@
 package com.junoyi.system.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.DateUtils;
@@ -300,5 +301,26 @@ public class SysUserServiceImpl implements ISysUserService {
                 sysUserDeptMapper.insert(userDept);
             }
         }
+    }
+
+    /**
+     * 重置用户密码
+     *
+     * @param userId 用户ID
+     * @param newPassword 新密码
+     */
+    @Override
+    public void resetPassword(Long userId, String newPassword) {
+        // 加密新密码，同时生成新盐值
+        PasswordUtils.EncryptResult encryptResult = PasswordUtils.encrypt(newPassword);
+        
+        // 使用 LambdaUpdateWrapper 只更新密码和盐值
+        LambdaUpdateWrapper<SysUser> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(SysUser::getUserId, userId)
+                .set(SysUser::getPassword, encryptResult.getEncodedPassword())
+                .set(SysUser::getSalt, encryptResult.getSalt())
+                .set(SysUser::getUpdateTime, DateUtils.getNowDate())
+                .set(SysUser::getUpdateBy, SecurityUtils.getUserName());
+        sysUserMapper.update(null, updateWrapper);
     }
 }
