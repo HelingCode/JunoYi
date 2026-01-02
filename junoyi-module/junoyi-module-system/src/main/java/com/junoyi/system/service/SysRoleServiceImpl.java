@@ -57,16 +57,17 @@ public class SysRoleServiceImpl implements ISysRoleService{
     }
 
     /**
-     * 获取所有可用角色列表
+     * 获取所有可用角色列表（排除超级管理员）
      *
      * @return 角色VO列表
      */
     @Override
     public List<SysRoleVO> getRoleList() {
-        // 构建查询条件：查询未删除且状态为启用的角色，按排序字段升序排列
+        // 构建查询条件：查询未删除且状态为启用的角色，排除超级管理员(ID=1)，按排序字段升序排列
         LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysRole::isDelFlag, false)
                 .eq(SysRole::getStatus, SysRoleStatus.ENABLE.getCode())
+                .ne(SysRole::getId, 1L)
                 .orderByAsc(SysRole::getSort);
         List<SysRole> sysRoles = sysRoleMapper.selectList(wrapper);
         return sysRoleConverter.toVoList(sysRoles);
