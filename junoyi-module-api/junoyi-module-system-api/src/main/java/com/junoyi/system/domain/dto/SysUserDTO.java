@@ -48,16 +48,6 @@ public class SysUserDTO {
     private String sex;
 
     /**
-     * 角色ID列表
-     */
-    private List<Long> roleIds;
-
-    /**
-     * 部门ID列表
-     */
-    private List<Long> deptIds;
-
-    /**
      * 状态（1-启用，0-禁用）
      */
     private Integer status;

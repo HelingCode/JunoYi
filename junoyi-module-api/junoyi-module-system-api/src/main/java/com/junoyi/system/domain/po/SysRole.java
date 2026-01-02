@@ -2,18 +2,19 @@ package com.junoyi.system.domain.po;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.junoyi.framework.core.domain.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
 
 /**
  * 系统角色实体类
  * 用于封装系统角色相关的信息，包括角色名称、权限标识、状态等属性
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("sys_role")
-public class SysRole {
+public class SysRole extends BaseEntity {
 
     /**
      * 角色主键ID
@@ -51,28 +52,5 @@ public class SysRole {
      */
     private boolean delFlag;
 
-    /**
-     * 创建者
-     */
-    private String createBy;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新者
-     */
-    private String updateBy;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    /**
-     * 备注信息
-     */
-    private String remark;
 }

@@ -2,18 +2,20 @@ package com.junoyi.system.domain.po;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.junoyi.framework.core.domain.base.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Date;
 
 /**
  * 用户部门数据实体对象
  *
  * @author Fan
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("sys_dept")
-public class SysDept {
+public class SysDept extends BaseEntity {
 
     /**
      * 部门主键 ID
@@ -61,28 +63,5 @@ public class SysDept {
      */
     private boolean delFlag;
 
-    /**
-     * 创建者
-     */
-    private String createBy;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新者
-     */
-    private String updateBy;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    /**
-     * 备注
-     */
-    private String remark;
 }

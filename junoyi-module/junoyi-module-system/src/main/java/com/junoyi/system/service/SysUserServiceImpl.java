@@ -11,16 +11,12 @@ import com.junoyi.system.domain.dto.SysUserDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
 import com.junoyi.system.domain.po.SysUser;
 import com.junoyi.system.domain.po.SysUserDept;
-import com.junoyi.system.domain.po.SysUserRole;
 import com.junoyi.system.domain.vo.SysUserVO;
 import com.junoyi.system.enums.SysUserStatus;
 import com.junoyi.system.mapper.SysUserDeptMapper;
 import com.junoyi.system.mapper.SysUserMapper;
-import com.junoyi.system.mapper.SysUserRoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -37,7 +33,6 @@ public class SysUserServiceImpl implements ISysUserService {
 
     private final SysUserMapper sysUserMapper;
     private final SysUserDeptMapper sysUserDeptMapper;
-    private final SysUserRoleMapper sysUserRoleMapper;
     private final SysUserConverter sysUserConverter;
 
     @Override
@@ -77,7 +72,6 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void addUser(SysUserDTO userDTO) {
         // 创建用户实体
         SysUser sysUser = sysUserConverter.toEntity(userDTO);
@@ -92,72 +86,22 @@ public class SysUserServiceImpl implements ISysUserService {
         sysUser.setStatus(userDTO.getStatus() != null ? userDTO.getStatus() : SysUserStatus.NORMAL.getCode());
         sysUser.setCreateTime(DateUtils.getNowDate());
         sysUser.setCreateBy(SecurityUtils.getUserName());
+        sysUser.setUpdateTime(DateUtils.getNowDate());
+        sysUser.setUpdateBy(SecurityUtils.getUserName());
         
         // 插入用户
         sysUserMapper.insert(sysUser);
-        Long userId = sysUser.getUserId();
-        
-        // 关联角色
-        if (!CollectionUtils.isEmpty(userDTO.getRoleIds())) {
-            for (Long roleId : userDTO.getRoleIds()) {
-                SysUserRole userRole = new SysUserRole();
-                userRole.setUserId(userId);
-                userRole.setRoleId(roleId);
-                sysUserRoleMapper.insert(userRole);
-            }
-        }
-        
-        // 关联部门
-        if (!CollectionUtils.isEmpty(userDTO.getDeptIds())) {
-            for (Long deptId : userDTO.getDeptIds()) {
-                SysUserDept userDept = new SysUserDept();
-                userDept.setUserId(userId);
-                userDept.setDeptId(deptId);
-                sysUserDeptMapper.insert(userDept);
-            }
-        }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void updateUser(SysUserDTO userDTO) {
-        Long userId = userDTO.getId();
-        
         // 更新用户基本信息（不更新密码）
         SysUser sysUser = sysUserConverter.toEntity(userDTO);
-        sysUser.setUserId(userId);
+        sysUser.setUserId(userDTO.getId());
         sysUser.setPassword(null);  // 不更新密码
         sysUser.setSalt(null);      // 不更新盐值
         sysUser.setUpdateTime(DateUtils.getNowDate());
         sysUser.setUpdateBy(SecurityUtils.getUserName());
         sysUserMapper.updateById(sysUser);
-        
-        // 更新角色关联（先删后增）
-        if (userDTO.getRoleIds() != null) {
-            LambdaQueryWrapper<SysUserRole> roleWrapper = new LambdaQueryWrapper<>();
-            roleWrapper.eq(SysUserRole::getUserId, userId);
-            sysUserRoleMapper.delete(roleWrapper);
-            
-            for (Long roleId : userDTO.getRoleIds()) {
-                SysUserRole userRole = new SysUserRole();
-                userRole.setUserId(userId);
-                userRole.setRoleId(roleId);
-                sysUserRoleMapper.insert(userRole);
-            }
-        }
-        
-        // 更新部门关联（先删后增）
-        if (userDTO.getDeptIds() != null) {
-            LambdaQueryWrapper<SysUserDept> deptWrapper = new LambdaQueryWrapper<>();
-            deptWrapper.eq(SysUserDept::getUserId, userId);
-            sysUserDeptMapper.delete(deptWrapper);
-            
-            for (Long deptId : userDTO.getDeptIds()) {
-                SysUserDept userDept = new SysUserDept();
-                userDept.setUserId(userId);
-                userDept.setDeptId(deptId);
-                sysUserDeptMapper.insert(userDept);
-            }
-        }
     }
 }
