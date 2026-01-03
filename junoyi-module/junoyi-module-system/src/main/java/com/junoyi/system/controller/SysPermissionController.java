@@ -6,8 +6,12 @@ import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.permission.annotation.Permission;
 import com.junoyi.framework.security.annotation.PlatformScope;
 import com.junoyi.framework.security.enums.PlatformType;
+import com.junoyi.system.domain.vo.SysPermGroupVO;
+import com.junoyi.system.service.ISysPermGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 系统权限管理控制器
@@ -21,6 +25,8 @@ public class SysPermissionController {
 
     private final JunoYiLog log = JunoYiLogFactory.getLogger(SysPermissionController.class);
 
+    private final ISysPermGroupService sysPermGroupService;
+
     /**
      * 获取权限组列表
      */
@@ -29,9 +35,8 @@ public class SysPermissionController {
     @Permission(
             value = {"system.ui.permission.view", "system.api.permission.get"}
     )
-    public R<?> getPermissionGroupList(){
-
-        return R.ok();
+    public R<List<SysPermGroupVO>> getPermissionGroupList(){
+        return R.ok(sysPermGroupService.getPermGroupList());
     }
 
     /**
