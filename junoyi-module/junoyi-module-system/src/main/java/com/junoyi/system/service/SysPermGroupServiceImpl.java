@@ -56,6 +56,19 @@ public class SysPermGroupServiceImpl implements ISysPermGroupService {
     }
 
     /**
+     * 获取权限组下拉列表（启用状态）
+     * @return 权限组VO列表
+     */
+    @Override
+    public List<SysPermGroupVO> getPermGroupOptions() {
+        LambdaQueryWrapper<SysPermGroup> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysPermGroup::getStatus, 1)
+                .orderByAsc(SysPermGroup::getPriority);
+        List<SysPermGroup> permGroups = sysPermGroupMapper.selectList(wrapper);
+        return sysPermGroupConverter.toVoList(permGroups);
+    }
+
+    /**
      * 新增权限组
      * @param dto 权限组DTO对象，包含权限组的基本信息
      */
@@ -69,17 +82,6 @@ public class SysPermGroupServiceImpl implements ISysPermGroupService {
         sysPermGroupMapper.insert(permGroup);
     }
 
-    /**
-     * 获取权限组下拉列表（启用状态）
-     * @return 权限组VO列表
-     */
-    @Override
-    public List<SysPermGroupVO> getPermGroupOptions() {
-        LambdaQueryWrapper<SysPermGroup> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysPermGroup::getStatus, 1)
-                .orderByAsc(SysPermGroup::getPriority);
-        List<SysPermGroup> permGroups = sysPermGroupMapper.selectList(wrapper);
-        return sysPermGroupConverter.toVoList(permGroups);
-    }
+
 
 }

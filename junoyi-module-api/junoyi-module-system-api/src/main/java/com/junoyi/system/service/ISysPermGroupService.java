@@ -26,17 +26,19 @@ public interface ISysPermGroupService {
     PageResult<SysPermGroupVO> getPermGroupList(SysPermGroupQueryDTO queryDTO, Page<SysPermGroup> page);
 
     /**
+     * 获取权限组下拉列表（启用状态）
+     *
+     * @return 权限组VO列表
+     */
+    List<SysPermGroupVO> getPermGroupOptions();
+
+    /**
      * 添加权限组
      *
      * @param dto 权限组数据
      */
     void addPermGroup(SysPermGroupDTO dto);
 
-    /**
-     * 获取权限组下拉列表（启用状态）
-     *
-     * @return 权限组VO列表
-     */
-    List<SysPermGroupVO> getPermGroupOptions();
+
 
 }
