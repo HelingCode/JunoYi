@@ -5,6 +5,7 @@ import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.system.domain.dto.SysRoleDTO;
 import com.junoyi.system.domain.dto.SysRoleQueryDTO;
 import com.junoyi.system.domain.po.SysRole;
+import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 
 import java.util.List;
@@ -61,4 +62,18 @@ public interface ISysRoleService {
      * @param ids 角色ID列表
      */
     void deleteRoleBatch(List<Long> ids);
+
+    /**
+     * 获取角色绑定的权限组列表
+     * @param roleId 角色ID
+     * @return 权限组列表
+     */
+    List<SysPermGroupVO> getRolePermGroups(Long roleId);
+
+    /**
+     * 更新角色权限组绑定
+     * @param roleId 角色ID
+     * @param groupIds 权限组ID列表
+     */
+    void updateRolePermGroups(Long roleId, List<Long> groupIds);
 }

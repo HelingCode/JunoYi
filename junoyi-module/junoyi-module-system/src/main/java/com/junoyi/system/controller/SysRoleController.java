@@ -10,6 +10,7 @@ import com.junoyi.framework.security.enums.PlatformType;
 import com.junoyi.framework.web.domain.BaseController;
 import com.junoyi.system.domain.dto.SysRoleDTO;
 import com.junoyi.system.domain.dto.SysRoleQueryDTO;
+import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.service.ISysRoleService;
 import lombok.RequiredArgsConstructor;
@@ -115,6 +116,31 @@ public class SysRoleController extends BaseController {
     )
     public R<Void> deleteRoleBatch(@RequestBody List<Long> ids){
         sysRoleService.deleteRoleBatch(ids);
+        return R.ok();
+    }
+
+    /**
+     * 获取角色已经绑定的权限组
+     */
+    @GetMapping("/{id}/permission-groups")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.role.view","system.api.role.get"}
+    )
+    public R<List<SysPermGroupVO>> getRolePermissionGroup(@PathVariable("id") Long id){
+        return R.ok(sysRoleService.getRolePermGroups(id));
+    }
+
+    /**
+     * 更新角色绑定权限组
+     */
+    @PutMapping("/{id}/permission-groups")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.role.view","system.api.role.update"}
+    )
+    public R<Void> updateRoleGroup(@PathVariable("id") Long id, @RequestBody List<Long> groupIds){
+        sysRoleService.updateRolePermGroups(id, groupIds);
         return R.ok();
     }
 }

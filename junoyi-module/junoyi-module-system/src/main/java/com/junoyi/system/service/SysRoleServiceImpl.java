@@ -7,19 +7,27 @@ import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.event.core.EventBus;
 import com.junoyi.framework.security.utils.SecurityUtils;
+import com.junoyi.system.convert.SysPermGroupConverter;
 import com.junoyi.system.convert.SysRoleConverter;
 import com.junoyi.system.domain.dto.SysRoleDTO;
 import com.junoyi.system.domain.dto.SysRoleQueryDTO;
+import com.junoyi.system.domain.po.SysPermGroup;
 import com.junoyi.system.domain.po.SysRole;
+import com.junoyi.system.domain.po.SysRoleGroup;
+import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.enums.SysRoleStatus;
 import com.junoyi.system.event.PermissionChangedEvent;
+import com.junoyi.system.mapper.SysPermGroupMapper;
+import com.junoyi.system.mapper.SysRoleGroupMapper;
 import com.junoyi.system.mapper.SysRoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -32,7 +40,10 @@ import java.util.List;
 public class SysRoleServiceImpl implements ISysRoleService{
 
     private final SysRoleMapper sysRoleMapper;
+    private final SysRoleGroupMapper sysRoleGroupMapper;
+    private final SysPermGroupMapper sysPermGroupMapper;
     private final SysRoleConverter sysRoleConverter;
+    private final SysPermGroupConverter sysPermGroupConverter;
 
     /**
      * 分页查询角色列表
@@ -164,5 +175,68 @@ public class SysRoleServiceImpl implements ISysRoleService{
                     id
             ));
         }
+    }
+
+    /**
+     * 获取角色绑定的权限组列表
+     *
+     * @param roleId 角色ID
+     * @return 权限组列表
+     */
+    @Override
+    public List<SysPermGroupVO> getRolePermGroups(Long roleId) {
+        // 查询角色权限组关联（只查未过期的）
+        List<SysRoleGroup> roleGroups = sysRoleGroupMapper.selectList(
+                new LambdaQueryWrapper<SysRoleGroup>()
+                        .eq(SysRoleGroup::getRoleId, roleId)
+                        .and(w -> w.isNull(SysRoleGroup::getExpireTime)
+                                .or().gt(SysRoleGroup::getExpireTime, DateUtils.getNowDate())));
+
+        if (roleGroups.isEmpty()) {
+            return List.of();
+        }
+
+        // 获取权限组ID列表
+        List<Long> groupIds = roleGroups.stream()
+                .map(SysRoleGroup::getGroupId)
+                .collect(Collectors.toList());
+
+        // 查询权限组信息
+        List<SysPermGroup> groups = sysPermGroupMapper.selectList(
+                new LambdaQueryWrapper<SysPermGroup>()
+                        .in(SysPermGroup::getId, groupIds));
+
+        return sysPermGroupConverter.toVoList(groups);
+    }
+
+    /**
+     * 更新角色权限组绑定
+     *
+     * @param roleId 角色ID
+     * @param groupIds 权限组ID列表
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRolePermGroups(Long roleId, List<Long> groupIds) {
+        // 先删除原有的角色权限组关联
+        sysRoleGroupMapper.delete(new LambdaQueryWrapper<SysRoleGroup>()
+                .eq(SysRoleGroup::getRoleId, roleId));
+
+        // 批量插入新的角色权限组关联
+        if (groupIds != null && !groupIds.isEmpty()) {
+            for (Long groupId : groupIds) {
+                SysRoleGroup roleGroup = new SysRoleGroup();
+                roleGroup.setRoleId(roleId);
+                roleGroup.setGroupId(groupId);
+                roleGroup.setCreateTime(DateUtils.getNowDate());
+                sysRoleGroupMapper.insert(roleGroup);
+            }
+        }
+
+        // 发布角色权限变更事件，同步受影响用户的会话
+        EventBus.get().callEvent(new PermissionChangedEvent(
+                PermissionChangedEvent.ChangeType.ROLE_PERM_UPDATE,
+                roleId
+        ));
     }
 }

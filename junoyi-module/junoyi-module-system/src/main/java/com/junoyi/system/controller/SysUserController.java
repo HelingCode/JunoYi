@@ -184,7 +184,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/{id}/permission-groups")
     @PlatformScope(PlatformType.ADMIN_WEB)
     @Permission(
-            value = {"system.ui.user.view","system.api.user.update"}
+            value = {"system.ui.user.view","system.api.user.get"}
     )
     public R<List<SysPermGroupVO>> getUserPermissionGroup(@PathVariable("id") Long id){
         return R.ok(sysUserService.getUserPermGroups(id));
