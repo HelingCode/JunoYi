@@ -5,25 +5,33 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.DateUtils;
+import com.junoyi.framework.event.core.EventBus;
 import com.junoyi.framework.security.utils.PasswordUtils;
 import com.junoyi.framework.security.utils.SecurityUtils;
 import com.junoyi.system.convert.SysDeptConverter;
+import com.junoyi.system.convert.SysPermGroupConverter;
 import com.junoyi.system.convert.SysRoleConverter;
 import com.junoyi.system.convert.SysUserConverter;
 import com.junoyi.system.domain.dto.SysUserDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
 import com.junoyi.system.domain.po.SysDept;
+import com.junoyi.system.domain.po.SysPermGroup;
 import com.junoyi.system.domain.po.SysRole;
 import com.junoyi.system.domain.po.SysUser;
 import com.junoyi.system.domain.po.SysUserDept;
+import com.junoyi.system.domain.po.SysUserGroup;
 import com.junoyi.system.domain.po.SysUserRole;
 import com.junoyi.system.domain.vo.SysDeptVO;
+import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.domain.vo.SysUserVO;
 import com.junoyi.system.enums.SysUserStatus;
+import com.junoyi.system.event.PermissionChangedEvent;
 import com.junoyi.system.mapper.SysDeptMapper;
+import com.junoyi.system.mapper.SysPermGroupMapper;
 import com.junoyi.system.mapper.SysRoleMapper;
 import com.junoyi.system.mapper.SysUserDeptMapper;
+import com.junoyi.system.mapper.SysUserGroupMapper;
 import com.junoyi.system.mapper.SysUserMapper;
 import com.junoyi.system.mapper.SysUserRoleMapper;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +54,14 @@ public class SysUserServiceImpl implements ISysUserService {
     private final SysUserMapper sysUserMapper;
     private final SysUserDeptMapper sysUserDeptMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
+    private final SysUserGroupMapper sysUserGroupMapper;
     private final SysRoleMapper sysRoleMapper;
     private final SysDeptMapper sysDeptMapper;
+    private final SysPermGroupMapper sysPermGroupMapper;
     private final SysUserConverter sysUserConverter;
     private final SysRoleConverter sysRoleConverter;
     private final SysDeptConverter sysDeptConverter;
+    private final SysPermGroupConverter sysPermGroupConverter;
 
     /**
      * 获取用户列表，支持分页和多条件查询
@@ -322,5 +333,68 @@ public class SysUserServiceImpl implements ISysUserService {
                 .set(SysUser::getUpdateTime, DateUtils.getNowDate())
                 .set(SysUser::getUpdateBy, SecurityUtils.getUserName());
         sysUserMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 获取用户绑定的权限组列表
+     *
+     * @param userId 用户ID
+     * @return 权限组列表
+     */
+    @Override
+    public List<SysPermGroupVO> getUserPermGroups(Long userId) {
+        // 查询用户权限组关联（只查未过期的）
+        List<SysUserGroup> userGroups = sysUserGroupMapper.selectList(
+                new LambdaQueryWrapper<SysUserGroup>()
+                        .eq(SysUserGroup::getUserId, userId)
+                        .and(w -> w.isNull(SysUserGroup::getExpireTime)
+                                .or().gt(SysUserGroup::getExpireTime, DateUtils.getNowDate())));
+
+        if (userGroups.isEmpty()) {
+            return List.of();
+        }
+
+        // 获取权限组ID列表
+        List<Long> groupIds = userGroups.stream()
+                .map(SysUserGroup::getGroupId)
+                .collect(Collectors.toList());
+
+        // 查询权限组信息
+        List<SysPermGroup> groups = sysPermGroupMapper.selectList(
+                new LambdaQueryWrapper<SysPermGroup>()
+                        .in(SysPermGroup::getId, groupIds));
+
+        return sysPermGroupConverter.toVoList(groups);
+    }
+
+    /**
+     * 更新用户权限组绑定
+     *
+     * @param userId 用户ID
+     * @param groupIds 权限组ID列表
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserPermGroups(Long userId, List<Long> groupIds) {
+        // 先删除原有的用户权限组关联
+        sysUserGroupMapper.delete(new LambdaQueryWrapper<SysUserGroup>()
+                .eq(SysUserGroup::getUserId, userId));
+
+        // 批量插入新的用户权限组关联
+        if (groupIds != null && !groupIds.isEmpty()) {
+            for (Long groupId : groupIds) {
+                SysUserGroup userGroup = new SysUserGroup();
+                userGroup.setUserId(userId);
+                userGroup.setGroupId(groupId);
+                userGroup.setCreateTime(DateUtils.getNowDate());
+                sysUserGroupMapper.insert(userGroup);
+            }
+        }
+
+        // 发布权限变更事件，同步用户会话
+        EventBus.get().callEvent(new PermissionChangedEvent(
+                PermissionChangedEvent.ChangeType.USER_GROUP_CHANGE,
+                userId
+        ));
     }
 }

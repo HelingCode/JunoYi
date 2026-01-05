@@ -12,6 +12,7 @@ import com.junoyi.system.domain.dto.ResetPasswordDTO;
 import com.junoyi.system.domain.dto.SysUserDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
 import com.junoyi.system.domain.vo.SysDeptVO;
+import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.domain.vo.SysUserVO;
 import com.junoyi.system.service.ISysUserService;
@@ -177,4 +178,28 @@ public class SysUserController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * 获取用户已经绑定的权限组
+     */
+    @GetMapping("/{id}/permission-groups")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.user.view","system.api.user.update"}
+    )
+    public R<List<SysPermGroupVO>> getUserPermissionGroup(@PathVariable("id") Long id){
+        return R.ok(sysUserService.getUserPermGroups(id));
+    }
+
+    /**
+     * 更新用户绑定权限组
+     */
+    @PutMapping("/{id}/permission-groups")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.user.view","system.api.user.update"}
+    )
+    public R<Void> updateUserGroup(@PathVariable("id") Long id, @RequestBody List<Long> groupIds){
+        sysUserService.updateUserPermGroups(id, groupIds);
+        return R.ok();
+    }
 }

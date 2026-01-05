@@ -5,6 +5,7 @@ import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.system.domain.dto.SysUserDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
 import com.junoyi.system.domain.po.SysUser;
+import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysDeptVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.domain.vo.SysUserVO;
@@ -84,4 +85,18 @@ public interface ISysUserService {
      * @param newPassword 新密码
      */
     void resetPassword(Long userId, String newPassword);
+
+    /**
+     * 获取用户绑定的权限组列表
+     * @param userId 用户ID
+     * @return 权限组列表
+     */
+    List<SysPermGroupVO> getUserPermGroups(Long userId);
+
+    /**
+     * 更新用户权限组绑定
+     * @param userId 用户ID
+     * @param groupIds 权限组ID列表
+     */
+    void updateUserPermGroups(Long userId, List<Long> groupIds);
 }
