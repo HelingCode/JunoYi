@@ -3,6 +3,7 @@ package com.junoyi.system.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
+import com.junoyi.framework.permission.matcher.PermissionMatcher;
 import com.junoyi.framework.security.module.LoginUser;
 import com.junoyi.system.domain.po.SysMenu;
 import com.junoyi.system.domain.vo.RouterItemVO;
@@ -66,8 +67,8 @@ public class SysRouterServiceImpl implements ISysRouterService {
                         if (perm == null || perm.isBlank()) {
                             return true;
                         }
-                        // 有权限标识的菜单需要用户拥有该权限
-                        return permissions.contains(perm);
+                        // 使用 PermissionMatcher 进行通配符匹配
+                        return PermissionMatcher.hasPermission(permissions, perm);
                     })
                     .collect(Collectors.toList());
             
