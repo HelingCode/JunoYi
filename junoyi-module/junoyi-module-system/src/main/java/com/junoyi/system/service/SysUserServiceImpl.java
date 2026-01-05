@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -423,59 +424,66 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public List<SysUserPermVO> getUserPerms(Long userId) {
-        // 查询用户独立权限（只查未过期的）
         List<SysUserPerm> userPerms = sysUserPermMapper.selectList(
                 new LambdaQueryWrapper<SysUserPerm>()
                         .eq(SysUserPerm::getUserId, userId)
-                        .and(w -> w.isNull(SysUserPerm::getExpireTime)
-                                .or().gt(SysUserPerm::getExpireTime, DateUtils.getNowDate()))
                         .orderByDesc(SysUserPerm::getCreateTime));
 
         return userPerms.stream().map(perm -> {
             SysUserPermVO vo = new SysUserPermVO();
             vo.setId(perm.getId());
             vo.setPermission(perm.getPermission());
-            vo.setExpireTime(perm.getExpireTime());
             vo.setCreateTime(perm.getCreateTime());
             return vo;
         }).collect(Collectors.toList());
     }
 
     /**
-     * 更新用户独立权限
+     * 添加用户独立权限（增量添加，已存在的权限不会重复添加）
      *
      * @param userId 用户ID
      * @param permissions 权限字符串列表
-     * @param expireTime 过期时间（可选）
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateUserPerms(Long userId, List<String> permissions, Date expireTime) {
-        // 先删除原有的用户独立权限
-        sysUserPermMapper.delete(new LambdaQueryWrapper<SysUserPerm>()
-                .eq(SysUserPerm::getUserId, userId));
+    public void updateUserPerms(Long userId, List<String> permissions) {
+        if (permissions == null || permissions.isEmpty()) {
+            return;
+        }
 
-        // 批量插入新的用户独立权限
-        if (permissions != null && !permissions.isEmpty()) {
-            Date now = DateUtils.getNowDate();
-            for (String permission : permissions) {
-                if (permission == null || permission.trim().isEmpty()) {
-                    continue;
-                }
+        // 查询用户已有的权限
+        List<SysUserPerm> existingPerms = sysUserPermMapper.selectList(
+                new LambdaQueryWrapper<SysUserPerm>()
+                        .eq(SysUserPerm::getUserId, userId));
+        Set<String> existingPermSet = existingPerms.stream()
+                .map(SysUserPerm::getPermission)
+                .collect(Collectors.toSet());
+
+        // 只插入不存在的权限
+        Date now = DateUtils.getNowDate();
+        boolean hasNewPerm = false;
+        for (String permission : permissions) {
+            if (permission == null || permission.trim().isEmpty()) {
+                continue;
+            }
+            String trimmedPerm = permission.trim();
+            if (!existingPermSet.contains(trimmedPerm)) {
                 SysUserPerm userPerm = new SysUserPerm();
                 userPerm.setUserId(userId);
-                userPerm.setPermission(permission.trim());
-                userPerm.setExpireTime(expireTime);
+                userPerm.setPermission(trimmedPerm);
                 userPerm.setCreateTime(now);
                 sysUserPermMapper.insert(userPerm);
+                hasNewPerm = true;
             }
         }
 
-        // 发布用户独立权限变更事件，同步用户会话
-        EventBus.get().callEvent(new PermissionChangedEvent(
-                PermissionChangedEvent.ChangeType.USER_PERM_CHANGE,
-                userId
-        ));
+        // 只有新增了权限才发布事件
+        if (hasNewPerm) {
+            EventBus.get().callEvent(new PermissionChangedEvent(
+                    PermissionChangedEvent.ChangeType.USER_PERM_CHANGE,
+                    userId
+            ));
+        }
     }
 
     /**

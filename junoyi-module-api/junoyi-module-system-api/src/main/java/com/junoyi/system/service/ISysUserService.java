@@ -11,7 +11,6 @@ import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.domain.vo.SysUserPermVO;
 import com.junoyi.system.domain.vo.SysUserVO;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,12 +109,11 @@ public interface ISysUserService {
     List<SysUserPermVO> getUserPerms(Long userId);
 
     /**
-     * 更新用户独立权限
+     * 添加用户独立权限（增量添加，已存在的不会重复）
      * @param userId 用户ID
      * @param permissions 权限字符串列表
-     * @param expireTime 过期时间（可选）
      */
-    void updateUserPerms(Long userId, List<String> permissions, Date expireTime);
+    void updateUserPerms(Long userId, List<String> permissions);
 
     /**
      * 删除用户独立权限

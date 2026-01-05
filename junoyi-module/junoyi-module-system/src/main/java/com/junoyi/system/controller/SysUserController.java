@@ -10,7 +10,6 @@ import com.junoyi.framework.security.enums.PlatformType;
 import com.junoyi.framework.web.domain.BaseController;
 import com.junoyi.system.domain.dto.ResetPasswordDTO;
 import com.junoyi.system.domain.dto.SysUserDTO;
-import com.junoyi.system.domain.dto.SysUserPermDTO;
 import com.junoyi.system.domain.dto.SysUserQueryDTO;
 import com.junoyi.system.domain.vo.SysDeptVO;
 import com.junoyi.system.domain.vo.SysPermGroupVO;
@@ -218,15 +217,15 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 更新用户独立权限
+     * 添加用户独立权限（增量添加，已存在的不会重复）
      */
-    @PutMapping("/{id}/permissions")
+    @PostMapping("/{id}/permissions")
     @PlatformScope(PlatformType.ADMIN_WEB)
     @Permission(
             value = {"system.ui.user.view", "system.api.user.update"}
     )
-    public R<Void> updateUserPermissions(@PathVariable("id") Long id, @RequestBody SysUserPermDTO permDTO) {
-        sysUserService.updateUserPerms(id, permDTO.getPermissions(), permDTO.getExpireTime());
+    public R<Void> addUserPermissions(@PathVariable("id") Long id, @RequestBody List<String> permissions) {
+        sysUserService.updateUserPerms(id, permissions);
         return R.ok();
     }
 
