@@ -520,6 +520,36 @@ public class SessionHelperImpl implements SessionHelper {
     }
 
     /**
+     * 获取所有活跃会话
+     *
+     * @return List<UserSession> 所有活跃会话列表
+     */
+    @Override
+    public List<UserSession> getAllSessions() {
+        // 扫描所有会话键
+        Collection<String> sessionKeys = RedisUtils.keys(SESSION + "*");
+        if (sessionKeys == null || sessionKeys.isEmpty())
+            return Collections.emptyList();
+
+        List<UserSession> sessions = new ArrayList<>();
+        for (String key : sessionKeys) {
+            UserSession session = RedisUtils.getCacheObject(key);
+            if (session != null) {
+                sessions.add(session);
+            }
+        }
+        
+        // 按登录时间降序排列
+        sessions.sort((a, b) -> {
+            if (a.getLoginTime() == null) return 1;
+            if (b.getLoginTime() == null) return -1;
+            return b.getLoginTime().compareTo(a.getLoginTime());
+        });
+        
+        return sessions;
+    }
+
+    /**
      * 解析设备类型
      *
      * @param userAgent 浏览器请求头中的User-Agent字段

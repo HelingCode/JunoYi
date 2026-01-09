@@ -113,4 +113,11 @@ public interface SessionHelper {
      * @param tokenId Token 唯一标识
      */
     void touch(String tokenId);
+
+    /**
+     * 获取所有活跃会话
+     * 
+     * @return 所有会话列表
+     */
+    List<UserSession> getAllSessions();
 }
