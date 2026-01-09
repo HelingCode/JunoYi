@@ -17,7 +17,7 @@ junoyi:
   copyrightYear: 2025
   copyright: JunoYi钧逸
   # 网站备案号
-  registration: 苏@123456
+  registration: 皖ICP备2025105858号-2
   # LOGO 图片文件（在resources/public/目录中存放，这里指定文件名）
   logo: LOGO.png
 
