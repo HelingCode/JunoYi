@@ -101,11 +101,12 @@ public class ApiEncryptFilter extends OncePerRequestFilter {
         if (!"true".equalsIgnoreCase(encrypted))
             return false;
 
-        // 只对 POST/PUT/PATCH 请求进行解密
+        // 对 POST/PUT/PATCH/DELETE 请求进行解密（DELETE 可能带 body 用于批量操作）
         String method = request.getMethod();
         return "POST".equalsIgnoreCase(method) 
             || "PUT".equalsIgnoreCase(method) 
-            || "PATCH".equalsIgnoreCase(method);
+            || "PATCH".equalsIgnoreCase(method)
+            || "DELETE".equalsIgnoreCase(method);
     }
 
     /**
