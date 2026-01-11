@@ -3,7 +3,6 @@ package com.junoyi.system.domain.vo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serial;
 
 /**
  * 缓存键详情 VO（包含值）
