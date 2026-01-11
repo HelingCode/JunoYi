@@ -2,8 +2,6 @@ package com.junoyi.system.domain.vo;
 
 import lombok.Data;
 
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * 缓存键信息 VO
