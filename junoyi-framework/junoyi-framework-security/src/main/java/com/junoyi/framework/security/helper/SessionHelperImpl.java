@@ -23,9 +23,15 @@ import static com.junoyi.framework.core.constant.CacheConstants.*;
 /**
  * 会话服务助手实现类
  *
+ * 滑动会话机制：
+ * - Session TTL = AccessToken 有效期（如 30 分钟）
+ * - 每次刷新 Token 时，Session TTL 滑动续期
+ * - RefreshToken 过期时间作为会话最大生命周期
+ * - Session 过期后，只要 RefreshToken 有效，刷新时会自动恢复 Session
+ *
  * Redis 存储结构：
- * 1. junoyi:session:{tokenId}       -> UserSession（会话详情）
- * 2. junoyi:refresh:{tokenId}       -> userId（RefreshToken 白名单）
+ * 1. junoyi:session:{tokenId}       -> UserSession（会话详情，TTL = AccessToken 有效期，滑动续期）
+ * 2. junoyi:refresh:{tokenId}       -> UserSession（RefreshToken 白名单 + 会话备份，TTL = RefreshToken 有效期）
  * 3. junoyi:user:sessions:{userId}  -> Set<tokenId>（用户会话索引）
  *
  * @author Fan
@@ -84,17 +90,20 @@ public class SessionHelperImpl implements SessionHelper {
                 .refreshExpireTime(tokenPair.getRefreshExpireTime())
                 .build();
 
-        // 计算 TTL（使用 RefreshToken 的过期时间）
-        long ttlMillis = tokenPair.getRefreshExpireTime() - System.currentTimeMillis();
-        Duration ttl = Duration.ofMillis(ttlMillis);
+        // 计算 Session TTL（使用 AccessToken 的过期时间，实现滑动会话）
+        long sessionTtlMillis = tokenPair.getAccessExpireTime() - System.currentTimeMillis();
+        Duration sessionTtl = Duration.ofMillis(sessionTtlMillis);
 
-        // 存储会话到 Redis
+        // 存储会话到 Redis（TTL = AccessToken 有效期）
         String sessionKey = SESSION + tokenId;
-        RedisUtils.setCacheObject(sessionKey, session, ttl);
+        RedisUtils.setCacheObject(sessionKey, session, sessionTtl);
 
-        // 存储 RefreshToken 白名单
+        // 存储 RefreshToken 白名单（TTL = RefreshToken 有效期）
+        // 存储完整的 UserSession，用于 Session 过期后恢复
+        long refreshTtlMillis = tokenPair.getRefreshExpireTime() - System.currentTimeMillis();
+        Duration refreshTtl = Duration.ofMillis(refreshTtlMillis);
         String refreshKey = REFRESH_TOKEN + tokenId;
-        RedisUtils.setCacheObject(refreshKey, loginUser.getUserId(), ttl);
+        RedisUtils.setCacheObject(refreshKey, session, refreshTtl);
 
         // 添加到用户会话索引（修复：使用 addToCacheSet 而不是 setCacheSet）
         addToUserSessionIndex(loginUser.getUserId(), tokenId);
@@ -279,8 +288,11 @@ public class SessionHelperImpl implements SessionHelper {
     }
 
     /**
-     * 使用刷新令牌重新生成新的访问令牌（固定有效期模式）
+     * 使用刷新令牌重新生成新的访问令牌（滑动会话模式）
      * 只刷新 AccessToken，RefreshToken 保持不变，到期必须重新登录
+     * Session TTL 随 AccessToken 刷新而滑动续期
+     * 
+     * 当 Session 已过期但 RefreshToken 仍有效时，会从 RefreshToken 白名单恢复 Session
      *
      * @param refreshToken 刷新令牌字符串
      * @return TokenPair 新的访问令牌（refreshToken 保持原值）
@@ -297,19 +309,24 @@ public class SessionHelperImpl implements SessionHelper {
         if (StringUtils.isBlank(tokenId))
             throw new IllegalArgumentException("无法解析 RefreshToken");
 
-        // 检查 RefreshToken 是否在白名单中（是否被主动失效）
+        // 检查 RefreshToken 白名单是否存在（存储的是 UserSession，用于恢复过期的 Session）
         String refreshKey = REFRESH_TOKEN + tokenId;
-        if (!RedisUtils.isExistsObject(refreshKey))
-            throw new IllegalArgumentException("RefreshToken 已被撤销");
+        UserSession refreshSession = RedisUtils.getCacheObject(refreshKey);
+        if (refreshSession == null)
+            throw new IllegalArgumentException("RefreshToken 已被撤销或已过期，请重新登录");
 
-        // 获取会话
-        UserSession session = getSessionByTokenId(tokenId);
-        if (session == null)
-            throw new IllegalArgumentException("会话不存在或已过期");
-
-        // 检查 RefreshToken 是否已过期（固定有效期）
-        if (session.getRefreshExpireTime() < System.currentTimeMillis())
+        // 检查 RefreshToken 是否已过期（固定有效期，作为会话最大生命周期）
+        if (refreshSession.getRefreshExpireTime() < System.currentTimeMillis())
             throw new IllegalArgumentException("RefreshToken 已过期，请重新登录");
+
+        // 获取会话（滑动会话模式下，Session 可能已过期）
+        UserSession session = getSessionByTokenId(tokenId);
+        
+        // 如果 Session 已过期，从 RefreshToken 白名单恢复
+        if (session == null) {
+            session = refreshSession;
+            log.info("SessionRecovered", "Session 已过期，从 RefreshToken 白名单恢复 | tokenId: " + tokenId.substring(0, 8) + "...");
+        }
 
         // 构建 LoginUser
         LoginUser loginUser = LoginUser.builder()
@@ -334,13 +351,20 @@ public class SessionHelperImpl implements SessionHelper {
         session.setAccessExpireTime(newAccessExpireTime);
         session.setLastAccessTime(new Date());
         
-        // 保存更新后的会话（保留原 TTL）
+        // 计算 Session 滑动续期时长（取 AccessToken 有效期和 RefreshToken 剩余时间的较小值）
+        long accessTtlMillis = newAccessExpireTime - System.currentTimeMillis();
+        long refreshRemainingMillis = session.getRefreshExpireTime() - System.currentTimeMillis();
+        long sessionTtlMillis = Math.min(accessTtlMillis, refreshRemainingMillis);
+        Duration sessionTtl = Duration.ofMillis(sessionTtlMillis);
+        
+        // 保存更新后的会话（滑动续期 TTL）
         String sessionKey = SESSION + tokenId;
-        RedisUtils.setCacheObject(sessionKey, session, true);
+        RedisUtils.setCacheObject(sessionKey, session, sessionTtl);
 
-        log.info("TokenRefreshed", "AccessToken 刷新成功 | 用户: " + loginUser.getUserName()
+        log.info("TokenRefreshed", "AccessToken 刷新成功，Session 滑动续期 | 用户: " + loginUser.getUserName()
                 + " | tokenId: " + tokenId.substring(0, 8) + "..."
-                + " | RefreshToken 剩余有效期: " + ((session.getRefreshExpireTime() - System.currentTimeMillis()) / 1000 / 60 / 60) + "小时");
+                + " | Session TTL: " + (sessionTtlMillis / 1000 / 60) + "分钟"
+                + " | RefreshToken 剩余: " + (refreshRemainingMillis / 1000 / 60 / 60) + "小时");
 
         // 返回新的 AccessToken，RefreshToken 保持原值
         return TokenPair.builder()
