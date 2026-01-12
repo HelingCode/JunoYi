@@ -37,4 +37,12 @@ public interface ISysCacheService {
      * @return 缓存详情
      */
     CacheKeyDetailVO getCacheKeyDetail(String key);
+
+    /**
+     * 删除指定缓存
+     *
+     * @param key 键名
+     * @return 是否删除成功
+     */
+    boolean deleteCacheKey(String key);
 }

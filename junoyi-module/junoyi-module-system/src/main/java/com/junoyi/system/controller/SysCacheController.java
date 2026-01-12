@@ -12,10 +12,7 @@ import com.junoyi.system.domain.vo.CacheKeyVO;
 import com.junoyi.system.domain.vo.RedisInfoVO;
 import com.junoyi.system.service.ISysCacheService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 系统缓存监控控制类
@@ -63,6 +60,19 @@ public class SysCacheController extends BaseController {
     )
     public R<CacheKeyDetailVO> getCacheKeyDetail(@RequestParam("key") String key) {
         return R.ok(sysCacheService.getCacheKeyDetail(key));
+    }
+
+    /**
+     * 删除指定缓存
+     */
+    @DeleteMapping("/key")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.cache.view", "system.api.cache.delete"}
+    )
+    public R<Void> deleteCacheKey(@RequestParam("key") String key) {
+        sysCacheService.deleteCacheKey(key);
+        return R.ok();
     }
 
 }

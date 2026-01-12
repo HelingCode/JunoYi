@@ -154,6 +154,17 @@ public class SysCacheServiceImpl implements ISysCacheService {
     }
 
     /**
+     * 删除指定缓存
+     *
+     * @param key 键名
+     * @return 是否删除成功
+     */
+    @Override
+    public boolean deleteCacheKey(String key) {
+        return RedisUtils.deleteObject(key);
+    }
+
+    /**
      * 将字符串解析为Long类型数值
      * @param value 待解析的字符串
      * @return 解析成功返回对应的Long值，解析失败或输入为空则返回null
