@@ -1,5 +1,6 @@
 package com.junoyi.framework.security.helper;
 
+import com.junoyi.framework.core.exception.auth.TokenExpiredException;
 import com.junoyi.framework.core.utils.IPUtils;
 import com.junoyi.framework.core.utils.StringUtils;
 import com.junoyi.framework.core.utils.UserAgentUtils;
@@ -296,28 +297,28 @@ public class SessionHelperImpl implements SessionHelper {
      *
      * @param refreshToken 刷新令牌字符串
      * @return TokenPair 新的访问令牌（refreshToken 保持原值）
-     * @throws IllegalArgumentException 若刷新令牌无效、已过期或已被撤销时抛出异常
+     * @throws TokenExpiredException 若刷新令牌无效、已过期或已被撤销时抛出异常
      */
     @Override
     public TokenPair refreshToken(String refreshToken) {
         // 验证 RefreshToken
         if (!tokenService.validateRefreshToken(refreshToken))
-            throw new IllegalArgumentException("RefreshToken 无效或格式错误");
+            throw new TokenExpiredException("RefreshToken 无效或格式错误");
 
         // 获取 tokenId
         String tokenId = tokenService.getTokenId(refreshToken);
         if (StringUtils.isBlank(tokenId))
-            throw new IllegalArgumentException("无法解析 RefreshToken");
+            throw new TokenExpiredException("无法解析 RefreshToken");
 
         // 检查 RefreshToken 白名单是否存在（存储的是 UserSession，用于恢复过期的 Session）
         String refreshKey = REFRESH_TOKEN + tokenId;
         UserSession refreshSession = RedisUtils.getCacheObject(refreshKey);
         if (refreshSession == null)
-            throw new IllegalArgumentException("RefreshToken 已被撤销或已过期，请重新登录");
+            throw new TokenExpiredException("RefreshToken 已被撤销或已过期，请重新登录");
 
         // 检查 RefreshToken 是否已过期（固定有效期，作为会话最大生命周期）
         if (refreshSession.getRefreshExpireTime() < System.currentTimeMillis())
-            throw new IllegalArgumentException("RefreshToken 已过期，请重新登录");
+            throw new TokenExpiredException("RefreshToken 已过期，请重新登录");
 
         // 获取会话（滑动会话模式下，Session 可能已过期）
         UserSession session = getSessionByTokenId(tokenId);

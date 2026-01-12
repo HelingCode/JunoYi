@@ -3,6 +3,7 @@ package com.junoyi.framework.web.exception;
 import com.junoyi.framework.core.constant.HttpStatus;
 import com.junoyi.framework.core.domain.base.BaseException;
 import com.junoyi.framework.core.domain.module.R;
+import com.junoyi.framework.core.exception.auth.AuthException;
 import com.junoyi.framework.core.exception.captcha.CaptchaException;
 import com.junoyi.framework.core.exception.dept.DeptException;
 import com.junoyi.framework.core.exception.menu.MenuException;
@@ -100,6 +101,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DeptException.class)
     public R<?> handleDeptException(DeptException e, HttpServletRequest request){
         log.warn("[部门异常] 请求地址: {}, 领域: {}, 异常信息: {}", request.getRequestURI(), e.getFullDomain(), e.getMessage());
+        return R.fail(e.getCode(), e.getMessage());
+    }
+
+    /**
+     * 认证异常（Token过期、登录失败等）
+     */
+    @ExceptionHandler(AuthException.class)
+    public R<?> handleAuthException(AuthException e, HttpServletRequest request) {
+        log.warn("[认证异常] 请求地址: {}, 领域: {}, 异常信息: {}", request.getRequestURI(), e.getFullDomain(), e.getMessage());
         return R.fail(e.getCode(), e.getMessage());
     }
 
