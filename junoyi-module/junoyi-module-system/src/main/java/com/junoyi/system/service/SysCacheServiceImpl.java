@@ -177,6 +177,14 @@ public class SysCacheServiceImpl implements ISysCacheService {
     }
 
     /**
+     * 清理所有缓存
+     */
+    @Override
+    public void clearAllCache() {
+        RedisUtils.flushDb();
+    }
+
+    /**
      * 将字符串解析为Long类型数值
      * @param value 待解析的字符串
      * @return 解析成功返回对应的Long值，解析失败或输入为空则返回null

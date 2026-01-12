@@ -54,4 +54,9 @@ public interface ISysCacheService {
      * @param keys 键名列表
      */
     void deleteCacheBatch(List<String> keys);
+
+    /**
+     * 清理所有缓存
+     */
+    void clearAllCache();
 }

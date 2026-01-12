@@ -481,6 +481,14 @@ public class RedisUtils {
     }
 
     /**
+     * 清空所有缓存（FLUSHDB）。
+     * 注意：此操作会删除当前数据库的所有键，请谨慎使用。
+     */
+    public static void flushDb() {
+        CLIENT.getKeys().flushdb();
+    }
+
+    /**
      * 判断 Redis 中是否存在指定键。
      *
      * @param key 键名

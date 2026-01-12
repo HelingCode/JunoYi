@@ -90,4 +90,17 @@ public class SysCacheController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * 清理所有缓存
+     */
+    @DeleteMapping("/clear")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(
+            value = {"system.ui.cache.view", "system.api.cache.delete"}
+    )
+    public R<Void> clearAllCache() {
+        sysCacheService.clearAllCache();
+        return R.ok();
+    }
+
 }
