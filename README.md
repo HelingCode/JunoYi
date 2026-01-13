@@ -203,7 +203,6 @@ JunoYi
 本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
 
 ---
-
 [![Star History Chart](https://api.star-history.com/svg?repos=Juno-Yi/JunoYi&type=date&legend=top-left)](https://www.star-history.com/#Juno-Yi/JunoYi&type=date&legend=top-left)
 ---
 
