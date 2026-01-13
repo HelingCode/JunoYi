@@ -9,6 +9,7 @@ import com.junoyi.framework.datasource.datascope.annotation.IgnoreDataScope;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.Parenthesis;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
@@ -204,7 +205,7 @@ public class DataScopeHandler implements DataPermissionHandler {
                 return buildDeptInExpression(prefix + deptField, context.getAccessibleDeptIds());
 
             case SELF:
-                return buildUserEqualsExpression(prefix + userField, context.getUserId());
+                return buildUserEqualsExpression(prefix + userField, context.getUserName());
 
             default:
                 return null;
@@ -229,17 +230,17 @@ public class DataScopeHandler implements DataPermissionHandler {
     }
 
     /**
-     * 构建用户等于表达式
+     * 构建用户等于表达式（使用用户名字符串）
      */
-    private Expression buildUserEqualsExpression(String fieldName, Long userId) {
-        if (userId == null) {
+    private Expression buildUserEqualsExpression(String fieldName, String userName) {
+        if (userName == null || userName.isEmpty()) {
             // 返回 1=0 表示无数据
             return new EqualsTo(new LongValue(1), new LongValue(0));
         }
 
         EqualsTo equalsTo = new EqualsTo();
         equalsTo.setLeftExpression(new Column(fieldName));
-        equalsTo.setRightExpression(new LongValue(userId));
+        equalsTo.setRightExpression(new StringValue(userName));
         return equalsTo;
     }
 }

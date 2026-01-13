@@ -114,6 +114,7 @@ public class TokenAuthenticationTokenFilter extends OncePerRequestFilter {
             // 设置数据范围上下文
             DataScopeContextHolder.set(DataScopeContextHolder.DataScopeContext.builder()
                     .userId(loginUser.getUserId())
+                    .userName(loginUser.getUserName())
                     .deptIds(loginUser.getDepts())
                     .scopeType(DataScopeType.fromValue(loginUser.getDataScope()))
                     .accessibleDeptIds(loginUser.getAccessibleDeptIds())

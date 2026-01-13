@@ -51,6 +51,11 @@ public class DataScopeContextHolder {
         private Long userId;
 
         /**
+         * 当前用户名（用于 SELF 模式，create_by 字段通常存储用户名）
+         */
+        private String userName;
+
+        /**
          * 当前用户所属部门ID集合
          */
         private Set<Long> deptIds;

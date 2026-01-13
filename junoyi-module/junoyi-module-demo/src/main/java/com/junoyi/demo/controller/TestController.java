@@ -3,6 +3,8 @@ package com.junoyi.demo.controller;
 import com.junoyi.demo.domain.UserInfoVO;
 import com.junoyi.demo.event.TestEvent;
 import com.junoyi.framework.core.domain.module.R;
+import com.junoyi.framework.datasource.datascope.DataScopeContextHolder;
+import com.junoyi.framework.datasource.datascope.DataScopeContextHolder.DataScopeContext;
 import com.junoyi.framework.event.core.EventBus;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
@@ -13,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/demo")
@@ -91,5 +95,56 @@ public class TestController {
         user.setBankCard("6222021234567890123");
         user.setAddress("北京市朝阳区建国路100号");
         return R.ok(user);
+    }
+
+    /**
+     * 测试数据范围 - 查看当前用户的数据范围信息
+     * <p>
+     * 返回当前登录用户的数据范围配置，包括：
+     * - scopeType: 数据范围类型 (ALL/DEPT/DEPT_AND_CHILD/SELF)
+     * - userId: 当前用户ID
+     * - deptIds: 用户所属部门
+     * - accessibleDeptIds: 可访问的部门ID列表
+     * - superAdmin: 是否超级管理员
+     */
+    @GetMapping("/data-scope")
+    public R<Map<String, Object>> testDataScope() {
+        DataScopeContext context = DataScopeContextHolder.get();
+        
+        Map<String, Object> result = new HashMap<>();
+        if (context == null) {
+            result.put("message", "未登录或数据范围上下文为空");
+            return R.ok(result);
+        }
+        
+        result.put("scopeType", context.getScopeType() != null ? context.getScopeType().name() : null);
+        result.put("scopeTypeDesc", context.getScopeType() != null ? context.getScopeType().getDesc() : null);
+        result.put("userId", context.getUserId());
+        result.put("userName", context.getUserName());
+        result.put("deptIds", context.getDeptIds());
+        result.put("accessibleDeptIds", context.getAccessibleDeptIds());
+        result.put("superAdmin", context.isSuperAdmin());
+        
+        // 说明
+        if (context.isSuperAdmin()) {
+            result.put("说明", "超级管理员，可查看所有数据");
+        } else if (context.getScopeType() != null) {
+            switch (context.getScopeType()) {
+                case ALL:
+                    result.put("说明", "全部数据权限，可查看所有数据");
+                    break;
+                case DEPT:
+                    result.put("说明", "本部门数据权限，只能查看部门ID在 " + context.getDeptIds() + " 中的数据");
+                    break;
+                case DEPT_AND_CHILD:
+                    result.put("说明", "本部门及下级数据权限，只能查看部门ID在 " + context.getAccessibleDeptIds() + " 中的数据");
+                    break;
+                case SELF:
+                    result.put("说明", "仅本人数据权限，只能查看 create_by = '" + context.getUserName() + "' 的数据");
+                    break;
+            }
+        }
+        
+        return R.ok(result);
     }
 }
