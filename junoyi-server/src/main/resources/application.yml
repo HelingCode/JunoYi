@@ -251,6 +251,13 @@ junoyi:
       request: true
       # 是否加密响应体
       response: true
+      # 排除路径
+      exclude-urls:
+        - /swagger-ui/**
+        - /v3/api-docs/**
+        - /doc.html
+        - /webjars/**
+        - /your-custom-path/**
     # 白名单路径
     whitelist:
       - /auth/login

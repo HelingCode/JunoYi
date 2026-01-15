@@ -55,6 +55,20 @@ public class SecurityProperties {
          * 是否对响应数据进行加密
          */
         private boolean response;
+
+        /**
+         * 排除的 URL 路径（不进行加密处理，支持 Ant 风格）
+         * 默认排除接口文档相关路径
+         */
+        private List<String> excludeUrls = List.of(
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/v3/api-docs/**",
+                "/webjars/**",
+                "/doc.html",
+                "/favicon.ico"
+        );
     }
 
     /**

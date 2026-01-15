@@ -11,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.BufferedReader;
@@ -35,6 +37,7 @@ import java.io.IOException;
 public class ApiEncryptFilter extends OncePerRequestFilter {
 
     private final JunoYiLog log = JunoYiLogFactory.getLogger(ApiEncryptFilter.class);
+    private final PathMatcher pathMatcher = new AntPathMatcher();
 
     private final SecurityProperties securityProperties;
     private final RsaCryptoHelper rsaCryptoHelper;
@@ -45,6 +48,12 @@ public class ApiEncryptFilter extends OncePerRequestFilter {
 
         // 检查是否启用 API 加密
         if (!securityProperties.getApiEncrypt().isEnable()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 检查是否在排除路径中（如接口文档）
+        if (isExcludedUrl(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -170,5 +179,16 @@ public class ApiEncryptFilter extends OncePerRequestFilter {
         
         // 写入加密后的响应
         wrapper.writeEncryptedContent(encryptedContent);
+    }
+
+    /**
+     * 判断是否为排除的 URL（如接口文档）
+     */
+    private boolean isExcludedUrl(String uri) {
+        var excludeUrls = securityProperties.getApiEncrypt().getExcludeUrls();
+        if (excludeUrls == null || excludeUrls.isEmpty()) {
+            return false;
+        }
+        return excludeUrls.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 }
