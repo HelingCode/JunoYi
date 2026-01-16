@@ -19,7 +19,9 @@ import net.sf.jsqlparser.schema.Column;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +54,23 @@ public class DataScopeHandler implements DataPermissionHandler {
             "com.junoyi.system.mapper.SysRoleGroup",
             "com.junoyi.system.mapper.SysDeptGroup"
     ));
+
+    /**
+     * @IgnoreDataScope 注解缓存（避免重复反射）
+     * key: mappedStatementId, value: 是否有忽略注解
+     */
+    private static final Map<String, Boolean> IGNORE_ANNOTATION_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * @DataScope 注解缓存（避免重复反射）
+     * key: mappedStatementId, value: DataScope 注解（null 表示无注解）
+     */
+    private static final Map<String, DataScope> DATA_SCOPE_ANNOTATION_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * 系统 Mapper 判断缓存
+     */
+    private static final Map<String, Boolean> SYSTEM_MAPPER_CACHE = new ConcurrentHashMap<>();
 
     /**
      * 是否启用全局数据范围（对所有查询生效）
@@ -93,18 +112,18 @@ public class DataScopeHandler implements DataPermissionHandler {
             return where;
         }
 
-        // 检查是否有 @IgnoreDataScope 注解
-        if (hasIgnoreAnnotation(mappedStatementId)) {
+        // 检查是否有 @IgnoreDataScope 注解（使用缓存）
+        if (hasIgnoreAnnotationCached(mappedStatementId)) {
             return where;
         }
 
-        // 全局模式下，检查是否是系统表（自动忽略）
-        if (globalEnabled && isSystemMapper(mappedStatementId)) {
+        // 全局模式下，检查是否是系统表（使用缓存）
+        if (globalEnabled && isSystemMapperCached(mappedStatementId)) {
             return where;
         }
 
-        // 获取 @DataScope 注解配置
-        DataScope dataScope = getDataScopeAnnotation(mappedStatementId);
+        // 获取 @DataScope 注解配置（使用缓存）
+        DataScope dataScope = getDataScopeAnnotationCached(mappedStatementId);
 
         // 非全局模式下，没有注解则不处理
         if (!globalEnabled && dataScope == null) {
@@ -130,6 +149,13 @@ public class DataScopeHandler implements DataPermissionHandler {
     }
 
     /**
+     * 检查是否是系统 Mapper（使用缓存）
+     */
+    private boolean isSystemMapperCached(String mappedStatementId) {
+        return SYSTEM_MAPPER_CACHE.computeIfAbsent(mappedStatementId, this::isSystemMapper);
+    }
+
+    /**
      * 检查是否是系统 Mapper（全局模式下自动忽略）
      */
     private boolean isSystemMapper(String mappedStatementId) {
@@ -139,6 +165,13 @@ public class DataScopeHandler implements DataPermissionHandler {
             }
         }
         return false;
+    }
+
+    /**
+     * 检查是否有 @IgnoreDataScope 注解（使用缓存）
+     */
+    private boolean hasIgnoreAnnotationCached(String mappedStatementId) {
+        return IGNORE_ANNOTATION_CACHE.computeIfAbsent(mappedStatementId, this::hasIgnoreAnnotation);
     }
 
     /**
@@ -166,6 +199,19 @@ public class DataScopeHandler implements DataPermissionHandler {
         } catch (Exception ignored) {
         }
         return false;
+    }
+
+    /**
+     * 获取 Mapper 方法上的 @DataScope 注解（使用缓存）
+     */
+    private DataScope getDataScopeAnnotationCached(String mappedStatementId) {
+        // 使用特殊标记处理 null 值缓存
+        if (DATA_SCOPE_ANNOTATION_CACHE.containsKey(mappedStatementId)) {
+            return DATA_SCOPE_ANNOTATION_CACHE.get(mappedStatementId);
+        }
+        DataScope annotation = getDataScopeAnnotation(mappedStatementId);
+        DATA_SCOPE_ANNOTATION_CACHE.put(mappedStatementId, annotation);
+        return annotation;
     }
 
     /**
