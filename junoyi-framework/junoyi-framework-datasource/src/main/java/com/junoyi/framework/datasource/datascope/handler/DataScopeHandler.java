@@ -40,19 +40,19 @@ public class DataScopeHandler implements DataPermissionHandler {
      * 系统表前缀，全局模式下自动忽略
      */
     private static final Set<String> IGNORE_MAPPER_PREFIXES = new HashSet<>(Arrays.asList(
-            "com.junoyi.system.mapper.SysUser",
-            "com.junoyi.system.mapper.SysRole",
-            "com.junoyi.system.mapper.SysDept",
-            "com.junoyi.system.mapper.SysMenu",
-            "com.junoyi.system.mapper.SysPermission",
-            "com.junoyi.system.mapper.SysSession",
-            "com.junoyi.system.mapper.SysPermGroup",
-            "com.junoyi.system.mapper.SysUserRole",
-            "com.junoyi.system.mapper.SysUserDept",
-            "com.junoyi.system.mapper.SysUserGroup",
-            "com.junoyi.system.mapper.SysUserPerm",
-            "com.junoyi.system.mapper.SysRoleGroup",
-            "com.junoyi.system.mapper.SysDeptGroup"
+            "com.junoyi.system.mapper.SysUserMapper",
+            "com.junoyi.system.mapper.SysRoleMapper",
+            "com.junoyi.system.mapper.SysDeptMapper",
+            "com.junoyi.system.mapper.SysMenuMapper",
+            "com.junoyi.system.mapper.SysPermissionMapper",
+            "com.junoyi.system.mapper.SysSessionMapper",
+            "com.junoyi.system.mapper.SysPermGroupMapper",
+            "com.junoyi.system.mapper.SysUserRoleMapper",
+            "com.junoyi.system.mapper.SysUserDeptMapper",
+            "com.junoyi.system.mapper.SysUserGroupMapper",
+            "com.junoyi.system.mapper.SysUserPermMapper",
+            "com.junoyi.system.mapper.SysRoleGroupMapper",
+            "com.junoyi.system.mapper.SysDeptGroupMapper"
     ));
 
     /**
@@ -99,19 +99,6 @@ public class DataScopeHandler implements DataPermissionHandler {
 
     @Override
     public Expression getSqlSegment(Expression where, String mappedStatementId) {
-        // 获取上下文
-        DataScopeContext context = DataScopeContextHolder.get();
-
-        // 无上下文或超级管理员，直接放行
-        if (context == null || context.isSuperAdmin()) {
-            return where;
-        }
-
-        // 全部数据权限，直接放行
-        if (context.getScopeType() == null || context.getScopeType() == DataScopeType.ALL) {
-            return where;
-        }
-
         // 检查是否有 @IgnoreDataScope 注解（使用缓存）
         if (hasIgnoreAnnotationCached(mappedStatementId)) {
             return where;
@@ -127,6 +114,24 @@ public class DataScopeHandler implements DataPermissionHandler {
 
         // 非全局模式下，没有注解则不处理
         if (!globalEnabled && dataScope == null) {
+            return where;
+        }
+
+        // 获取上下文（在确认需要处理数据范围后再获取）
+        DataScopeContext context = DataScopeContextHolder.get();
+
+        // 无上下文，直接放行（避免 NPE）
+        if (context == null) {
+            return where;
+        }
+        
+        // 超级管理员，直接放行
+        if (context.isSuperAdmin()) {
+            return where;
+        }
+
+        // 全部数据权限，直接放行
+        if (context.getScopeType() == null || context.getScopeType() == DataScopeType.ALL) {
             return where;
         }
 
@@ -239,9 +244,19 @@ public class DataScopeHandler implements DataPermissionHandler {
      */
     private Expression buildScopeExpression(DataScopeContext context, String tableAlias,
                                             String deptField, String userField) {
+        // 防御性检查
+        if (context == null) {
+            return null;
+        }
+        
         String prefix = (tableAlias == null || tableAlias.isEmpty()) ? "" : tableAlias + ".";
 
         DataScopeType scopeType = context.getScopeType();
+        
+        // scopeType 为 null 时不处理
+        if (scopeType == null) {
+            return null;
+        }
 
         switch (scopeType) {
             case DEPT:

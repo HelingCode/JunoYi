@@ -259,6 +259,7 @@ junoyi:
         - /doc.html
         - /webjars/**
         - /your-custom-path/**
+        - /system/info/logo
     # 白名单路径
     whitelist:
       - /auth/login

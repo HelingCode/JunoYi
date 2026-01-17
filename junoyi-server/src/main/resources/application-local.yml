@@ -11,10 +11,10 @@ spring:
         # 主库配置
         master:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://121.40.119.149:3306/junoyi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
-          username: junoyi
-          password: L4PPRK2ZmGEPpL6t
-      
+          url: jdbc:mysql://localhost:3306/junoyi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+          username: root
+          password: 123456
+
       # Druid 连接池配置
       druid:
         # 基础连接池配置

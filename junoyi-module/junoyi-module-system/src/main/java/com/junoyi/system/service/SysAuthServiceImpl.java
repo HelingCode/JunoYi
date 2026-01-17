@@ -492,16 +492,22 @@ public class SysAuthServiceImpl implements ISysAuthService {
     public UserInfoVO getUserInfo(LoginUser loginUser){
         Long userId = loginUser.getUserId();
 
-        // 只查询头像和邮箱（这两个字段不在 Session 中）
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysUser::isDelFlag, false)
-                .eq(SysUser::getUserId, userId)
-                .select(SysUser::getAvatar, SysUser::getEmail);
-        SysUser sysUser = sysUserMapper.selectOne(wrapper);
+        // 直接通过 ID 查询（selectById 不会被数据范围拦截器影响）
+        SysUser sysUser = null;
+        try {
+            sysUser = sysUserMapper.selectById(userId);
+        } catch (Exception e) {
+            log.error("[getUserInfo] 查询用户失败, userId: {}, 异常: {}", userId, e.getMessage());
+            // 打印完整堆栈
+            if (e.getCause() != null) {
+                log.error("[getUserInfo] 根本原因: {}", e.getCause().getMessage(), e.getCause());
+            }
+            throw e;
+        }
         
         String avatar = "/default-avatar.png";
         String email = null;
-        if (sysUser != null) {
+        if (sysUser != null && !sysUser.isDelFlag()) {
             if (sysUser.getAvatar() != null && !sysUser.getAvatar().isBlank()) {
                 avatar = sysUser.getAvatar();
             }
