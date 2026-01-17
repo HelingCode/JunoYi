@@ -1,7 +1,6 @@
 package com.junoyi.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.junoyi.framework.datasource.datascope.annotation.IgnoreDataScope;
 import com.junoyi.system.domain.po.SysRole;
 import org.mapstruct.Mapper;
 
@@ -13,7 +12,6 @@ import org.mapstruct.Mapper;
  * @author Fan
  */
 @Mapper
-@IgnoreDataScope
 public interface SysRoleMapper extends BaseMapper<SysRole> {
 
 }

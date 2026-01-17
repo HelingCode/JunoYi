@@ -104,8 +104,8 @@ public class DataScopeHandler implements DataPermissionHandler {
             return where;
         }
 
-        // 全局模式下，检查是否是系统表（使用缓存）
-        if (globalEnabled && isSystemMapperCached(mappedStatementId)) {
+        // 检查是否是系统表（无论什么模式都跳过系统表）
+        if (isSystemMapperCached(mappedStatementId)) {
             return where;
         }
 
