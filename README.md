@@ -360,6 +360,8 @@ sequenceDiagram
     Service-->>Controller: 18. 返回业务结果
     Controller-->>Client: 19. 统一响应格式
 ```
+
+
 模块依赖关系图
 ```mermaid
 graph TB
@@ -420,6 +422,7 @@ graph TB
 4. **boot-starter** 聚合了所有框架模块，简化依赖管理
 5. 所有框架模块最终依赖 **framework-core** 核心模块
 6. **dependencies** 统一管理所有模块的版本号
+7. 
 
 框架层详细架构
 ```mermaid
