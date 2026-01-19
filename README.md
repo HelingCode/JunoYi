@@ -454,10 +454,10 @@ graph TB
     end
 
     subgraph "junoyi-framework-permission 权限控制"
-        P1[权限注解<br/>@Permission]
+        P1[权限注解<br/>Permission]
         P2[权限切面<br/>PermissionAspect]
         P3[权限匹配器<br/>PermissionMatcher]
-        P4[字段权限<br/>@FieldPermission]
+        P4[字段权限<br/>FieldPermission]
         P5[字段脱敏<br/>MaskUtils]
         P6[权限助手<br/>PermissionHelper]
     end
@@ -475,7 +475,7 @@ graph TB
         R1[Redis工具类<br/>RedisUtils]
         R2[Redisson配置<br/>RedissonConfig]
         R3[分布式锁<br/>Lock4j]
-        R4[缓存注解<br/>@Cacheable]
+        R4[缓存注解<br/>Cacheable]
     end
     
     subgraph "junoyi-framework-captcha 验证码"
@@ -488,7 +488,7 @@ graph TB
     subgraph "junoyi-framework-log 日志框架"
         L1[日志配置<br/>JunoYiLoggingConfig]
         L2[日志工具<br/>JunoYiLog]
-        L3[操作日志<br/>@OperationLog]
+        L3[操作日志<br/>OperationLog注解]
         L4[日志切面<br/>LogAspect]
     end
     
@@ -532,9 +532,9 @@ graph TB
     end
     
     subgraph "权限控制 Access Control"
-        AC1[接口权限<br/>@Permission]
-        AC2[字段权限<br/>@FieldPermission]
-        AC3[数据权限<br/>@DataScope]
+        AC1[接口权限<br/>Permission注解]
+        AC2[字段权限<br/>FieldPermission注解]
+        AC3[数据权限<br/>DataScope注解]
         AC4[菜单权限<br/>Menu Control]
     end
     
