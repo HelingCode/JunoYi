@@ -83,10 +83,24 @@ public class JunoYiLog {
     }
 
     /**
+     * 带分类和参数的 DEBUG 日志
+     */
+    public void debug(String category, String format, Object... args) {
+        delegate.debug("[{}] " + format, prependCategory(category, args));
+    }
+
+    /**
      * 带分类的 INFO 日志
      */
     public void info(String category, String msg) {
         delegate.info("[{}] {}", category, msg);
+    }
+    
+    /**
+     * 带分类和参数的 INFO 日志
+     */
+    public void info(String category, String format, Object... args) {
+        delegate.info("[{}] " + format, prependCategory(category, args));
     }
     
     /**
@@ -97,6 +111,13 @@ public class JunoYiLog {
     }
     
     /**
+     * 带分类和参数的 WARN 日志
+     */
+    public void warn(String category, String format, Object... args) {
+        delegate.warn("[{}] " + format, prependCategory(category, args));
+    }
+    
+    /**
      * 带分类的 ERROR 日志
      */
     public void error(String category, String msg) {
@@ -104,10 +125,45 @@ public class JunoYiLog {
     }
     
     /**
+     * 带分类和参数的 ERROR 日志
+     */
+    public void error(String category, String format, Object... args) {
+        delegate.error("[{}] " + format, prependCategory(category, args));
+    }
+    
+    /**
      * 带分类和异常的 ERROR 日志
      */
     public void error(String category, String msg, Throwable t) {
         delegate.error("[{}] {}", category, msg, t);
+    }
+    
+    /**
+     * 带分类、参数和异常的 ERROR 日志
+     */
+    public void error(String category, String format, Throwable t, Object... args) {
+        delegate.error("[{}] " + format, prependCategoryWithThrowable(category, t, args));
+    }
+
+    /**
+     * 辅助方法：将分类添加到参数数组的开头
+     */
+    private Object[] prependCategory(String category, Object... args) {
+        Object[] newArgs = new Object[args.length + 1];
+        newArgs[0] = category;
+        System.arraycopy(args, 0, newArgs, 1, args.length);
+        return newArgs;
+    }
+
+    /**
+     * 辅助方法：将分类和异常添加到参数数组
+     */
+    private Object[] prependCategoryWithThrowable(String category, Throwable t, Object... args) {
+        Object[] newArgs = new Object[args.length + 2];
+        newArgs[0] = category;
+        System.arraycopy(args, 0, newArgs, 1, args.length);
+        newArgs[newArgs.length - 1] = t;
+        return newArgs;
     }
 
     /**
