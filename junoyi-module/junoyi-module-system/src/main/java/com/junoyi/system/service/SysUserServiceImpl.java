@@ -29,6 +29,9 @@ import com.junoyi.system.domain.vo.SysUserPermVO;
 import com.junoyi.system.domain.vo.SysUserVO;
 import com.junoyi.system.enums.SysUserStatus;
 import com.junoyi.system.event.PermissionChangedEvent;
+import com.junoyi.system.exception.UserEmailAlreadyExistsException;
+import com.junoyi.system.exception.UserNameAlreadyExistsException;
+import com.junoyi.system.exception.UserPhoneAlreadyExistsException;
 import com.junoyi.system.mapper.SysDeptMapper;
 import com.junoyi.system.mapper.SysPermGroupMapper;
 import com.junoyi.system.mapper.SysRoleMapper;
@@ -119,6 +122,9 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public void addUser(SysUserDTO userDTO) {
+        // 检查用户名、邮箱、手机号唯一性
+        checkUserUniqueness(null, userDTO.getUserName(), userDTO.getEmail(), userDTO.getPhonenumber());
+
         // 创建用户实体
         SysUser sysUser = sysUserConverter.toEntity(userDTO);
 
@@ -146,6 +152,9 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public void updateUser(SysUserDTO userDTO) {
+        // 检查用户名、邮箱、手机号唯一性（排除当前用户）
+        checkUserUniqueness(userDTO.getId(), userDTO.getUserName(), userDTO.getEmail(), userDTO.getPhonenumber());
+
         // 更新用户基本信息（不更新密码）
         SysUser sysUser = sysUserConverter.toEntity(userDTO);
         sysUser.setUserId(userDTO.getId());
@@ -154,6 +163,61 @@ public class SysUserServiceImpl implements ISysUserService {
         sysUser.setUpdateTime(DateUtils.getNowDate());
         sysUser.setUpdateBy(SecurityUtils.getUserName());
         sysUserMapper.updateById(sysUser);
+    }
+
+    /**
+     * 检查用户名、邮箱、手机号的唯一性
+     *
+     * @param userId      用户ID（更新时传入，新增时传 null）
+     * @param userName    用户名
+     * @param email       邮箱
+     * @param phonenumber 手机号
+     * @throws UserNameAlreadyExistsException  如果用户名已存在
+     * @throws UserEmailAlreadyExistsException 如果邮箱已被使用
+     * @throws UserPhoneAlreadyExistsException 如果手机号已被使用
+     */
+    private void checkUserUniqueness(Long userId, String userName, String email, String phonenumber) {
+        // 检查用户名唯一性
+        if (StringUtils.hasText(userName)) {
+            LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SysUser::getUserName, userName)
+                   .eq(SysUser::isDelFlag, false);
+            if (userId != null) {
+                wrapper.ne(SysUser::getUserId, userId);
+            }
+            long count = sysUserMapper.selectCount(wrapper);
+            if (count > 0) {
+                throw new UserNameAlreadyExistsException(userName);
+            }
+        }
+
+        // 检查邮箱唯一性
+        if (StringUtils.hasText(email)) {
+            LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SysUser::getEmail, email)
+                   .eq(SysUser::isDelFlag, false);
+            if (userId != null) {
+                wrapper.ne(SysUser::getUserId, userId);
+            }
+            long count = sysUserMapper.selectCount(wrapper);
+            if (count > 0) {
+                throw new UserEmailAlreadyExistsException(email);
+            }
+        }
+
+        // 检查手机号唯一性
+        if (StringUtils.hasText(phonenumber)) {
+            LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SysUser::getPhonenumber, phonenumber)
+                   .eq(SysUser::isDelFlag, false);
+            if (userId != null) {
+                wrapper.ne(SysUser::getUserId, userId);
+            }
+            long count = sysUserMapper.selectCount(wrapper);
+            if (count > 0) {
+                throw new UserPhoneAlreadyExistsException(phonenumber);
+            }
+        }
     }
 
     /**

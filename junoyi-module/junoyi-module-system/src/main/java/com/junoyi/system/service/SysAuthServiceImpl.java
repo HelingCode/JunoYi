@@ -144,6 +144,8 @@ public class SysAuthServiceImpl implements ISysAuthService {
 
     /**
      * 根据登录标识查询用户
+     * <p>
+     * 安全检查：如果查询到多条记录，说明数据库存在重复数据，抛出异常
      */
     private SysUser findUserByIdentity(LoginIdentity identity) {
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
@@ -155,12 +157,21 @@ public class SysAuthServiceImpl implements ISysAuthService {
             case EMAIL -> wrapper.eq(SysUser::getEmail, identity.getAccount());
         }
 
-        SysUser user = sysUserMapper.selectOne(wrapper);
+        // 使用 selectList 查询，检查是否存在重复数据
+        List<SysUser> users = sysUserMapper.selectList(wrapper);
 
-        if (user == null)
+        if (users == null || users.isEmpty()) {
             throw new UserNotExistException("用户不存在或已被删除");
+        }
 
-        return user;
+        // 安全检查：如果存在多条记录，说明数据不一致
+        if (users.size() > 1) {
+            log.error("安全", "数据库存在重复账号: loginType={}, account={}, count={}", 
+                    identity.getLoginType(), identity.getAccount(), users.size());
+            throw new UserNotExistException("系统数据异常，请联系管理员");
+        }
+
+        return users.get(0);
     }
 
     /**
