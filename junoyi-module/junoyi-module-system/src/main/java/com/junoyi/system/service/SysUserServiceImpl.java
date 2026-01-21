@@ -177,48 +177,50 @@ public class SysUserServiceImpl implements ISysUserService {
      * @throws UserPhoneAlreadyExistsException 如果手机号已被使用
      */
     private void checkUserUniqueness(Long userId, String userName, String email, String phonenumber) {
-        // 检查用户名唯一性
-        if (StringUtils.hasText(userName)) {
-            LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(SysUser::getUserName, userName)
-                   .eq(SysUser::isDelFlag, false);
-            if (userId != null) {
-                wrapper.ne(SysUser::getUserId, userId);
+        // 构建动态查询条件
+        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysUser::isDelFlag, false);
+
+        // 排除当前用户
+        if (userId != null) {
+            wrapper.ne(SysUser::getUserId, userId);
+        }
+
+        // 添加 OR 条件
+        wrapper.and(w -> {
+            boolean hasCondition = false;
+            if (StringUtils.hasText(userName)) {
+                w.eq(SysUser::getUserName, userName);
+                hasCondition = true;
             }
-            long count = sysUserMapper.selectCount(wrapper);
-            if (count > 0) {
+            if (StringUtils.hasText(email)) {
+                if (hasCondition) w.or();
+                w.eq(SysUser::getEmail, email);
+                hasCondition = true;
+            }
+            if (StringUtils.hasText(phonenumber)) {
+                if (hasCondition) w.or();
+                w.eq(SysUser::getPhonenumber, phonenumber);
+            }
+        });
+
+        // 一次查询检查所有字段
+        List<SysUser> duplicates = sysUserMapper.selectList(wrapper);
+
+        // 判断具体是哪个字段重复
+        for (SysUser user : duplicates) {
+            if (StringUtils.hasText(userName) && userName.equals(user.getUserName())) {
                 throw new UserNameAlreadyExistsException(userName);
             }
-        }
-
-        // 检查邮箱唯一性
-        if (StringUtils.hasText(email)) {
-            LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(SysUser::getEmail, email)
-                   .eq(SysUser::isDelFlag, false);
-            if (userId != null) {
-                wrapper.ne(SysUser::getUserId, userId);
-            }
-            long count = sysUserMapper.selectCount(wrapper);
-            if (count > 0) {
+            if (StringUtils.hasText(email) && email.equals(user.getEmail())) {
                 throw new UserEmailAlreadyExistsException(email);
             }
-        }
-
-        // 检查手机号唯一性
-        if (StringUtils.hasText(phonenumber)) {
-            LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(SysUser::getPhonenumber, phonenumber)
-                   .eq(SysUser::isDelFlag, false);
-            if (userId != null) {
-                wrapper.ne(SysUser::getUserId, userId);
-            }
-            long count = sysUserMapper.selectCount(wrapper);
-            if (count > 0) {
+            if (StringUtils.hasText(phonenumber) && phonenumber.equals(user.getPhonenumber())) {
                 throw new UserPhoneAlreadyExistsException(phonenumber);
             }
         }
     }
+
 
     /**
      * 逻辑删除单个用户
