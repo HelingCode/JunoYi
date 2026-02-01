@@ -1,9 +1,10 @@
-package com.junoyi.system.service;
+package com.junoyi.system.service.impl;
 
 import com.junoyi.framework.file.domain.FileInfo;
 import com.junoyi.framework.file.helper.FileHelper;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
+import com.junoyi.system.service.ISysFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ public class SysFileServiceImpl implements ISysFileService {
 
     private final JunoYiLog log = JunoYiLogFactory.getLogger(SysFileServiceImpl.class);
     private final FileHelper fileHelper;
+
 
     /**
      * 根据业务类型上传文件
