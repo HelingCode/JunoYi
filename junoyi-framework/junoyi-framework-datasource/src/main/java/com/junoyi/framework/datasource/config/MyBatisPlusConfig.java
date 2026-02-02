@@ -56,7 +56,7 @@ public class MyBatisPlusConfig {
      * @return 初始化完成的 MybatisPlusInterceptor 实例
      */
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(DataPermissionProperties dataPermissionProperties) {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(DataPermissionProperties dataPermissionProperties, DataSourceProperties dataSourceProperties) {
         log.info("Start initializing MyBatis-Plus interceptor.");
 
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
@@ -90,10 +90,12 @@ public class MyBatisPlusConfig {
         interceptor.addInnerInterceptor(paginationInnerInterceptor);
 
         // 添加乐观锁插件
-        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        if (dataSourceProperties.isOptimisticLockerEnable())
+            interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
 
         // 添加防止全表更新删除插件
-        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        if (dataSourceProperties.isBlockAttackEnable())
+            interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
 
         log.info("Initialization MyBatis-Plus interceptor completed.");
         return interceptor;

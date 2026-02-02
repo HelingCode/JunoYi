@@ -30,6 +30,17 @@ public class DataSourceProperties {
      */
     private boolean sqlLogEnabled = true;
 
+    /**
+     * 是否启用乐观锁插件
+     */
+    private boolean optimisticLockerEnable = true;
+
+    /**
+     * 是否启用防止全表更新删除插件
+     */
+    private boolean blockAttackEnable = true;
+
+
     public boolean isSqlBeautifyEnabled() {
         return sqlBeautifyEnabled;
     }
@@ -60,5 +71,21 @@ public class DataSourceProperties {
 
     public void setSqlLogEnabled(boolean sqlLogEnabled) {
         this.sqlLogEnabled = sqlLogEnabled;
+    }
+
+    public void setOptimisticLockerEnable(boolean optimisticLockerEnable){
+        this.optimisticLockerEnable = optimisticLockerEnable;
+    }
+
+    public boolean isOptimisticLockerEnable() {
+        return optimisticLockerEnable;
+    }
+
+    public void setBlockAttackEnable(boolean blockAttackEnable){
+        this.blockAttackEnable = blockAttackEnable;
+    }
+
+    public boolean isBlockAttackEnable(){
+        return blockAttackEnable;
     }
 }

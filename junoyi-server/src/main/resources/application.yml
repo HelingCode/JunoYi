@@ -112,6 +112,10 @@ junoyi:
     slow-sql-threshold: 3000
     # 启用 SQL 日志
     sql-log-enabled: false
+    # 是否启用乐观锁插件
+    optimistic-locker-enable: true
+    # 是否启用防止全表更新删除插件
+    block-attack-enable: true
 
   # ==================== 数据权限配置 ====================
   data-permission:
