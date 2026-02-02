@@ -21,4 +21,23 @@ public interface ISysAuthLogService {
      * @return 分页结果
      */
     PageResult<SysAuthLogVO> getLoginLogList(SysAuthLogQueryDTO queryDTO, Page<SysAuthLog> page);
+
+    /**
+     * 记录登录日志
+     *
+     * @param authLog 登录日志
+     */
+    void recordLoginLog(SysAuthLog authLog);
+
+    /**
+     * 清空登录日志
+     */
+    void clearLoginLog();
+
+    /**
+     * 删除登录日志
+     *
+     * @param ids 日志ID数组
+     */
+    void deleteLoginLog(Long[] ids);
 }

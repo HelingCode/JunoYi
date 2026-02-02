@@ -13,9 +13,7 @@ import com.junoyi.system.domain.dto.SysAuthLogQueryDTO;
 import com.junoyi.system.domain.po.SysAuthLog;
 import com.junoyi.system.service.ISysAuthLogService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 系统登录日志控制器
@@ -41,4 +39,27 @@ public class SysAuthLogController extends BaseController {
         Page<SysAuthLog> page = buildPage();
         return R.ok(sysAuthLogService.getLoginLogList(queryDTO, page));
     }
+
+    /**
+     * 删除登录日志
+     */
+    @DeleteMapping("/{ids}")
+    @Permission(value = {"system.ui.auth-log.button.delete", "system.api.auth-log.delete"})
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    public R<Void> delete(@PathVariable("ids") Long[] ids) {
+//        sysLoginLogService.deleteLoginLog(ids);
+        return R.ok();
+    }
+
+    /**
+     * 清空登录日志
+     */
+    @DeleteMapping("/clear")
+    @Permission(value = {"system.ui.auth-log.button.clear", "system.api.auth-log.clear"})
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    public R<Void> clear() {
+//        sysLoginLogService.clearLoginLog();
+        return R.ok();
+    }
+
 }

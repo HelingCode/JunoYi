@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,35 @@ public class SysAuthLogServiceImpl implements ISysAuthLogService {
                 (int) resultPage.getCurrent(),
                 (int) resultPage.getSize());
     }
+
+    /**
+     * 记录登录日志
+     *
+     * @param authLog 登录日志
+     */
+    @Override
+    public void recordLoginLog(SysAuthLog authLog) {
+        sysAuthLogMapper.insert(authLog);
+    }
+
+    /**
+     * 清空登录日志
+     */
+    @Override
+    public void clearLoginLog() {
+        sysAuthLogMapper.delete(new LambdaQueryWrapper<>());
+    }
+
+    /**
+     * 删除登录日志
+     *
+     * @param ids 日志ID数组
+     */
+    @Override
+    public void deleteLoginLog(Long[] ids) {
+        sysAuthLogMapper.deleteBatchIds(Arrays.asList(ids));
+    }
+
 
     private SysAuthLogVO convertToVO(SysAuthLog loginLog) {
         SysAuthLogVO vo = new SysAuthLogVO();
