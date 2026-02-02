@@ -47,7 +47,7 @@ public class SysAuthLogController extends BaseController {
     @Permission(value = {"system.ui.auth-log.button.delete", "system.api.auth-log.delete"})
     @PlatformScope(PlatformType.ADMIN_WEB)
     public R<Void> delete(@PathVariable("ids") Long[] ids) {
-//        sysLoginLogService.deleteLoginLog(ids);
+        sysAuthLogService.deleteLoginLog(ids);
         return R.ok();
     }
 
@@ -58,7 +58,7 @@ public class SysAuthLogController extends BaseController {
     @Permission(value = {"system.ui.auth-log.button.clear", "system.api.auth-log.clear"})
     @PlatformScope(PlatformType.ADMIN_WEB)
     public R<Void> clear() {
-//        sysLoginLogService.clearLoginLog();
+        sysAuthLogService.clearLoginLog();
         return R.ok();
     }
 
