@@ -1,10 +1,20 @@
 package com.junoyi.system.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.junoyi.framework.core.domain.module.R;
+import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
+import com.junoyi.framework.permission.annotation.Permission;
+import com.junoyi.framework.security.annotation.PlatformScope;
+import com.junoyi.framework.security.enums.PlatformType;
 import com.junoyi.framework.web.domain.BaseController;
+import com.junoyi.system.domain.dto.SysOperLogQueryDTO;
+import com.junoyi.system.domain.po.SysOperLog;
+import com.junoyi.system.domain.vo.SysOperLogVO;
 import com.junoyi.system.service.ISysOperLogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,5 +32,16 @@ public class SysOperLogController extends BaseController {
 
     private final ISysOperLogService sysOperLogService;
 
-
+    /**
+     * 分页查询操作日志
+     */
+    @GetMapping("/list")
+    @Permission(
+            value = {"system.ui.oper-log.view", "system.ui.oper-log.get.list"}
+    )
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    public R<PageResult<SysOperLogVO>> list(SysOperLogQueryDTO queryDTO) {
+        Page<SysOperLog> page = buildPage();
+        return R.ok(sysOperLogService.getOperationLogList(queryDTO, page));
+    }
 }
