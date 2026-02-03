@@ -1,12 +1,9 @@
 package com.junoyi.system.event;
 
 import com.junoyi.framework.event.domain.BaseEvent;
-import com.junoyi.framework.security.enums.PlatformType;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.junoyi.framework.security.module.LoginUser;
+import lombok.Getter;
 
-import java.util.Date;
 
 /**
  * 用户登录事件
@@ -14,38 +11,89 @@ import java.util.Date;
  *
  * @author Fan
  */
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Builder
+@Getter
 public class UserLoginEvent extends BaseEvent {
+    /**
+     * 用户ID（登录失败时可能为空）
+     */
+    private final Long userId;
 
     /**
-     * 用户ID
+     * 用户名
      */
-    private Long userId;
+    private final String userName;
+
+    /**
+     * 用户昵称
+     */
+    private final String nickName;
 
     /**
      * 登录IP
      */
-    private String loginIp;
+    private final String loginIp;
 
     /**
-     * 登录时间
+     * 会话ID（登录成功时有值）
      */
-    private Date loginTime;
+    private final String sessionId;
 
     /**
-     * 登录平台类型
+     * 身份（角色名称）
      */
-    private PlatformType platformType;
+    private final String identity;
 
     /**
-     * 登录平台唯一标识符ID
+     * 登录方式
      */
-    private String platformUID;
+    private final String loginType;
 
     /**
-     * 使用的token
+     * User-Agent
      */
-    private String token;
+    private final String userAgent;
+
+    /**
+     * 登录状态（true-成功，false-失败）
+     */
+    private final boolean success;
+
+    /**
+     * 失败消息
+     */
+    private final String failMessage;
+
+    /**
+     * 登录成功事件构造
+     */
+    public UserLoginEvent(LoginUser loginUser, String loginIp, String sessionId, String loginType, String userAgent) {
+        super();
+        this.userId = loginUser.getUserId();
+        this.userName = loginUser.getUserName();
+        this.nickName = loginUser.getNickName();
+        this.loginIp = loginIp;
+        this.sessionId = sessionId;
+        this.identity = loginUser.isSuperAdmin() ? "超级管理员" : "普通用户";
+        this.loginType = loginType;
+        this.userAgent = userAgent;
+        this.success = true;
+        this.failMessage = null;
+    }
+
+    /**
+     * 登录失败事件构造
+     */
+    public UserLoginEvent(String userName, String loginIp, String loginType, String userAgent, String failMessage) {
+        super();
+        this.userId = null;
+        this.userName = userName;
+        this.nickName = null;
+        this.loginIp = loginIp;
+        this.sessionId = null;
+        this.identity = null;
+        this.loginType = loginType;
+        this.userAgent = userAgent;
+        this.success = false;
+        this.failMessage = failMessage;
+    }
 }
