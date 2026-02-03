@@ -2,10 +2,10 @@ package com.junoyi.system.domain.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.junoyi.framework.core.domain.base.BaseEntity;
 import lombok.Data;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,7 +14,7 @@ import java.util.Date;
  * @author Fan
  */
 @Data
-public class SysAuthLog extends BaseEntity {
+public class SysAuthLog implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

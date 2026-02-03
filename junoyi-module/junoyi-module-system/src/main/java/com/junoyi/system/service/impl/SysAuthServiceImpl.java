@@ -1,10 +1,12 @@
 package com.junoyi.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.junoyi.framework.event.core.EventBus;
 import com.junoyi.framework.security.exception.LoginAccountIsNullException;
 import com.junoyi.framework.security.exception.LoginFailedAccountLockedException;
 import com.junoyi.framework.security.exception.LoginPasswordIsNullException;
 import com.junoyi.framework.security.exception.LoginPasswordWrongException;
+import com.junoyi.system.event.UserLoginEvent;
 import com.junoyi.system.exception.UserNotExistException;
 import com.junoyi.system.exception.UserStatusIsDisableException;
 import com.junoyi.system.exception.UserStatusIsLockedException;
@@ -80,6 +82,9 @@ public class SysAuthServiceImpl implements ISysAuthService {
             // 登录成功，清除失败记录
             authHelper.onLoginSuccess(loginIdentity.getAccount(), platformType, loginIp);
 
+            // 发布登录成功事件
+            EventBus.get().callEvent(new UserLoginEvent(loginUser, loginIp, tokenPair.getTokenId(), "password", userAgent));
+
             // 构建返回结果
             AuthVO authVo = new AuthVO();
             authVo.setAccessToken(tokenPair.getAccessToken());
@@ -91,6 +96,8 @@ public class SysAuthServiceImpl implements ISysAuthService {
             // 登录失败，记录失败次数
             boolean locked = authHelper.onLoginFail(loginIdentity.getAccount(), platformType, loginIp);
             if (locked) {
+                // 只有账号被锁定时才记录登录失败日志
+                EventBus.get().callEvent(new UserLoginEvent(loginIdentity.getAccount(), loginIp, "password", userAgent, "登录失败次数过多，账号已被锁定"));
                 throw new LoginFailedAccountLockedException("登录失败次数过多，账号已被锁定，请稍后再试");
             }
             throw e;
