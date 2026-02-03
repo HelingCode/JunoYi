@@ -44,7 +44,7 @@ public class SysAuthLogController extends BaseController {
      * 删除登录日志
      */
     @DeleteMapping("/{ids}")
-    @Permission(value = {"system.ui.auth-log.button.delete", "system.api.auth-log.delete"})
+    @Permission(value = {"system.ui.auth-log.button.delete", "system.api.auth-log.del"})
     @PlatformScope(PlatformType.ADMIN_WEB)
     public R<Void> delete(@PathVariable("ids") Long[] ids) {
         sysAuthLogService.deleteLoginLog(ids);
