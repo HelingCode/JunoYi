@@ -11,7 +11,7 @@
  Target Server Version : 80404 (8.4.4)
  File Encoding         : 65001
 
- Date: 02/02/2026 18:30:43
+ Date: 03/02/2026 19:49:03
 */
 
 SET NAMES utf8mb4;
@@ -43,12 +43,17 @@ CREATE TABLE `sys_auth_log` (
   KEY `idx_login_time` (`login_time`),
   KEY `idx_status` (`status`),
   KEY `idx_login_ip` (`login_ip`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统登录日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统登录日志表';
 
 -- ----------------------------
 -- Records of sys_auth_log
 -- ----------------------------
 BEGIN;
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (1, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', 'adae064d570848d78db2a4e22b68a90e', '超级管理员', 'password', 'Chrome 143', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-03 19:35:09');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (2, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '33fdf2a35e1a4396ad3a71ae8478cd29', '超级管理员', 'password', 'Chrome 143', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-03 19:37:21');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (3, NULL, 'super_admin', NULL, '127.0.0.1', '内网IP', NULL, NULL, 'password', 'Chrome 143', 'macOS 10.15.7', 'Desktop', 0, '登录失败次数过多，账号已被锁定', '2026-02-03 19:37:58');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (4, 2, 'admin', '用户管理员', '127.0.0.1', '内网IP', 'da61042b05ed4d779a2f69f9d41abed2', '普通用户', 'password', 'Chrome 143', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-03 19:38:11');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (5, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '00300015950f4b789638c4bd4afc37ee', '超级管理员', 'password', 'Chrome 143', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-03 19:38:41');
 COMMIT;
 
 -- ----------------------------
@@ -262,7 +267,7 @@ CREATE TABLE `sys_permission` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统权限池（开发期与运维期的权限注册表）';
+) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统权限池（开发期与运维期的权限注册表）';
 
 -- ----------------------------
 -- Records of sys_permission
@@ -363,6 +368,12 @@ INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `crea
 INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (93, 'system.api.cache.delete.key', '系统缓存监控删除指定缓存接口权限', 1, 'super_admin', '2026-01-14 20:11:04', NULL, NULL, NULL);
 INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (94, 'system.api.cache.delete.batch', '系统缓存监控批量删除缓存接口权限', 1, 'super_admin', '2026-01-14 20:11:36', NULL, NULL, NULL);
 INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (95, 'system.api.cache.clear', '系统缓存监控清空缓存接口权限', 1, 'super_admin', '2026-01-14 20:12:04', NULL, NULL, NULL);
+INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (97, 'system.ui.auth-log.view', '系统日志管理登录日志页面权限', 1, 'super_admin', '2026-02-03 19:40:55', NULL, NULL, NULL);
+INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (98, 'system.ui.auth-log.button.delete', '系统日志管理登录日志删除按钮权限', 1, 'super_admin', '2026-02-03 19:42:17', NULL, NULL, NULL);
+INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (99, 'system.ui.auth-log.button.clear', '系统日志管理登录日志清除按钮权限', 1, 'super_admin', '2026-02-03 19:42:53', NULL, NULL, NULL);
+INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (100, 'system.api.auth-log.get.list', '系统日志管理登录日志获取日志列表接口权限', 1, 'super_admin', '2026-02-03 19:45:59', NULL, NULL, NULL);
+INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (101, 'system.api.auth-log.del', '系统日志管理登录日志删除接口权限', 1, 'super_admin', '2026-02-03 19:47:02', NULL, NULL, NULL);
+INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (102, 'system.api.auth-log.clear', '系统日志管理登录日志清理接口权限', 1, 'super_admin', '2026-02-03 19:47:35', NULL, NULL, NULL);
 COMMIT;
 
 -- ----------------------------
