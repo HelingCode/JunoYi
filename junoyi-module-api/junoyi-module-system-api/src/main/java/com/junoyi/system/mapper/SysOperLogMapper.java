@@ -18,6 +18,6 @@ public interface SysOperLogMapper extends BaseMapper<SysOperLog> {
      * 清空登录日志（管理员操作）
      */
     @InterceptorIgnore(blockAttack = "true")
-    @Delete("TRUNCATE TABLE sys_auth_log")
+    @Delete("TRUNCATE TABLE sys_oper_log")
     void truncate();
 }
