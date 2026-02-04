@@ -34,5 +34,28 @@ public interface ISysOperLogService {
      */
     void clearOperationLog();
 
+    /**
+     * 记录操作日志
+     *
+     * @param operationLog 操作日志
+     */
+    void recordOperationLog(SysOperLog operationLog);
 
+    /**
+     * 记录操作日志（简化版）
+     *
+     * @param level      日志级别
+     * @param action     动作
+     * @param module     模块
+     * @param message    详情描述
+     * @param targetId   对象ID
+     * @param targetName 对象名称
+     * @param rawData    原始数据
+     */
+    void recordLog(String level, String action, String module, String message, String targetId, String targetName, String rawData);
+
+    /**
+     * 记录操作日志（简化版-info级别）
+     */
+    void recordInfoLog(String action, String module, String message, String targetId, String targetName);
 }

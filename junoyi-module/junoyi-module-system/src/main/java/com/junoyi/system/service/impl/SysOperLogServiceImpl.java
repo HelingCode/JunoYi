@@ -3,6 +3,8 @@ package com.junoyi.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
+import com.junoyi.framework.core.utils.ServletUtils;
+import com.junoyi.framework.security.utils.SecurityUtils;
 import com.junoyi.system.domain.dto.SysOperLogQueryDTO;
 import com.junoyi.system.domain.po.SysOperLog;
 import com.junoyi.system.domain.vo.SysOperLogVO;
@@ -10,13 +12,11 @@ import com.junoyi.system.mapper.SysOperLogMapper;
 import com.junoyi.system.service.ISysOperLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -99,6 +99,71 @@ public class SysOperLogServiceImpl implements ISysOperLogService {
     @Override
     public void deleteOperationLog(Long[] ids) {
         sysOperLogMapper.deleteBatchIds(Arrays.asList(ids));
+    }
+
+    /**
+     * 记录操作日志
+     *
+     * @param operationLog 操作日志
+     */
+    @Override
+    @Async
+    public void recordOperationLog(SysOperLog operationLog) {
+        sysOperLogMapper.insert(operationLog);
+    }
+
+    /**
+     * 记录操作日志（简化版）
+     *
+     * @param level      日志级别
+     * @param action     动作
+     * @param module     模块
+     * @param message    详情描述
+     * @param targetId   对象ID
+     * @param targetName 对象名称
+     * @param rawData    原始数据
+     */
+    @Override
+    @Async
+    public void recordLog(String level, String action, String module, String message, String targetId, String targetName, String rawData) {
+        SysOperLog log = new SysOperLog();
+        log.setLevel(level);
+        log.setAction(action);
+        log.setModule(module);
+        log.setMessage(message);
+        log.setTargetId(targetId);
+        log.setTargetName(targetName);
+        log.setRawData(rawData);
+        log.setCreateTime(new Date());
+
+        // 获取当前用户信息
+        try {
+            log.setUserId(SecurityUtils.getUserId());
+            log.setUserName(SecurityUtils.getUserName());
+            log.setNickName(SecurityUtils.getNickName());
+        } catch (Exception ignored) {
+            // 未登录情况下忽略
+        }
+
+        // 获取请求信息
+        try {
+            log.setIp(ServletUtils.getClientIp());
+            log.setPath(ServletUtils.getRequest().getRequestURI());
+            log.setMethod(ServletUtils.getRequest().getMethod());
+        } catch (Exception ignored) {
+            // 非HTTP请求上下文忽略
+        }
+
+        sysOperLogMapper.insert(log);
+    }
+
+    /**
+     * 记录操作日志（简化版-info级别）
+     */
+    @Override
+    @Async
+    public void recordInfoLog(String action, String module, String message, String targetId, String targetName) {
+        recordLog("info", action, module, message, targetId, targetName, null);
     }
 
 
