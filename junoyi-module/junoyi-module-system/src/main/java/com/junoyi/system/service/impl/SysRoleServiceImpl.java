@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.event.core.EventBus;
+import com.junoyi.framework.json.utils.JsonUtils;
 import com.junoyi.framework.security.utils.SecurityUtils;
 import com.junoyi.system.convert.SysPermGroupConverter;
 import com.junoyi.system.convert.SysRoleConverter;
@@ -18,6 +19,8 @@ import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.enums.SysRoleStatus;
 import com.junoyi.system.event.PermissionChangedEvent;
+import com.junoyi.system.event.UserOperationEvent;
+import com.junoyi.system.exception.SystemRoleProtectedException;
 import com.junoyi.system.mapper.SysPermGroupMapper;
 import com.junoyi.system.mapper.SysRoleGroupMapper;
 import com.junoyi.system.mapper.SysRoleMapper;
@@ -117,6 +120,12 @@ public class SysRoleServiceImpl implements ISysRoleService {
         sysRole.setCreateBy(SecurityUtils.getUserName());
         sysRole.setCreateTime(DateUtils.getNowDate());
         sysRoleMapper.insert(sysRole);
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.withRawData("create", "role",
+                "创建了角色「" + sysRole.getRoleName() + "」",
+                String.valueOf(sysRole.getId()), sysRole.getRoleName(),
+                JsonUtils.toJsonString(roleDTO)));
     }
 
     /**
@@ -136,6 +145,12 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 PermissionChangedEvent.ChangeType.ROLE_PERM_UPDATE,
                 roleDTO.getId()
         ));
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.withRawData("update", "role",
+                "更新了角色「" + roleDTO.getRoleName() + "」",
+                String.valueOf(roleDTO.getId()), roleDTO.getRoleName(),
+                JsonUtils.toJsonString(roleDTO)));
     }
 
     /**
@@ -145,6 +160,10 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public void deleteRole(Long id) {
+        // 检查是否为系统内置角色（ID为1、2、3的角色不允许删除）
+        if (id != null && (id == 1L || id == 2L || id == 3L))
+            throw new SystemRoleProtectedException(id);
+
         // 构建更新条件：根据ID将删除标志设置为true
         LambdaUpdateWrapper<SysRole> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(SysRole::getId, id)
@@ -156,6 +175,13 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 PermissionChangedEvent.ChangeType.ROLE_DELETE,
                 id
         ));
+
+        // 发布操作日志事件
+        SysRole role = sysRoleMapper.selectById(id);
+        String roleName = role != null ? role.getRoleName() : String.valueOf(id);
+        EventBus.get().callEvent(UserOperationEvent.of("delete", "role",
+                "删除了角色「" + roleName + "」",
+                String.valueOf(id), roleName));
     }
 
     /**
@@ -178,6 +204,13 @@ public class SysRoleServiceImpl implements ISysRoleService {
                     id
             ));
         }
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.of("delete", "role",
+                "批量删除了 " + ids.size() + " 个角色",
+                ids.toString(), null));
+
+
     }
 
     /**
