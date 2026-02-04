@@ -52,7 +52,7 @@ public class SysOperLogController extends BaseController {
     )
     @PlatformScope(PlatformType.ADMIN_WEB)
     public R<Void> delete(@PathVariable("ids") Long[] ids) {
-//        sysOperLogService.deleteOperationLog(ids);
+        sysOperLogService.deleteOperationLog(ids);
         return R.ok();
     }
 
@@ -65,7 +65,7 @@ public class SysOperLogController extends BaseController {
     )
     @PlatformScope(PlatformType.ADMIN_WEB)
     public R<Void> clear() {
-//        sysOperationLogService.clearOperationLog();
+        sysOperLogService.clearOperationLog();
         return R.ok();
     }
 }
