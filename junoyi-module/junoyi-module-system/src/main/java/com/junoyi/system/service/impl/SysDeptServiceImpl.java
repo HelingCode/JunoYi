@@ -2,6 +2,7 @@ package com.junoyi.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.junoyi.system.event.UserOperationEvent;
 import com.junoyi.system.exception.DeptHasChildrenException;
 import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.event.core.EventBus;
@@ -105,6 +106,11 @@ public class SysDeptServiceImpl implements ISysDeptService {
         sysDept.setCreateTime(DateUtils.getNowDate());
         sysDept.setCreateBy(SecurityUtils.getUserName());
         sysDeptMapper.insert(sysDept);
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.of("create", "dept",
+                "创建了部门「" + sysDept.getName() + "」",
+                String.valueOf(sysDept.getId()), sysDept.getName()));
     }
 
     /**
@@ -118,6 +124,11 @@ public class SysDeptServiceImpl implements ISysDeptService {
         sysDept.setUpdateTime(DateUtils.getNowDate());
         sysDept.setUpdateBy(SecurityUtils.getUserName());
         sysDeptMapper.updateById(sysDept);
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.of("update", "dept",
+                "更新了部门「" + deptDTO.getName() + "」",
+                String.valueOf(deptDTO.getId()), deptDTO.getName()));
     }
 
     /**
@@ -143,6 +154,13 @@ public class SysDeptServiceImpl implements ISysDeptService {
         sysDept.setUpdateTime(DateUtils.getNowDate());
         sysDept.setUpdateBy(SecurityUtils.getUserName());
         sysDeptMapper.updateById(sysDept);
+
+        // 发布操作日志事件
+        SysDept dept = sysDeptMapper.selectById(id);
+        String deptName = dept != null ? dept.getName() : String.valueOf(id);
+        EventBus.get().callEvent(UserOperationEvent.of("delete", "dept",
+                "删除了部门「" + deptName + "」",
+                String.valueOf(id), deptName));
     }
 
     /**
