@@ -15,6 +15,7 @@ import com.junoyi.system.domain.dto.SysPermGroupQueryDTO;
 import com.junoyi.system.domain.po.SysPermGroup;
 import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.event.PermissionChangedEvent;
+import com.junoyi.system.exception.SystemPermGroupProtectedException;
 import com.junoyi.system.mapper.SysPermGroupMapper;
 import com.junoyi.system.service.ISysPermGroupService;
 import lombok.RequiredArgsConstructor;
@@ -168,6 +169,10 @@ public class SysPermGroupServiceImpl implements ISysPermGroupService {
      */
     @Override
     public void deletePermGroup(Long id) {
+        // 检查是否为系统内置权限组（ID为1、2的权限组不允许删除）
+        if (id != null && (id == 1L || id == 2L)) {
+            throw new SystemPermGroupProtectedException(id);
+        }
         // 检查是否存在子权限组
         LambdaQueryWrapper<SysPermGroup> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysPermGroup::getParentId, id);
@@ -202,6 +207,14 @@ public class SysPermGroupServiceImpl implements ISysPermGroupService {
         if (ids == null || ids.isEmpty()) {
             return;
         }
+
+        // 检查是否包含系统内置权限组
+        for (Long id : ids) {
+            if (id != null && (id == 1L || id == 2L)) {
+                throw new SystemPermGroupProtectedException(id);
+            }
+        }
+
         // 检查是否存在子权限组
         LambdaQueryWrapper<SysPermGroup> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(SysPermGroup::getParentId, ids);
