@@ -8,7 +8,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![MyBatis Plus](https://img.shields.io/badge/MyBatis%20Plus-3.5.9-blue.svg)](https://baomidou.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.4.6--alpha-yellow.svg)](https://github.com/Juno-Yi/JunoYi)
+[![Version](https://img.shields.io/badge/Version-0.4.6--beta-yellow.svg)](https://github.com/Juno-Yi/JunoYi)
 
 ## JunoYi 后台管理系统脚手架框架
 **一个安全内建、简洁优雅的 Java 企业级开发框架**
@@ -21,22 +21,21 @@
 
 ---
 
-> ⚠️ **Alpha 内测版本声明**
-> 
-> 当前版本为 **0.4.6-alpha**，属于内部测试版本。功能仍在持续开发和完善中，API 可能会有变动。欢迎试用并反馈问题，但暂不建议用于生产环境。
-> 
+> **Beta 测试版本声明**
+>
+> 当前版本为 **0.4.6-beta**，已完成核心功能开发并通过内部测试，可以用于项目开发。我们会持续优化和完善功能，欢迎试用并反馈问题。
+>
 > 📌 **相关链接**
-> - 📖 文档站：https://doc.framework.junoyi.com  
+> - 📖 文档站：https://doc.framework.junoyi.com
 > - 🎮 演示站：https://demo.junoyi.com
-> 
+>
 > 演示站账号：
-> 
+>
 > 超级管理员 - 账号：super_admin 密码：admin123
-> 
+>
 > 用户管理员 - 账号：admin 密码：admin123
-> 
+>
 > 用户1 - 账号：user1 密码：admin123
-
 ---
 
 ## 🗓️ 版本介绍规划
