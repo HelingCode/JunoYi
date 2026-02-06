@@ -162,16 +162,11 @@ public class LocalFileStorage implements FileStorage {
     /**
      * 获取文件访问URL
      * @param filePath 文件路径
-     * @return String 文件访问URL
+     * @return String 文件访问URL（相对路径）
      */
     @Override
     public String getFileUrl(String filePath) {
         String urlPrefix = properties.getLocal().getUrlPrefix();
-        String domain = properties.getDomain();
-
-        if (StrUtil.isNotBlank(domain)) {
-            return domain + urlPrefix + "/" + filePath;
-        }
         return urlPrefix + "/" + filePath;
     }
 
