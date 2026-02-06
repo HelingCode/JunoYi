@@ -136,7 +136,8 @@ public class SysConfigController extends BaseController {
     public R<List<SysConfigVO>> getSystemAppConfig() {
         // 硬编码需要获取的配置键名列表
         List<String> configKeys = List.of(
-                "sys.watermark.enabled"
+                "sys.watermark.enabled",
+                "sys.watermark.text"
         );
         
         List<SysConfigVO> configs = sysConfigService.getConfigsByKeys(configKeys);
