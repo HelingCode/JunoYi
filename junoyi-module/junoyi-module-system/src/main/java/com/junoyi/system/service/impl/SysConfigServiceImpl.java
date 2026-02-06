@@ -45,10 +45,10 @@ public class SysConfigServiceImpl implements ISysConfigService {
     @Override
     public PageResult<SysConfigVO> getConfigList(SysConfigQueryDTO queryDTO) {
         LambdaQueryWrapper<SysConfig> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.isNotBlank(queryDTO.getConfigName()), SysConfig::getSettingName, queryDTO.getConfigName())
-                .like(StringUtils.isNotBlank(queryDTO.getConfigKey()), SysConfig::getSettingKey, queryDTO.getConfigKey())
-                .eq(StringUtils.isNotBlank(queryDTO.getSettingType()), SysConfig::getSettingType, queryDTO.getSettingType())
-                .eq(StringUtils.isNotBlank(queryDTO.getSettingGroup()), SysConfig::getSettingGroup, queryDTO.getSettingGroup())
+        wrapper.like(StringUtils.isNotBlank(queryDTO.getConfigName()), SysConfig::getConfigName, queryDTO.getConfigName())
+                .like(StringUtils.isNotBlank(queryDTO.getConfigKey()), SysConfig::getConfigKey, queryDTO.getConfigKey())
+                .eq(StringUtils.isNotBlank(queryDTO.getConfigType()), SysConfig::getConfigType, queryDTO.getConfigType())
+                .eq(StringUtils.isNotBlank(queryDTO.getConfigGroup()), SysConfig::getConfigGroup, queryDTO.getConfigGroup())
                 .eq(queryDTO.getIsSystem() != null, SysConfig::getIsSystem, queryDTO.getIsSystem())
                 .orderByAsc(SysConfig::getSort)
                 .orderByDesc(SysConfig::getCreateTime);
@@ -89,12 +89,12 @@ public class SysConfigServiceImpl implements ISysConfigService {
 
         // 缓存未命中，从数据库查询
         LambdaQueryWrapper<SysConfig> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysConfig::getSettingKey, configKey)
+        wrapper.eq(SysConfig::getConfigKey, configKey)
                 .eq(SysConfig::getStatus, 0);
         SysConfig config = sysConfigMapper.selectOne(wrapper);
 
         if (config != null) {
-            String value = config.getSettingValue();
+            String value = config.getConfigValue();
             // 存入缓存（永久有效，手动刷新）
             RedisUtils.setCacheObject(cacheKey, value);
             return value;
@@ -113,7 +113,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     public void addConfig(SysConfigDTO configDTO) {
         // 检查键名是否已存在
         LambdaQueryWrapper<SysConfig> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysConfig::getSettingKey, configDTO.getSettingKey());
+        wrapper.eq(SysConfig::getConfigKey, configDTO.getConfigKey());
         Long count = sysConfigMapper.selectCount(wrapper);
         if (count > 0) {
             throw new IllegalArgumentException("参数键名已存在");
@@ -131,18 +131,18 @@ public class SysConfigServiceImpl implements ISysConfigService {
         if (config.getSort() == null) {
             config.setSort(0); // 默认排序
         }
-        if (config.getSettingType() == null) {
-            config.setSettingType("text"); // 默认文本类型
+        if (config.getConfigType() == null) {
+            config.setConfigType("text"); // 默认文本类型
         }
-        if (config.getSettingGroup() == null) {
-            config.setSettingGroup("default"); // 默认分组
+        if (config.getConfigGroup() == null) {
+            config.setConfigGroup("default"); // 默认分组
         }
 
         sysConfigMapper.insert(config);
 
         // 清除缓存
-        clearCache(config.getSettingKey());
-        log.info("Config", "添加系统参数: {}", config.getSettingKey());
+        clearCache(config.getConfigKey());
+        log.info("Config", "添加系统参数: {}", config.getConfigKey());
     }
 
     /**
@@ -153,27 +153,27 @@ public class SysConfigServiceImpl implements ISysConfigService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateConfig(SysConfigDTO configDTO) {
-        SysConfig oldConfig = sysConfigMapper.selectById(configDTO.getSettingId());
+        SysConfig oldConfig = sysConfigMapper.selectById(configDTO.getConfigId());
         if (oldConfig == null) {
             throw new IllegalArgumentException("参数不存在");
         }
 
         // 系统内置参数不允许修改键名
-        if (oldConfig.getIsSystem() == 1 && !oldConfig.getSettingKey().equals(configDTO.getSettingKey())) {
+        if (oldConfig.getIsSystem() == 1 && !oldConfig.getConfigKey().equals(configDTO.getConfigKey())) {
             throw new IllegalArgumentException("系统内置参数不允许修改键名");
         }
 
         // 转换DTO到实体
         SysConfig config = sysConfigConverter.toEntity(configDTO);
-        config.setSettingId(configDTO.getSettingId());
+        config.setConfigId(configDTO.getConfigId());
 
         // 保留原有的字段值（DTO中没有的字段）
         config.setIsSystem(oldConfig.getIsSystem()); // 不允许修改是否为系统内置
-        if (config.getSettingType() == null) {
-            config.setSettingType(oldConfig.getSettingType());
+        if (config.getConfigType() == null) {
+            config.setConfigType(oldConfig.getConfigType());
         }
-        if (config.getSettingGroup() == null) {
-            config.setSettingGroup(oldConfig.getSettingGroup());
+        if (config.getConfigGroup() == null) {
+            config.setConfigGroup(oldConfig.getConfigGroup());
         }
         if (config.getSort() == null) {
             config.setSort(oldConfig.getSort());
@@ -185,12 +185,12 @@ public class SysConfigServiceImpl implements ISysConfigService {
         sysConfigMapper.updateById(config);
 
         // 清除缓存
-        clearCache(oldConfig.getSettingKey());
-        if (!oldConfig.getSettingKey().equals(config.getSettingKey())) {
-            clearCache(config.getSettingKey());
+        clearCache(oldConfig.getConfigKey());
+        if (!oldConfig.getConfigKey().equals(config.getConfigKey())) {
+            clearCache(config.getConfigKey());
         }
 
-        log.info("Config", "更新系统参数: {}", config.getSettingKey());
+        log.info("Config", "更新系统参数: {}", config.getConfigKey());
     }
 
     /**
@@ -214,8 +214,8 @@ public class SysConfigServiceImpl implements ISysConfigService {
         sysConfigMapper.deleteById(id);
 
         // 清除缓存
-        clearCache(config.getSettingKey());
-        log.info("Config", "删除系统参数: {}", config.getSettingKey());
+        clearCache(config.getConfigKey());
+        log.info("Config", "删除系统参数: {}", config.getConfigKey());
     }
 
     /**
@@ -228,7 +228,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     public void deleteConfigBatch(List<Long> ids) {
         // 检查是否包含系统内置参数
         LambdaQueryWrapper<SysConfig> wrapper = new LambdaQueryWrapper<>();
-        wrapper.in(SysConfig::getSettingId, ids)
+        wrapper.in(SysConfig::getConfigId, ids)
                 .eq(SysConfig::getIsSystem, 1);
         Long count = sysConfigMapper.selectCount(wrapper);
         if (count > 0) {
@@ -244,7 +244,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
         }
 
         // 清除缓存
-        configs.forEach(config -> clearCache(config.getSettingKey()));
+        configs.forEach(config -> clearCache(config.getConfigKey()));
         log.info("Config", "批量删除系统参数: {} 条", ids.size());
     }
 

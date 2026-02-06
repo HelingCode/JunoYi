@@ -34,19 +34,9 @@ public interface SysConfigConverter extends BaseConverter<SysConfigDTO, SysConfi
     SysConfig toEntity(SysConfigDTO dto);
 
     /**
-     * DTO转VO，将configType直接传递
+     * DTO转VO，将isSystem直接传递
      */
     @Override
-    @Mapping(target = "settingId", source = "settingId")
-    @Mapping(target = "settingKey", source = "settingKey")
-    @Mapping(target = "settingValue", source = "settingValue")
-    @Mapping(target = "settingName", source = "settingName")
-    @Mapping(target = "settingType", source = "settingType")
-    @Mapping(target = "settingGroup", source = "settingGroup")
-    @Mapping(target = "sort", source = "sort")
-    @Mapping(target = "configType", source = "configType")
-    @Mapping(target = "status", source = "status")
-    @Mapping(target = "remark", source = "remark")
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "updateTime", ignore = true)
     SysConfigVO dtoToVo(SysConfigDTO dto);

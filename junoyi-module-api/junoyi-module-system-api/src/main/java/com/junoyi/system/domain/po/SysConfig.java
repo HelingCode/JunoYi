@@ -18,35 +18,35 @@ public class SysConfig extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 设置ID
+     * 配置ID
      */
     @TableId
-    private Long settingId;
+    private Long configId;
 
     /**
-     * 设置键名
+     * 配置键名
      */
-    private String settingKey;
+    private String configKey;
 
     /**
-     * 设置键值
+     * 配置键值
      */
-    private String settingValue;
+    private String configValue;
 
     /**
-     * 设置名称
+     * 配置名称
      */
-    private String settingName;
+    private String configName;
 
     /**
-     * 设置类型（text/number/boolean/json）
+     * 配置类型（text/number/boolean/json）
      */
-    private String settingType;
+    private String configType;
 
     /**
-     * 设置分组
+     * 配置分组
      */
-    private String settingGroup;
+    private String configGroup;
 
     /**
      * 排序
@@ -54,7 +54,7 @@ public class SysConfig extends BaseEntity {
     private Integer sort;
 
     /**
-     * 是否系统内置
+     * 是否系统内置（0否 1是）
      */
     private Integer isSystem;
 

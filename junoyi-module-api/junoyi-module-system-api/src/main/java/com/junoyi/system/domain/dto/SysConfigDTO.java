@@ -15,35 +15,35 @@ public class SysConfigDTO {
      * 参数ID（修改时必填）
      */
     @JsonProperty("id")
-    private Long settingId;
+    private Long configId;
 
     /**
      * 参数键名
      */
     @JsonProperty("configKey")
-    private String settingKey;
+    private String configKey;
 
     /**
      * 参数键值
      */
     @JsonProperty("configValue")
-    private String settingValue;
+    private String configValue;
 
     /**
      * 参数名称
      */
     @JsonProperty("configName")
-    private String settingName;
+    private String configName;
 
     /**
      * 参数类型（text/number/boolean/json）
      */
-    private String settingType;
+    private String configType;
 
     /**
      * 参数分组
      */
-    private String settingGroup;
+    private String configGroup;
 
     /**
      * 排序
@@ -53,8 +53,8 @@ public class SysConfigDTO {
     /**
      * 系统内置（Y是 N否）
      */
-    @JsonProperty("configType")
-    private String configType;
+    @JsonProperty("isSystem")
+    private Integer isSystem;
 
     /**
      * 状态（0正常 1停用）
