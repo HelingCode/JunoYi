@@ -131,8 +131,15 @@ public class SysConfigController extends BaseController {
     /**
      * 获取系统应用配置
      */
+    @Operation(summary = "获取系统应用配置", description = "获取系统应用所需的配置信息")
     @GetMapping("/app")
-    public R<List<SysConfigVO>> getSystemAppConfig(){
-        return R.ok();
+    public R<List<SysConfigVO>> getSystemAppConfig() {
+        // 硬编码需要获取的配置键名列表
+        List<String> configKeys = List.of(
+                "sys.watermark.enabled"
+        );
+        
+        List<SysConfigVO> configs = sysConfigService.getConfigsByKeys(configKeys);
+        return R.ok(configs);
     }
 }

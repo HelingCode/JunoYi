@@ -70,4 +70,12 @@ public interface ISysConfigService {
      * 刷新系统参数缓存
      */
     void refreshCache();
+
+    /**
+     * 根据参数键名列表批量获取参数配置
+     *
+     * @param configKeys 参数键名列表
+     * @return 参数配置列表
+     */
+    List<SysConfigVO> getConfigsByKeys(List<String> configKeys);
 }

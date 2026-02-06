@@ -319,6 +319,27 @@ public class SysConfigServiceImpl implements ISysConfigService {
     }
 
     /**
+     * 根据参数键名列表批量获取参数配置
+     *
+     * @param configKeys 参数键名列表
+     * @return 参数配置列表
+     */
+    @Override
+    public List<SysConfigVO> getConfigsByKeys(List<String> configKeys) {
+        if (configKeys == null || configKeys.isEmpty()) {
+            return List.of();
+        }
+
+        LambdaQueryWrapper<SysConfig> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(SysConfig::getConfigKey, configKeys)
+                .eq(SysConfig::getStatus, 0)
+                .orderByAsc(SysConfig::getSort);
+
+        List<SysConfig> configs = sysConfigMapper.selectList(wrapper);
+        return sysConfigConverter.toVoList(configs);
+    }
+
+    /**
      * 清除指定键名的缓存
      *
      * @param configKey 配置键名
