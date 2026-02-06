@@ -53,7 +53,7 @@ public class SysConfigController extends BaseController {
     @GetMapping("/{id}")
     @PlatformScope(PlatformType.ADMIN_WEB)
     @Permission(value = {"system.ui.config.view", "system.api.config.get.id"})
-    public R<SysConfigVO> getConfigById(@Parameter(description = "参数ID") @PathVariable Long id) {
+    public R<SysConfigVO> getConfigById(@Parameter(description = "参数ID") @PathVariable("id") Long id) {
         return R.ok(sysConfigService.getConfigById(id));
     }
 
@@ -64,7 +64,7 @@ public class SysConfigController extends BaseController {
     @GetMapping("/key/{configKey}")
     @PlatformScope(PlatformType.ADMIN_WEB)
     @Permission(value = {"system.ui.config.view", "system.api.config.get.key"})
-    public R<String> getConfigByKey(@Parameter(description = "参数键名") @PathVariable String configKey) {
+    public R<String> getConfigByKey(@Parameter(description = "参数键名") @PathVariable("configKey") String configKey) {
         return R.ok(sysConfigService.getConfigByKey(configKey));
     }
 
@@ -99,7 +99,7 @@ public class SysConfigController extends BaseController {
     @DeleteMapping("/{id}")
     @PlatformScope(PlatformType.ADMIN_WEB)
     @Permission(value = {"system.ui.config.view", "system.api.config.delete.id"})
-    public R<Void> deleteConfig(@Parameter(description = "参数ID") @PathVariable Long id) {
+    public R<Void> deleteConfig(@Parameter(description = "参数ID") @PathVariable("id") Long id) {
         sysConfigService.deleteConfig(id);
         return R.ok();
     }
@@ -137,7 +137,9 @@ public class SysConfigController extends BaseController {
         // 硬编码需要获取的配置键名列表
         List<String> configKeys = List.of(
                 "sys.watermark.enabled",
-                "sys.watermark.text"
+                "sys.watermark.text",
+                "sys.menu.layout.editable",
+                "sys.menu.layout.default"
         );
         
         List<SysConfigVO> configs = sysConfigService.getConfigsByKeys(configKeys);

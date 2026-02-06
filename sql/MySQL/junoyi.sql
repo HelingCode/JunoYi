@@ -11,7 +11,7 @@
  Target Server Version : 80404 (8.4.4)
  File Encoding         : 65001
 
- Date: 06/02/2026 16:13:46
+ Date: 06/02/2026 23:36:04
 */
 
 SET NAMES utf8mb4;
@@ -43,7 +43,7 @@ CREATE TABLE `sys_auth_log` (
   KEY `idx_login_time` (`login_time`),
   KEY `idx_status` (`status`),
   KEY `idx_login_ip` (`login_ip`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统登录日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统登录日志表';
 
 -- ----------------------------
 -- Records of sys_auth_log
@@ -54,6 +54,10 @@ INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip
 INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (3, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', 'fdb28eb9a7c14c3c823a629a3f52f218', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 14:54:49');
 INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (4, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '2585f78ac8934884a712ad914e9fc2cc', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 16:10:58');
 INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (5, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '6ccaa8c0246d4289b07a3573e7a6b8a9', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 16:11:50');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (6, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '43607c4203cd405b8b48704b20c7c0d7', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 21:12:26');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (7, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '0e29b3591873473883a504002efb4fdc', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 21:18:54');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (8, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', 'd24b959c69344fb0b6206827670a9a75', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 21:24:49');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (9, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '52ed7e2efa1042918ff2f5b3a452dd97', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 21:25:10');
 COMMIT;
 
 -- ----------------------------
@@ -66,7 +70,6 @@ CREATE TABLE `sys_config` (
   `config_value` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '设置键值',
   `config_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '设置名称',
   `config_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'text' COMMENT '设置类型（text/number/boolean/json）',
-  `config_group` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'default' COMMENT '设置分组',
   `sort` int DEFAULT '0' COMMENT '排序',
   `is_system` tinyint NOT NULL DEFAULT '0' COMMENT '是否系统内置（0否 1是）',
   `status` tinyint DEFAULT '0' COMMENT '状态（0正常 1停用）',
@@ -77,18 +80,22 @@ CREATE TABLE `sys_config` (
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`config_id`) USING BTREE,
   UNIQUE KEY `uk_setting_key` (`config_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统设置表';
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统设置表';
 
 -- ----------------------------
 -- Records of sys_config
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `config_group`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 'sys.system.name', 'JunoYi', '系统名称', 'text', 'basic', 1, 1, 0, 'admin', '2026-01-28 22:04:26', '', NULL, '系统显示名称');
-INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `config_group`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, 'sys.system.version', '1.0.0', '系统版本', 'text', 'basic', 2, 1, 0, 'admin', '2026-01-28 22:04:27', '', NULL, '系统版本号');
-INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `config_group`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (3, 'sys.system.logo', '/system/info/logo', '系统Logo', 'text', 'basic', 3, 1, 0, 'admin', '2026-01-28 22:04:28', 'super_admin', '2026-01-28 22:06:38', '系统Logo图片地址');
-INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `config_group`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4, 'sys.system.copyright', '安庆钧逸网络科技有限公司', '版权所有者', 'text', 'basic', 4, 1, 0, 'admin', '2026-01-28 22:04:29', '', NULL, '版权所有者名称');
-INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `config_group`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (5, 'sys.system.copyrightYear', '2025', '版权年份', 'text', 'basic', 5, 1, 0, 'admin', '2026-01-28 22:04:33', '', NULL, '版权年份');
-INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `config_group`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (6, 'sys.system.registration', '皖ICP备@xxxxxxxxx', '备案号', 'text', 'basic', 6, 1, 0, 'admin', '2026-01-28 22:04:34', 'super_admin', '2026-01-28 22:10:20', '网站备案号');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 'sys.system.name', 'JunoYi', '系统名称', 'text', 1, 1, 0, 'system', '2026-01-28 22:04:26', '', NULL, '系统显示名称');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, 'sys.system.version', '1.0.0', '系统版本', 'text', 2, 1, 0, 'system', '2026-01-28 22:04:27', '', NULL, '系统版本号');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (3, 'sys.system.logo', '/system/info/logo', '系统Logo', 'text', 3, 1, 0, 'system', '2026-01-28 22:04:28', 'super_admin', '2026-01-28 22:06:38', '系统Logo图片地址');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4, 'sys.system.copyright', '安庆钧逸网络科技有限公司', '版权所有者', 'text', 4, 1, 0, 'system', '2026-01-28 22:04:29', '', NULL, '版权所有者名称');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (5, 'sys.system.copyrightYear', '2025', '版权年份', 'text', 5, 1, 0, 'system', '2026-01-28 22:04:33', '', NULL, '版权年份');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (6, 'sys.system.registration', '皖ICP备@xxxxxxxxx', '备案号', 'text', 6, 1, 0, 'system', '2026-01-28 22:04:34', 'super_admin', '2026-01-28 22:10:20', '网站备案号');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (7, 'sys.watermark.enabled', 'false', '全局水印', 'boolean', 7, 1, 0, 'system', '2026-01-28 22:04:34', 'super_admin', '2026-02-06 20:57:06', '是否启用全局水印');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (8, 'sys.watermark.text', '{nickname}({username}) - JunoYi - {date}', '自定义水印文本', 'text', 8, 1, 0, 'system', '2026-02-06 19:31:44', 'super_admin', '2026-02-06 20:56:52', '可使用占位符：{nickname} 用户昵称、{username} 用户账号、、{date} 当前日期、{time} 时间、{year} 年、{month} 月、{day} 日');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (9, 'sys.menu.layout.editable', 'true', '允许修改菜单布局', 'boolean', 9, 1, 0, 'system', '2026-02-06 21:00:12', 'super_admin', '2026-02-06 21:59:47', '是否允许用户修改菜单布局');
+INSERT INTO `sys_config` (`config_id`, `config_key`, `config_value`, `config_name`, `config_type`, `sort`, `is_system`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (10, 'sys.menu.layout.default', 'left', '默认菜单布局', 'text', 10, 1, 0, 'system', '2026-02-06 21:03:02', 'super_admin', '2026-02-06 22:02:29', '系统默认菜单布局类型： left(垂直)、top(水平)、mix(混合)、double(双列)');
 COMMIT;
 
 -- ----------------------------
@@ -117,7 +124,7 @@ CREATE TABLE `sys_dept` (
 -- Records of sys_dept
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_dept` (`id`, `parent_id`, `name`, `sort`, `leader`, `phonenumber`, `email`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 0, 'JunoYi网络科技有限公司', 1, '小饭', '18877667671', 'admin@junoyi.com', 1, 0, 'super_admin', '2026-01-02 04:00:44', 'super_admin', '2026-01-04 14:50:55', '主公司');
+INSERT INTO `sys_dept` (`id`, `parent_id`, `name`, `sort`, `leader`, `phonenumber`, `email`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 0, '钧逸网络科技有限公司', 1, '小饭', '18877667671', 'admin@junoyi.com', 1, 0, 'super_admin', '2026-01-02 04:00:44', 'super_admin', '2026-02-06 18:01:16', '主公司');
 INSERT INTO `sys_dept` (`id`, `parent_id`, `name`, `sort`, `leader`, `phonenumber`, `email`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, 1, '杭州总公司', 1, '小饭', '18877667671', 'admin@junoyi.com', 1, 0, 'super_admin', '2026-01-02 04:03:41', 'super_admin', '2026-01-04 14:50:55', '总公司');
 INSERT INTO `sys_dept` (`id`, `parent_id`, `name`, `sort`, `leader`, `phonenumber`, `email`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (3, 1, '上海分公司', 2, '小王', '17788667643', 'user1@junoyi.com', 1, 0, 'super_admin', '2026-01-02 04:05:12', 'super_admin', '2026-01-04 14:50:55', '分公司');
 INSERT INTO `sys_dept` (`id`, `parent_id`, `name`, `sort`, `leader`, `phonenumber`, `email`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4, 2, '研发部门', 2, '小苏', '19988333223', 'user2@junoyi.com', 1, 0, 'super_admin', '2026-01-02 04:06:30', 'super_admin', '2026-01-04 14:50:55', '研发部门');
@@ -271,7 +278,7 @@ CREATE TABLE `sys_oper_log` (
   KEY `idx_level` (`level`),
   KEY `idx_target_id` (`target_id`),
   KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志表';
 
 -- ----------------------------
 -- Records of sys_oper_log
@@ -280,6 +287,7 @@ BEGIN;
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (1, 'info', 'update', 'perm_group', 1, 'super_admin', '超级管理员', '更新了权限组「默认管理权限组」', '2', '默认管理权限组', '/system/permission', 'PUT', '127.0.0.1', '{\"id\":2,\"groupCode\":\"default_admin\",\"groupName\":\"默认管理权限组\",\"parentId\":1,\"priority\":100,\"description\":\"系统所有管理用户的基础权限\",\"status\":1,\"permissions\":[\"system.ui.user.button.dept\",\"system.ui.cache.button.detail\",\"system.ui.user.button.edit\",\"system.ui.user.view\",\"system.ui.auth-log.view\",\"system.ui.oper-log.view\",\"system.ui.permission.pool.button.add\",\"system.ui.permission.view\",\"system.ui.permission.button.edit\",\"system.ui.auth-log.button.clear\",\"system.ui.cache.button.clear\",\"system.ui.menu.button.edit\",\"system.ui.dept.button.permission\",\"system.ui.role.view\",\"system.ui.menu.button.add\",\"system.ui.session.button.logout\",\"system.ui.auth-log.button.delete\",\"system.ui.session.view\",\"system.ui.role.button.permission\",\"system.ui.dept.button.add\",\"system.ui.cache.view\",\"system.ui.user.button.individual-perm\",\"system.ui.role.button.delete\",\"system.ui.dept.button.edit\",\"system.ui.cache.button.delete\",\"system.ui.permission.pool.view\",\"system.ui.user.button.permission\",\"system.ui.role.button.edit\",\"system.ui.dept.button.delete\",\"system.ui.oper-log.button.clear\",\"system.ui.user.button.role\",\"system.ui.dept.view\",\"system.ui.permission.button.add\",\"system.ui.user.button.delete\",\"system.ui.permission.button.delete\",\"system.ui.user.button.add\",\"system.ui.menu.view\",\"system.ui.menu.button.delete\",\"system.ui.permission.pool.button.delete\",\"system.ui.role.button.add\",\"system.ui.oper-log.button.delete\",\"system.ui.permission-pool.button.status\"]}', '2026-02-05 23:00:29');
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (2, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「menus.plan.log」', '50', 'menus.plan.log', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-05 23:09:50');
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (3, 'info', 'create', 'menu', 1, 'super_admin', '超级管理员', '创建了菜单「系统参数」', '124', '系统参数', '/system/menu', 'POST', '127.0.0.1', NULL, '2026-02-06 12:24:07');
+INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (4, 'info', 'update', 'dept', 1, 'super_admin', '超级管理员', '更新了部门「钧逸网络科技有限公司」', '1', '钧逸网络科技有限公司', '/system/dept', 'PUT', '127.0.0.1', NULL, '2026-02-06 18:01:16');
 COMMIT;
 
 -- ----------------------------
