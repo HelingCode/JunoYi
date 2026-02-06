@@ -27,10 +27,6 @@ public interface SysConfigConverter extends BaseConverter<SysConfigDTO, SysConfi
      */
     @Override
     @Mapping(target = "isSystem", expression = "java(\"Y\".equals(dto.getConfigType()) ? 1 : 0)")
-    @Mapping(target = "settingType", ignore = true)
-    @Mapping(target = "settingGroup", ignore = true)
-    @Mapping(target = "sort", ignore = true)
-    @Mapping(target = "status", ignore = true)
     @Mapping(target = "createBy", ignore = true)
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "updateBy", ignore = true)
@@ -45,7 +41,11 @@ public interface SysConfigConverter extends BaseConverter<SysConfigDTO, SysConfi
     @Mapping(target = "settingKey", source = "settingKey")
     @Mapping(target = "settingValue", source = "settingValue")
     @Mapping(target = "settingName", source = "settingName")
+    @Mapping(target = "settingType", source = "settingType")
+    @Mapping(target = "settingGroup", source = "settingGroup")
+    @Mapping(target = "sort", source = "sort")
     @Mapping(target = "configType", source = "configType")
+    @Mapping(target = "status", source = "status")
     @Mapping(target = "remark", source = "remark")
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "updateTime", ignore = true)
@@ -56,10 +56,6 @@ public interface SysConfigConverter extends BaseConverter<SysConfigDTO, SysConfi
      */
     @Override
     @Mapping(target = "isSystem", expression = "java(\"Y\".equals(dto.getConfigType()) ? 1 : 0)")
-    @Mapping(target = "settingType", ignore = true)
-    @Mapping(target = "settingGroup", ignore = true)
-    @Mapping(target = "sort", ignore = true)
-    @Mapping(target = "status", ignore = true)
     @Mapping(target = "createBy", ignore = true)
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "updateBy", ignore = true)

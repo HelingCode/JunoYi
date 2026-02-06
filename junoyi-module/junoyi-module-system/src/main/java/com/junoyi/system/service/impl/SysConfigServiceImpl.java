@@ -129,6 +129,12 @@ public class SysConfigServiceImpl implements ISysConfigService {
         if (config.getSort() == null) {
             config.setSort(0); // 默认排序
         }
+        if (config.getSettingType() == null) {
+            config.setSettingType("text"); // 默认文本类型
+        }
+        if (config.getSettingGroup() == null) {
+            config.setSettingGroup("default"); // 默认分组
+        }
 
         sysConfigMapper.insert(config);
 

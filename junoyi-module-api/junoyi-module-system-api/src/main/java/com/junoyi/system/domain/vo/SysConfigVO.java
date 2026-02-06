@@ -38,10 +38,30 @@ public class SysConfigVO {
     private String settingName;
 
     /**
+     * 参数类型（text/number/boolean/json）
+     */
+    private String settingType;
+
+    /**
+     * 参数分组
+     */
+    private String settingGroup;
+
+    /**
+     * 排序
+     */
+    private Integer sort;
+
+    /**
      * 系统内置（Y是 N否）
      */
     @JsonProperty("configType")
     private String configType;
+
+    /**
+     * 状态（0正常 1停用）
+     */
+    private Integer status;
 
     /**
      * 备注
