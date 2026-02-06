@@ -17,7 +17,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
-import java.net.URLConnection;
 
 /**
  * 系统信息控制类
@@ -58,25 +57,16 @@ public class SysInfoController {
     @GetMapping("/logo")
     public ResponseEntity<byte[]> getLogo() {
         try {
-            String logoPath = configService.getConfigByKey("sys.system.logo");
-            if (logoPath == null || logoPath.isEmpty()) {
-                log.error("Logo path not configured");
-                return ResponseEntity.notFound().build();
-            }
-
-            // 如果是相对路径，从 classpath 读取
-            ClassPathResource logoResource = new ClassPathResource("public/" + logoPath);
+            // 从 classpath 的 public 目录读取 logo
+            ClassPathResource logoResource = new ClassPathResource("public/LOGO.png");
             if (!logoResource.exists()) {
-                log.error("Logo file does not exist: public/{}", logoPath);
+                log.error("Logo file does not exist: public/LOGO.png");
                 return ResponseEntity.notFound().build();
             }
 
             byte[] bytes = StreamUtils.copyToByteArray(logoResource.getInputStream());
 
-            String contentType = URLConnection.guessContentTypeFromName(logoPath);
-            if (contentType == null) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-            }
+            String contentType = "image/png";
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
