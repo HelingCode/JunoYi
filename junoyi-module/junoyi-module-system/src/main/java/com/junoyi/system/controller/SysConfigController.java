@@ -15,6 +15,7 @@ import com.junoyi.system.service.ISysConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,7 +75,7 @@ public class SysConfigController extends BaseController {
     @PostMapping
     @PlatformScope(PlatformType.ADMIN_WEB)
     @Permission(value = {"system.ui.config.view", "system.api.config.add"})
-    public R<Void> addConfig(@RequestBody SysConfigDTO configDTO) {
+    public R<Void> addConfig(@RequestBody @Valid SysConfigDTO configDTO) {
         sysConfigService.addConfig(configDTO);
         return R.ok();
     }
@@ -86,7 +87,7 @@ public class SysConfigController extends BaseController {
     @PutMapping
     @PlatformScope(PlatformType.ADMIN_WEB)
     @Permission(value = {"system.ui.config.view", "system.api.config.update"})
-    public R<Void> updateConfig(@RequestBody SysConfigDTO configDTO) {
+    public R<Void> updateConfig(@RequestBody @Valid SysConfigDTO configDTO) {
         sysConfigService.updateConfig(configDTO);
         return R.ok();
     }

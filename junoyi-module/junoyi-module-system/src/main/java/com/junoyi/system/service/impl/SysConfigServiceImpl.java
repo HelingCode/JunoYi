@@ -3,22 +3,31 @@ package com.junoyi.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.StringUtils;
+import com.junoyi.framework.event.core.EventBus;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.redis.utils.RedisUtils;
+import com.junoyi.framework.security.utils.SecurityUtils;
 import com.junoyi.system.convert.SysConfigConverter;
 import com.junoyi.system.domain.dto.SysConfigDTO;
 import com.junoyi.system.domain.dto.SysConfigQueryDTO;
 import com.junoyi.system.domain.po.SysConfig;
 import com.junoyi.system.domain.vo.SysConfigVO;
+import com.junoyi.system.enums.ConfigGroup;
+import com.junoyi.system.enums.ConfigType;
+import com.junoyi.system.event.ConfigChangedEvent;
 import com.junoyi.system.mapper.SysConfigMapper;
 import com.junoyi.system.service.ISysConfigService;
+import com.junoyi.system.util.ConfigValueValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -35,6 +44,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     private final SysConfigConverter sysConfigConverter;
 
     private static final String CACHE_KEY_PREFIX = "sys:config:";
+    private static final long CACHE_EXPIRE_HOURS = 24;
 
     /**
      * 分页查询系统参数配置列表
@@ -95,8 +105,8 @@ public class SysConfigServiceImpl implements ISysConfigService {
 
         if (config != null) {
             String value = config.getConfigValue();
-            // 存入缓存（永久有效，手动刷新）
-            RedisUtils.setCacheObject(cacheKey, value);
+            // 存入缓存（24小时过期）
+            RedisUtils.setCacheObject(cacheKey, value, Duration.ofHours(CACHE_EXPIRE_HOURS));
             return value;
         }
 
@@ -119,6 +129,24 @@ public class SysConfigServiceImpl implements ISysConfigService {
             throw new IllegalArgumentException("参数键名已存在");
         }
 
+        // 验证配置类型
+        String configType = configDTO.getConfigType();
+        if (StringUtils.isNotBlank(configType) && !ConfigType.isValid(configType)) {
+            throw new IllegalArgumentException("不支持的配置类型: " + configType);
+        }
+
+        // 验证配置分组
+        String configGroup = configDTO.getConfigGroup();
+        if (StringUtils.isNotBlank(configGroup) && !ConfigGroup.isValid(configGroup)) {
+            throw new IllegalArgumentException("不支持的配置分组: " + configGroup);
+        }
+
+        // 验证配置值
+        ConfigValueValidator.validate(
+                configType != null ? configType : ConfigType.TEXT.getCode(),
+                configDTO.getConfigValue()
+        );
+
         SysConfig config = sysConfigConverter.toEntity(configDTO);
 
         // 设置默认值
@@ -132,16 +160,25 @@ public class SysConfigServiceImpl implements ISysConfigService {
             config.setSort(0); // 默认排序
         }
         if (config.getConfigType() == null) {
-            config.setConfigType("text"); // 默认文本类型
+            config.setConfigType(ConfigType.TEXT.getCode()); // 默认文本类型
         }
         if (config.getConfigGroup() == null) {
-            config.setConfigGroup("default"); // 默认分组
+            config.setConfigGroup(ConfigGroup.DEFAULT.getCode()); // 默认分组
         }
 
         sysConfigMapper.insert(config);
 
         // 清除缓存
         clearCache(config.getConfigKey());
+
+        // 发布配置变更事件
+        publishConfigChangedEvent(
+                config.getConfigKey(),
+                null,
+                config.getConfigValue(),
+                ConfigChangedEvent.OperationType.ADD
+        );
+
         log.info("Config", "添加系统参数: {}", config.getConfigKey());
     }
 
@@ -162,6 +199,24 @@ public class SysConfigServiceImpl implements ISysConfigService {
         if (oldConfig.getIsSystem() == 1 && !oldConfig.getConfigKey().equals(configDTO.getConfigKey())) {
             throw new IllegalArgumentException("系统内置参数不允许修改键名");
         }
+
+        // 验证配置类型
+        String configType = configDTO.getConfigType();
+        if (StringUtils.isNotBlank(configType) && !ConfigType.isValid(configType)) {
+            throw new IllegalArgumentException("不支持的配置类型: " + configType);
+        }
+
+        // 验证配置分组
+        String configGroup = configDTO.getConfigGroup();
+        if (StringUtils.isNotBlank(configGroup) && !ConfigGroup.isValid(configGroup)) {
+            throw new IllegalArgumentException("不支持的配置分组: " + configGroup);
+        }
+
+        // 验证配置值
+        ConfigValueValidator.validate(
+                configType != null ? configType : oldConfig.getConfigType(),
+                configDTO.getConfigValue()
+        );
 
         // 转换DTO到实体
         SysConfig config = sysConfigConverter.toEntity(configDTO);
@@ -190,6 +245,14 @@ public class SysConfigServiceImpl implements ISysConfigService {
             clearCache(config.getConfigKey());
         }
 
+        // 发布配置变更事件
+        publishConfigChangedEvent(
+                config.getConfigKey(),
+                oldConfig.getConfigValue(),
+                config.getConfigValue(),
+                ConfigChangedEvent.OperationType.UPDATE
+        );
+
         log.info("Config", "更新系统参数: {}", config.getConfigKey());
     }
 
@@ -215,6 +278,15 @@ public class SysConfigServiceImpl implements ISysConfigService {
 
         // 清除缓存
         clearCache(config.getConfigKey());
+
+        // 发布配置变更事件
+        publishConfigChangedEvent(
+                config.getConfigKey(),
+                config.getConfigValue(),
+                null,
+                ConfigChangedEvent.OperationType.DELETE
+        );
+
         log.info("Config", "删除系统参数: {}", config.getConfigKey());
     }
 
@@ -235,7 +307,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
             throw new IllegalArgumentException("不能删除系统内置参数");
         }
 
-        // 获取所有配置的键名，用于清除缓存
+        // 获取所有配置的键名，用于清除缓存和发布事件
         List<SysConfig> configs = sysConfigMapper.selectBatchIds(ids);
 
         // 批量删除
@@ -243,8 +315,17 @@ public class SysConfigServiceImpl implements ISysConfigService {
             sysConfigMapper.deleteById(id);
         }
 
-        // 清除缓存
-        configs.forEach(config -> clearCache(config.getConfigKey()));
+        // 清除缓存并发布事件
+        configs.forEach(config -> {
+            clearCache(config.getConfigKey());
+            publishConfigChangedEvent(
+                    config.getConfigKey(),
+                    config.getConfigValue(),
+                    null,
+                    ConfigChangedEvent.OperationType.DELETE
+            );
+        });
+
         log.info("Config", "批量删除系统参数: {} 条", ids.size());
     }
 
@@ -266,5 +347,32 @@ public class SysConfigServiceImpl implements ISysConfigService {
     private void clearCache(String configKey) {
         String cacheKey = CACHE_KEY_PREFIX + configKey;
         RedisUtils.deleteObject(cacheKey);
+    }
+
+    /**
+     * 发布配置变更事件
+     *
+     * @param configKey     配置键名
+     * @param oldValue      旧值
+     * @param newValue      新值
+     * @param operationType 操作类型
+     */
+    private void publishConfigChangedEvent(String configKey, String oldValue, String newValue,
+                                            ConfigChangedEvent.OperationType operationType) {
+        try {
+            String operator = SecurityUtils.getUserName();
+            ConfigChangedEvent event = new ConfigChangedEvent(
+                    this,
+                    configKey,
+                    oldValue,
+                    newValue,
+                    operationType,
+                    operator
+            );
+            EventBus.get().callEvent(event);
+            log.debug("Config", "发布配置变更事件: key={}, type={}", configKey, operationType);
+        } catch (Exception e) {
+            log.error("Config", "发布配置变更事件失败: " + e.getMessage(), e);
+        }
     }
 }
