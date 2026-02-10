@@ -8,7 +8,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![MyBatis Plus](https://img.shields.io/badge/MyBatis%20Plus-3.5.9-blue.svg)](https://baomidou.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.4.6--beta-yellow.svg)](https://github.com/Juno-Yi/JunoYi)
+[![Version](https://img.shields.io/badge/Version-0.5.0--beta-yellow.svg)](https://github.com/Juno-Yi/JunoYi)
 
 ## JunoYi 后台管理系统脚手架框架
 **一个安全内建、简洁优雅的 Java 企业级开发框架**
@@ -23,7 +23,7 @@
 
 > **Beta 版本声明**
 >
-> 当前版本为 **0.4.6-beta**，已完成核心功能开发并通过内部测试，可以用于项目开发。我们会持续优化和完善功能，欢迎试用并反馈问题。
+> 当前版本为 **0.5.0-beta**，已完成核心功能开发并通过内部测试，可以用于项目开发。我们会持续优化和完善功能，欢迎试用并反馈问题。
 >
 > 📌 **相关链接**
 > - 📖 文档站：https://doc.framework.junoyi.com
