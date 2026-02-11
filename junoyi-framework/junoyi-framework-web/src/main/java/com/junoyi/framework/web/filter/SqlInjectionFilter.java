@@ -120,6 +120,22 @@ public class SqlInjectionFilter extends OncePerRequestFilter {
 
         // 排除的 URL
         String uri = request.getRequestURI();
+        
+        // 字典管理接口白名单 - 字典数据可能包含 SQL 关键词（如 update、delete 等）
+        if (uri.contains("/system/dict/data") || uri.contains("/system/dict-data")) {
+            return true;
+        }
+        
+        // 权限池接口白名单 - 权限标识可能包含 SQL 关键词（如 system.api.user.delete）
+        if (uri.contains("/system/permission-pool") || uri.contains("/system/permission/pool")) {
+            return true;
+        }
+        
+        // 权限管理接口白名单 - 权限标识可能包含 SQL 关键词
+        if (uri.contains("/system/permission") && !uri.contains("/system/permission-pool")) {
+            return true;
+        }
+        
         return properties.getExcludeUrls().stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 

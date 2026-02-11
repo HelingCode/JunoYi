@@ -62,9 +62,19 @@ public class SysUserVO {
     private String sex;
 
     /**
+     * 性别标签（字典翻译）
+     */
+    private String sexLabel;
+
+    /**
      * 状态
      */
     private Integer status;
+
+    /**
+     * 状态标签（字典翻译）
+     */
+    private String statusLabel;
 
     /**
      * 创建时间

@@ -2,6 +2,8 @@ package com.junoyi.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.junoyi.system.api.SysDictApi;
+import com.junoyi.system.constant.DictTypeConstants;
 import com.junoyi.system.event.UserOperationEvent;
 import com.junoyi.system.exception.DeptHasChildrenException;
 import com.junoyi.framework.core.utils.DateUtils;
@@ -50,6 +52,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     private final SysPermGroupMapper sysPermGroupMapper;
     private final SysDeptConverter sysDeptConverter;
     private final SysPermGroupConverter sysPermGroupConverter;
+    private final SysDictApi sysDictApi;
 
     /**
      * 获取部门树形结构数据
@@ -73,6 +76,17 @@ public class SysDeptServiceImpl implements ISysDeptService {
         List<SysDept> deptList = sysDeptMapper.selectList(wrapper);
         // 将实体对象转换为VO对象
         List<SysDeptVO> voList = sysDeptConverter.toVoList(deptList);
+        
+        // 使用字典API翻译状态标签
+        for (SysDeptVO deptVO : voList) {
+            if (deptVO.getStatus() != null) {
+                deptVO.setStatusLabel(sysDictApi.getDictLabel(
+                    DictTypeConstants.SYS_DEPT_STATUS,
+                    String.valueOf(deptVO.getStatus())
+                ));
+            }
+        }
+        
         // 构建树形结构并返回
         return buildTree(voList);
     }
