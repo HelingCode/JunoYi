@@ -8,6 +8,7 @@ import com.junoyi.framework.core.utils.StringUtils;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.security.utils.SecurityUtils;
+import com.junoyi.system.api.SysDictApiImpl;
 import com.junoyi.system.convert.SysDictTypeConverter;
 import com.junoyi.system.domain.dto.SysDictTypeDTO;
 import com.junoyi.system.domain.dto.SysDictTypeQueryDTO;
@@ -36,6 +37,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     private final SysDictTypeMapper sysDictTypeMapper;
     private final SysDictTypeConverter sysDictTypeConverter;
     private final SysDictDataMapper sysDictDataMapper;
+    private final SysDictApiImpl sysDictApi;
 
     /**
      * 分页查询字典类型列表
