@@ -43,6 +43,11 @@ public class SysRoleVO {
     private String dataScopeLabel;
 
     /**
+     * 数据范围标签类型（用于前端标签颜色）
+     */
+    private String dataScopeType;
+
+    /**
      * 状态
      */
     private Integer status;
@@ -51,6 +56,11 @@ public class SysRoleVO {
      * 状态标签（字典翻译）
      */
     private String statusLabel;
+
+    /**
+     * 状态标签类型（用于前端标签颜色）
+     */
+    private String statusType;
 
     /**
      * 创建时间

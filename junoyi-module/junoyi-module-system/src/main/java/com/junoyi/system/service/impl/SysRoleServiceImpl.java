@@ -17,6 +17,7 @@ import com.junoyi.system.domain.dto.SysRoleQueryDTO;
 import com.junoyi.system.domain.po.SysPermGroup;
 import com.junoyi.system.domain.po.SysRole;
 import com.junoyi.system.domain.po.SysRoleGroup;
+import com.junoyi.system.domain.vo.SysDictDataVO;
 import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.domain.vo.SysRoleVO;
 import com.junoyi.system.enums.SysRoleStatus;
@@ -74,19 +75,27 @@ public class SysRoleServiceImpl implements ISysRoleService {
         Page<SysRole> resultPage = sysRoleMapper.selectPage(page, wrapper);
         List<SysRoleVO> roleVOList = sysRoleConverter.toVoList(resultPage.getRecords());
         
-        // 使用字典API翻译状态和数据范围标签
+        // 使用字典API翻译状态和数据范围标签，并获取标签类型（颜色）
         for (SysRoleVO roleVO : roleVOList) {
             if (roleVO.getStatus() != null) {
-                roleVO.setStatusLabel(sysDictApi.getDictLabel(
+                SysDictDataVO statusDict = sysDictApi.getDictItem(
                     DictTypeConstants.SYS_ROLE_STATUS,
                     String.valueOf(roleVO.getStatus())
-                ));
+                );
+                if (statusDict != null) {
+                    roleVO.setStatusLabel(statusDict.getDictLabel());
+                    roleVO.setStatusType(statusDict.getListClass());
+                }
             }
             if (roleVO.getDataScope() != null) {
-                roleVO.setDataScopeLabel(sysDictApi.getDictLabel(
+                SysDictDataVO dataScopeDict = sysDictApi.getDictItem(
                     DictTypeConstants.SYS_DATA_SCOPE,
                     roleVO.getDataScope()
-                ));
+                );
+                if (dataScopeDict != null) {
+                    roleVO.setDataScopeLabel(dataScopeDict.getDictLabel());
+                    roleVO.setDataScopeType(dataScopeDict.getListClass());
+                }
             }
         }
         
@@ -110,7 +119,33 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 .ne(SysRole::getId, 1L)
                 .orderByAsc(SysRole::getSort);
         List<SysRole> sysRoles = sysRoleMapper.selectList(wrapper);
-        return sysRoleConverter.toVoList(sysRoles);
+        List<SysRoleVO> roleVOList = sysRoleConverter.toVoList(sysRoles);
+        
+        // 使用字典API翻译状态和数据范围标签，并获取标签类型（颜色）
+        for (SysRoleVO roleVO : roleVOList) {
+            if (roleVO.getStatus() != null) {
+                SysDictDataVO statusDict = sysDictApi.getDictItem(
+                    DictTypeConstants.SYS_ROLE_STATUS,
+                    String.valueOf(roleVO.getStatus())
+                );
+                if (statusDict != null) {
+                    roleVO.setStatusLabel(statusDict.getDictLabel());
+                    roleVO.setStatusType(statusDict.getListClass());
+                }
+            }
+            if (roleVO.getDataScope() != null) {
+                SysDictDataVO dataScopeDict = sysDictApi.getDictItem(
+                    DictTypeConstants.SYS_DATA_SCOPE,
+                    roleVO.getDataScope()
+                );
+                if (dataScopeDict != null) {
+                    roleVO.setDataScopeLabel(dataScopeDict.getDictLabel());
+                    roleVO.setDataScopeType(dataScopeDict.getListClass());
+                }
+            }
+        }
+        
+        return roleVOList;
     }
 
     /**

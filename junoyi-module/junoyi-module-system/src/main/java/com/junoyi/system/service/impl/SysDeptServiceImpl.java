@@ -19,6 +19,7 @@ import com.junoyi.system.domain.po.SysDept;
 import com.junoyi.system.domain.po.SysDeptGroup;
 import com.junoyi.system.domain.po.SysPermGroup;
 import com.junoyi.system.domain.vo.SysDeptVO;
+import com.junoyi.system.domain.vo.SysDictDataVO;
 import com.junoyi.system.domain.vo.SysPermGroupVO;
 import com.junoyi.system.enums.SysDeptStatus;
 import com.junoyi.system.event.PermissionChangedEvent;
@@ -77,13 +78,17 @@ public class SysDeptServiceImpl implements ISysDeptService {
         // 将实体对象转换为VO对象
         List<SysDeptVO> voList = sysDeptConverter.toVoList(deptList);
         
-        // 使用字典API翻译状态标签
+        // 使用字典API翻译状态标签，并获取标签类型（颜色）
         for (SysDeptVO deptVO : voList) {
             if (deptVO.getStatus() != null) {
-                deptVO.setStatusLabel(sysDictApi.getDictLabel(
+                SysDictDataVO statusDict = sysDictApi.getDictItem(
                     DictTypeConstants.SYS_DEPT_STATUS,
                     String.valueOf(deptVO.getStatus())
-                ));
+                );
+                if (statusDict != null) {
+                    deptVO.setStatusLabel(statusDict.getDictLabel());
+                    deptVO.setStatusType(statusDict.getListClass());
+                }
             }
         }
         

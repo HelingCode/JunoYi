@@ -36,6 +36,11 @@ public class SysDeptVO {
      */
     private String statusLabel;
 
+    /**
+     * 状态标签类型（用于前端标签颜色）
+     */
+    private String statusType;
+
     private Date createTime;
 
     private Date updateTime;
