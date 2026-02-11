@@ -156,17 +156,28 @@ public class SysOperLogServiceImpl implements ISysOperLogService {
         
         // 使用字典翻译日志级别
         if (log.getLevel() != null) {
-            vo.setLevelLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_LOG_LEVEL, log.getLevel()));
+            String levelLabel = sysDictApi.getDictLabel(DictTypeConstants.SYS_LOG_LEVEL, log.getLevel());
+            vo.setLevelLabel(levelLabel);
         }
         
         // 使用字典翻译操作类型
         if (log.getAction() != null) {
-            vo.setActionLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_OPER_TYPE, log.getAction()));
+            String actionLabel = sysDictApi.getDictLabel(DictTypeConstants.SYS_OPER_TYPE, log.getAction());
+            vo.setActionLabel(actionLabel);
+            // 如果前端直接使用 action 字段显示，则直接替换 action 的值为翻译后的标签
+            if (actionLabel != null && !actionLabel.isEmpty()) {
+                vo.setAction(actionLabel);
+            }
         }
         
         // 使用字典翻译操作模块
         if (log.getModule() != null) {
-            vo.setModuleLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_OPER_MODULE, log.getModule()));
+            String moduleLabel = sysDictApi.getDictLabel(DictTypeConstants.SYS_OPER_MODULE, log.getModule());
+            vo.setModuleLabel(moduleLabel);
+            // 如果前端直接使用 module 字段显示，则直接替换 module 的值为翻译后的标签
+            if (moduleLabel != null && !moduleLabel.isEmpty()) {
+                vo.setModule(moduleLabel);
+            }
         }
         
         return vo;
