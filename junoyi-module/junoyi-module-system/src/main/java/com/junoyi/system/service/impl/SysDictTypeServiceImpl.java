@@ -107,6 +107,9 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         sysDictTypeMapper.insert(dictType);
 
         log.info("DictType", "添加字典类型: {}", dictType.getDictType());
+        
+        // 刷新缓存
+        sysDictApi.refreshDictCache(dictType.getDictType());
     }
 
     /**
@@ -135,6 +138,12 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         sysDictTypeMapper.updateById(dictType);
 
         log.info("DictType", "更新字典类型: {}", dictType.getDictType());
+        
+        // 刷新缓存(如果字典类型改变了,需要刷新新旧两个类型的缓存)
+        sysDictApi.refreshDictCache(oldDictType.getDictType());
+        if (!oldDictType.getDictType().equals(dictType.getDictType())) {
+            sysDictApi.refreshDictCache(dictType.getDictType());
+        }
     }
 
     /**
@@ -150,19 +159,24 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
             throw new RuntimeException("字典类型不存在");
         }
 
+        String dictTypeCode = dictType.getDictType();
+
         // 先删除该类型下的所有字典数据
         LambdaQueryWrapper<SysDictData> dataWrapper = new LambdaQueryWrapper<>();
-        dataWrapper.eq(SysDictData::getDictType, dictType.getDictType());
+        dataWrapper.eq(SysDictData::getDictType, dictTypeCode);
         Long dataCount = sysDictDataMapper.selectCount(dataWrapper);
         if (dataCount > 0) {
             sysDictDataMapper.delete(dataWrapper);
-            log.info("DictType", "删除字典类型 {} 关联的字典数据: {} 条", dictType.getDictType(), dataCount);
+            log.info("DictType", "删除字典类型 {} 关联的字典数据: {} 条", dictTypeCode, dataCount);
         }
 
         // 再删除字典类型
         sysDictTypeMapper.deleteById(dictId);
 
-        log.info("DictType", "删除字典类型: {}", dictType.getDictType());
+        log.info("DictType", "删除字典类型: {}", dictTypeCode);
+        
+        // 刷新缓存
+        sysDictApi.refreshDictCache(dictTypeCode);
     }
 
     /**
@@ -193,5 +207,10 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         }
 
         log.info("DictType", "批量删除字典类型: {} 条", dictIds.size());
+        
+        // 刷新所有被删除字典类型的缓存
+        for (SysDictType dictType : dictTypes) {
+            sysDictApi.refreshDictCache(dictType.getDictType());
+        }
     }
 }

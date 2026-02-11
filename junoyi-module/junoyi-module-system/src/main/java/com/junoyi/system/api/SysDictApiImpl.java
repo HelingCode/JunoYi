@@ -3,8 +3,11 @@ package com.junoyi.system.api;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.junoyi.framework.core.constant.CacheConstants;
 import com.junoyi.framework.core.utils.StringUtils;
+import com.junoyi.framework.log.core.JunoYiLog;
+import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.redis.utils.RedisUtils;
 import com.junoyi.system.convert.SysDictDataConverter;
+import com.junoyi.system.domain.po.SysDept;
 import com.junoyi.system.domain.po.SysDictData;
 import com.junoyi.system.domain.vo.SysDictDataVO;
 import com.junoyi.system.mapper.SysDictDataMapper;
@@ -24,10 +27,11 @@ import java.util.stream.Collectors;
  *
  * @author Fan
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class SysDictApiImpl implements com.junoyi.system.api.SysDictApi {
+public class SysDictApiImpl implements SysDictApi {
+
+    private final JunoYiLog log = JunoYiLogFactory.getLogger(SysDictApiImpl.class);
 
     private final SysDictDataMapper sysDictDataMapper;
     private final SysDictDataConverter sysDictDataConverter;
