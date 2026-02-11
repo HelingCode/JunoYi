@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.core.utils.StringUtils;
+import com.junoyi.framework.event.core.EventBus;
+import com.junoyi.framework.json.utils.JsonUtils;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.security.utils.SecurityUtils;
@@ -14,6 +16,7 @@ import com.junoyi.system.domain.dto.SysDictDataDTO;
 import com.junoyi.system.domain.dto.SysDictDataQueryDTO;
 import com.junoyi.system.domain.po.SysDictData;
 import com.junoyi.system.domain.vo.SysDictDataVO;
+import com.junoyi.system.event.UserOperationEvent;
 import com.junoyi.system.mapper.SysDictDataMapper;
 import com.junoyi.system.service.ISysDictDataService;
 import lombok.RequiredArgsConstructor;
@@ -118,6 +121,12 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
 
         // 刷新缓存
         sysDictApi.refreshDictCache(dictData.getDictType());
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.withRawData("create", "dict_data",
+                "创建了字典数据「" + dictData.getDictLabel() + "」",
+                String.valueOf(dictData.getDictCode()), dictData.getDictLabel(),
+                JsonUtils.toJsonString(dictDataDTO)));
     }
 
     /**
@@ -160,6 +169,12 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
             typesToRefresh.add(dictData.getDictType());
         }
         typesToRefresh.forEach(sysDictApi::refreshDictCache);
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.withRawData("update", "dict_data",
+                "更新了字典数据「" + dictData.getDictLabel() + "」",
+                String.valueOf(dictData.getDictCode()), dictData.getDictLabel(),
+                JsonUtils.toJsonString(dictDataDTO)));
     }
 
     /**
@@ -182,6 +197,11 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
 
         // 刷新缓存
         sysDictApi.refreshDictCache(dictType);
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.of("delete", "dict_data",
+                "删除了字典数据「" + dictData.getDictLabel() + "」",
+                String.valueOf(dictCode), dictData.getDictLabel()));
     }
 
     /**
@@ -208,5 +228,10 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
 
         // 刷新所有相关字典类型的缓存
         typesToRefresh.forEach(sysDictApi::refreshDictCache);
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.of("delete", "dict_data",
+                "批量删除了 " + dictCodes.size() + " 条字典数据",
+                dictCodes.toString(), null));
     }
 }

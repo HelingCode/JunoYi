@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.core.utils.StringUtils;
+import com.junoyi.framework.event.core.EventBus;
+import com.junoyi.framework.json.utils.JsonUtils;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.security.utils.SecurityUtils;
@@ -15,6 +17,7 @@ import com.junoyi.system.domain.dto.SysDictTypeQueryDTO;
 import com.junoyi.system.domain.po.SysDictData;
 import com.junoyi.system.domain.po.SysDictType;
 import com.junoyi.system.domain.vo.SysDictTypeVO;
+import com.junoyi.system.event.UserOperationEvent;
 import com.junoyi.system.mapper.SysDictDataMapper;
 import com.junoyi.system.mapper.SysDictTypeMapper;
 import com.junoyi.system.service.ISysDictTypeService;
@@ -110,6 +113,12 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         
         // 刷新缓存
         sysDictApi.refreshDictCache(dictType.getDictType());
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.withRawData("create", "dict_type",
+                "创建了字典类型「" + dictType.getDictName() + "」",
+                String.valueOf(dictType.getDictId()), dictType.getDictName(),
+                JsonUtils.toJsonString(dictTypeDTO)));
     }
 
     /**
@@ -144,6 +153,12 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         if (!oldDictType.getDictType().equals(dictType.getDictType())) {
             sysDictApi.refreshDictCache(dictType.getDictType());
         }
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.withRawData("update", "dict_type",
+                "更新了字典类型「" + dictType.getDictName() + "」",
+                String.valueOf(dictType.getDictId()), dictType.getDictName(),
+                JsonUtils.toJsonString(dictTypeDTO)));
     }
 
     /**
@@ -177,6 +192,11 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         
         // 刷新缓存
         sysDictApi.refreshDictCache(dictTypeCode);
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.of("delete", "dict_type",
+                "删除了字典类型「" + dictType.getDictName() + "」及其 " + dataCount + " 条字典数据",
+                String.valueOf(dictId), dictType.getDictName()));
     }
 
     /**
@@ -212,5 +232,10 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         for (SysDictType dictType : dictTypes) {
             sysDictApi.refreshDictCache(dictType.getDictType());
         }
+
+        // 发布操作日志事件
+        EventBus.get().callEvent(UserOperationEvent.of("delete", "dict_type",
+                "批量删除了 " + dictIds.size() + " 个字典类型",
+                dictIds.toString(), null));
     }
 }
