@@ -77,6 +77,11 @@ public class DictTypeConstants {
      */
     public static final String SYS_OPER_TYPE = "sys_oper_type";
 
+    /**
+     * 操作模块
+     */
+    public static final String SYS_OPER_MODULE = "sys_oper_module";
+
     private DictTypeConstants() {
         // 私有构造函数,防止实例化
     }

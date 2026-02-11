@@ -5,6 +5,8 @@ import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.StringUtils;
 import com.junoyi.framework.security.helper.SessionHelper;
 import com.junoyi.framework.security.module.UserSession;
+import com.junoyi.system.api.SysDictApi;
+import com.junoyi.system.constant.DictTypeConstants;
 import com.junoyi.system.domain.dto.SysSessionQueryDTO;
 import com.junoyi.system.domain.po.SysSession;
 import com.junoyi.system.service.ISysSessionService;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class SysSessionServiceImpl implements ISysSessionService {
 
     private final SessionHelper sessionHelper;
+    private final SysDictApi sysDictApi;
 
     /**
      * 获取系统会话列表，支持查询条件过滤和分页
@@ -140,6 +143,15 @@ public class SysSessionServiceImpl implements ISysSessionService {
         sysSession.setBrowser(userSession.getBrowser());
         sysSession.setAccessExpireTime(userSession.getAccessExpireTime());
         sysSession.setRefreshExpireTime(userSession.getRefreshExpireTime());
+        
+        // 翻译设备类型
+        if (userSession.getDeviceType() != null) {
+            sysSession.setDeviceTypeLabel(sysDictApi.getDictLabel(
+                    DictTypeConstants.SYS_DEVICE_TYPE, 
+                    userSession.getDeviceType()
+            ));
+        }
+        
         return sysSession;
     }
 }

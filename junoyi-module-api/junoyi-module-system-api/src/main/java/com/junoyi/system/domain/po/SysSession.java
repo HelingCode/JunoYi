@@ -70,6 +70,11 @@ public class SysSession {
     private String deviceType;
 
     /**
+     * 设备类型标签
+     */
+    private String deviceTypeLabel;
+
+    /**
      * 操作系统（如 Windows 10、macOS、Android 13）
      */
     private String os;

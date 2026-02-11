@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.core.utils.ServletUtils;
 import com.junoyi.framework.security.utils.SecurityUtils;
+import com.junoyi.system.api.SysDictApi;
+import com.junoyi.system.constant.DictTypeConstants;
 import com.junoyi.system.domain.dto.SysOperLogQueryDTO;
 import com.junoyi.system.domain.po.SysOperLog;
 import com.junoyi.system.domain.vo.SysOperLogVO;
@@ -29,26 +31,7 @@ import java.util.stream.Collectors;
 public class SysOperLogServiceImpl implements ISysOperLogService {
 
     private final SysOperLogMapper sysOperLogMapper;
-
-    private static final Map<String, String> ACTION_MAP = new HashMap<>();
-    private static final Map<String, String> MODULE_MAP = new HashMap<>();
-
-    static {
-        ACTION_MAP.put("view", "查看");
-        ACTION_MAP.put("create", "创建");
-        ACTION_MAP.put("update", "更新");
-        ACTION_MAP.put("delete", "删除");
-        ACTION_MAP.put("export", "导出");
-        ACTION_MAP.put("import", "导入");
-
-        MODULE_MAP.put("user", "用户");
-        MODULE_MAP.put("role", "角色");
-        MODULE_MAP.put("dept", "部门");
-        MODULE_MAP.put("menu", "菜单");
-        MODULE_MAP.put("permission", "权限");
-        MODULE_MAP.put("file", "文件");
-        MODULE_MAP.put("system", "系统");
-    }
+    private final SysDictApi sysDictApi;
 
     /**
      * 分页查询操作日志
@@ -170,8 +153,22 @@ public class SysOperLogServiceImpl implements ISysOperLogService {
     private SysOperLogVO convertToVO(SysOperLog log) {
         SysOperLogVO vo = new SysOperLogVO();
         BeanUtils.copyProperties(log, vo);
-        vo.setActionName(ACTION_MAP.getOrDefault(log.getAction(), log.getAction()));
-        vo.setModuleName(MODULE_MAP.getOrDefault(log.getModule(), log.getModule()));
+        
+        // 使用字典翻译日志级别
+        if (log.getLevel() != null) {
+            vo.setLevelLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_LOG_LEVEL, log.getLevel()));
+        }
+        
+        // 使用字典翻译操作类型
+        if (log.getAction() != null) {
+            vo.setActionLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_OPER_TYPE, log.getAction()));
+        }
+        
+        // 使用字典翻译操作模块
+        if (log.getModule() != null) {
+            vo.setModuleLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_OPER_MODULE, log.getModule()));
+        }
+        
         return vo;
     }
 }

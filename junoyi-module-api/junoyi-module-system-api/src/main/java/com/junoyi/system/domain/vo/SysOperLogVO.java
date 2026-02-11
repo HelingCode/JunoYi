@@ -28,14 +28,19 @@ public class SysOperLogVO implements Serializable {
     private String level;
 
     /**
+     * 日志级别标签
+     */
+    private String levelLabel;
+
+    /**
      * 动作
      */
     private String action;
 
     /**
-     * 动作名称
+     * 动作标签
      */
-    private String actionName;
+    private String actionLabel;
 
     /**
      * 模块
@@ -43,9 +48,9 @@ public class SysOperLogVO implements Serializable {
     private String module;
 
     /**
-     * 模块名称
+     * 模块标签
      */
-    private String moduleName;
+    private String moduleLabel;
 
     /**
      * 操作用户ID
