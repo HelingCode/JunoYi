@@ -49,14 +49,9 @@ public class SysMenuVO {
     private String icon;
 
     /**
-     * 菜单类型（0目录 1菜单 2按钮）
+     * 菜单类型（0目录 1菜单）
      */
     private Integer menuType;
-
-    /**
-     * 菜单类型标签
-     */
-    private String menuTypeLabel;
 
     /**
      * 排序号
@@ -67,11 +62,6 @@ public class SysMenuVO {
      * 是否隐藏菜单（0否 1是）
      */
     private Integer isHide;
-
-    /**
-     * 是否隐藏菜单标签
-     */
-    private String isHideLabel;
 
     /**
      * 是否隐藏标签页（0否 1是）
@@ -127,11 +117,6 @@ public class SysMenuVO {
      * 状态（0禁用 1启用）
      */
     private Integer status;
-
-    /**
-     * 状态标签
-     */
-    private String statusLabel;
 
     /**
      * 备注

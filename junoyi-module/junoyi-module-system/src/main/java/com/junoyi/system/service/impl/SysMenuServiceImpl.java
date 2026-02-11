@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.junoyi.framework.core.domain.page.PageResult;
 import com.junoyi.framework.event.core.EventBus;
-import com.junoyi.system.api.SysDictApi;
-import com.junoyi.system.constant.DictTypeConstants;
 import com.junoyi.system.event.UserOperationEvent;
 import com.junoyi.system.exception.MenuHasChildrenException;
 import com.junoyi.framework.core.utils.DateUtils;
@@ -44,7 +42,6 @@ public class SysMenuServiceImpl implements ISysMenuService {
 
     private final SysMenuMapper sysMenuMapper;
     private final SysMenuConverter sysMenuConverter;
-    private final SysDictApi sysDictApi;
 
     /**
      * 获取菜单树形结构
@@ -59,12 +56,6 @@ public class SysMenuServiceImpl implements ISysMenuService {
         List<SysMenu> menus = queryMenuList(queryDTO);
         // 转换为 VO
         List<SysMenuVO> menuVOList = sysMenuConverter.toVoList(menus);
-        
-        // 翻译字典字段
-        for (SysMenuVO menu : menuVOList) {
-            translateDictFields(menu);
-        }
-        
         // 构建树形结构
         return buildTree(menuVOList, 0L);
     }
@@ -84,12 +75,6 @@ public class SysMenuServiceImpl implements ISysMenuService {
         Page<SysMenu> result = sysMenuMapper.selectPage(page, wrapper);
 
         List<SysMenuVO> voList = sysMenuConverter.toVoList(result.getRecords());
-        
-        // 翻译字典字段
-        for (SysMenuVO menu : voList) {
-            translateDictFields(menu);
-        }
-        
         return PageResult.of(voList, result.getTotal(), (int) result.getCurrent(), (int) result.getSize());
     }
 
@@ -103,49 +88,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
     public List<SysMenuVO> getMenuList(SysMenuQueryDTO queryDTO) {
         log.debug("查询菜单列表, queryDTO: {}", queryDTO);
         List<SysMenu> menus = queryMenuList(queryDTO);
-        List<SysMenuVO> voList = sysMenuConverter.toVoList(menus);
-        
-        // 翻译字典字段
-        for (SysMenuVO menu : voList) {
-            translateDictFields(menu);
-        }
-        
-        return voList;
-    }
-
-    /**
-     * 翻译字典字段
-     *
-     * @param menu 菜单VO
-     */
-    private void translateDictFields(SysMenuVO menu) {
-        if (menu == null) {
-            return;
-        }
-        
-        // 翻译菜单类型
-        if (menu.getMenuType() != null) {
-            menu.setMenuTypeLabel(sysDictApi.getDictLabel(
-                    DictTypeConstants.SYS_MENU_TYPE, 
-                    String.valueOf(menu.getMenuType())
-            ));
-        }
-        
-        // 翻译菜单状态
-        if (menu.getStatus() != null) {
-            menu.setStatusLabel(sysDictApi.getDictLabel(
-                    DictTypeConstants.SYS_MENU_STATUS, 
-                    String.valueOf(menu.getStatus())
-            ));
-        }
-        
-        // 翻译是否隐藏
-        if (menu.getIsHide() != null) {
-            menu.setIsHideLabel(sysDictApi.getDictLabel(
-                    DictTypeConstants.SYS_SHOW_HIDE, 
-                    String.valueOf(menu.getIsHide())
-            ));
-        }
+        return sysMenuConverter.toVoList(menus);
     }
 
     /**
@@ -261,7 +204,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
         if (childCount > 0)
             throw new MenuHasChildrenException("存在子菜单，无法删除");
 
-        boolean result = sysMenuMapper.deleteBatchIds(ids) > 0;
+        boolean result = sysMenuMapper.delete(new LambdaQueryWrapper<SysMenu>().in(SysMenu::getId, ids)) > 0;
 
         // 发布操作日志事件
         if (result) {
