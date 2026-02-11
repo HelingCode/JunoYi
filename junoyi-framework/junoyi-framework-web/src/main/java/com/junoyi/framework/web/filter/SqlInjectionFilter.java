@@ -126,6 +126,16 @@ public class SqlInjectionFilter extends OncePerRequestFilter {
             return true;
         }
         
+        // 权限池接口白名单 - 权限标识可能包含 SQL 关键词（如 system.api.user.delete）
+        if (uri.contains("/system/permission-pool") || uri.contains("/system/permission/pool")) {
+            return true;
+        }
+        
+        // 权限管理接口白名单 - 权限标识可能包含 SQL 关键词
+        if (uri.contains("/system/permission") && !uri.contains("/system/permission-pool")) {
+            return true;
+        }
+        
         return properties.getExcludeUrls().stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 
