@@ -11,7 +11,7 @@
  Target Server Version : 80404 (8.4.4)
  File Encoding         : 65001
 
- Date: 11/02/2026 20:44:07
+ Date: 11/02/2026 22:01:00
 */
 
 SET NAMES utf8mb4;
@@ -378,7 +378,7 @@ CREATE TABLE `sys_oper_log` (
   KEY `idx_level` (`level`),
   KEY `idx_target_id` (`target_id`),
   KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志表';
 
 -- ----------------------------
 -- Records of sys_oper_log
@@ -422,6 +422,7 @@ INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (36, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「系统信息」', '118', '系统信息', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-11 20:09:01');
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (37, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「menus.plan.log」', '50', 'menus.plan.log', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-11 20:20:00');
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (38, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「menus.plan.log」', '50', 'menus.plan.log', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-11 20:43:30');
+INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (39, 'info', 'update', 'perm_group', 1, 'super_admin', '超级管理员', '更新了权限组「默认管理权限组」', '2', '默认管理权限组', '/system/permission', 'PUT', '127.0.0.1', '{\"id\":2,\"groupCode\":\"default_admin\",\"groupName\":\"默认管理权限组\",\"parentId\":1,\"priority\":100,\"description\":\"系统所有管理用户的基础权限\",\"status\":1,\"permissions\":[\"system.ui.user.button.dept\",\"system.ui.auth-log.view\",\"system.ui.oper-log.view\",\"system.ui.menu.button.edit\",\"system.ui.dict.view\",\"system.ui.menu.button.add\",\"system.ui.session.button.logout\",\"system.ui.auth-log.button.delete\",\"system.ui.role.button.permission\",\"system.ui.dict.button.add\",\"system.ui.permission.pool.view\",\"system.ui.user.button.permission\",\"system.ui.config.button.edit\",\"system.ui.role.button.edit\",\"system.ui.oper-log.button.clear\",\"system.ui.user.button.role\",\"system.ui.dict.button.edit\",\"system.ui.dept.view\",\"system.ui.info.view\",\"system.ui.permission.button.delete\",\"system.ui.menu.view\",\"system.ui.permission.pool.button.delete\",\"system.ui.cache.button.detail\",\"system.ui.user.button.edit\",\"system.ui.user.view\",\"system.ui.permission.pool.button.add\",\"system.ui.permission.view\",\"system.ui.permission.button.edit\",\"system.ui.auth-log.button.clear\",\"system.ui.cache.button.clear\",\"system.ui.config.view\",\"system.ui.dept.button.permission\",\"system.ui.role.view\",\"system.ui.session.view\",\"system.ui.dept.button.add\",\"system.ui.cache.view\",\"system.ui.config.button.delete\",\"system.ui.config.button.add\",\"system.ui.user.button.individual-perm\",\"system.ui.role.button.delete\",\"system.ui.dept.button.edit\",\"system.ui.cache.button.delete\",\"system.ui.dict.button.delete\",\"system.ui.dept.button.delete\",\"system.ui.permission.button.add\",\"system.ui.user.button.delete\",\"system.ui.user.button.add\",\"system.ui.menu.button.delete\",\"system.ui.role.button.add\",\"system.ui.oper-log.button.delete\",\"system.ui.permission-pool.button.status\"]}', '2026-02-11 21:59:28');
 COMMIT;
 
 -- ----------------------------
@@ -450,7 +451,7 @@ CREATE TABLE `sys_perm_group` (
 -- ----------------------------
 BEGIN;
 INSERT INTO `sys_perm_group` (`id`, `group_code`, `group_name`, `parent_id`, `priority`, `description`, `status`, `permissions`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 'default_user', '默认用户权限组', NULL, 10, '系统所有登录用户的基础权限', 1, '[]', 'system', '2025-12-29 21:02:33', 'super_admin', '2026-01-08 19:38:18', '默认用户权限组');
-INSERT INTO `sys_perm_group` (`id`, `group_code`, `group_name`, `parent_id`, `priority`, `description`, `status`, `permissions`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, 'default_admin', '默认管理权限组', 1, 100, '系统所有管理用户的基础权限', 1, '[\"system.ui.user.button.dept\",\"system.ui.auth-log.view\",\"system.ui.oper-log.view\",\"system.ui.menu.button.edit\",\"system.ui.dict.view\",\"system.ui.menu.button.add\",\"system.ui.session.button.logout\",\"system.ui.auth-log.button.delete\",\"system.ui.role.button.permission\",\"system.ui.dict.button.add\",\"system.ui.permission.pool.view\",\"system.ui.user.button.permission\",\"system.ui.config.button.edit\",\"system.ui.role.button.edit\",\"system.ui.oper-log.button.clear\",\"system.ui.user.button.role\",\"system.ui.dict.button.edit\",\"system.ui.dept.view\",\"system.ui.permission.button.delete\",\"system.ui.menu.view\",\"system.ui.permission.pool.button.delete\",\"system.ui.cache.button.detail\",\"system.ui.user.button.edit\",\"system.ui.user.view\",\"system.ui.permission.pool.button.add\",\"system.ui.permission.view\",\"system.ui.permission.button.edit\",\"system.ui.auth-log.button.clear\",\"system.ui.cache.button.clear\",\"system.ui.config.view\",\"system.ui.dept.button.permission\",\"system.ui.role.view\",\"system.ui.session.view\",\"system.ui.dept.button.add\",\"system.ui.cache.view\",\"system.ui.config.button.delete\",\"system.ui.config.button.add\",\"system.ui.user.button.individual-perm\",\"system.ui.role.button.delete\",\"system.ui.dept.button.edit\",\"system.ui.cache.button.delete\",\"system.ui.dict.button.delete\",\"system.ui.dept.button.delete\",\"system.ui.permission.button.add\",\"system.ui.user.button.delete\",\"system.ui.user.button.add\",\"system.ui.menu.button.delete\",\"system.ui.role.button.add\",\"system.ui.oper-log.button.delete\",\"system.ui.permission-pool.button.status\"]', 'system', '2025-12-29 21:04:58', 'super_admin', '2026-02-11 18:10:45', '默认管理权限组');
+INSERT INTO `sys_perm_group` (`id`, `group_code`, `group_name`, `parent_id`, `priority`, `description`, `status`, `permissions`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, 'default_admin', '默认管理权限组', 1, 100, '系统所有管理用户的基础权限', 1, '[\"system.ui.user.button.dept\",\"system.ui.auth-log.view\",\"system.ui.oper-log.view\",\"system.ui.menu.button.edit\",\"system.ui.dict.view\",\"system.ui.menu.button.add\",\"system.ui.session.button.logout\",\"system.ui.auth-log.button.delete\",\"system.ui.role.button.permission\",\"system.ui.dict.button.add\",\"system.ui.permission.pool.view\",\"system.ui.user.button.permission\",\"system.ui.config.button.edit\",\"system.ui.role.button.edit\",\"system.ui.oper-log.button.clear\",\"system.ui.user.button.role\",\"system.ui.dict.button.edit\",\"system.ui.dept.view\",\"system.ui.info.view\",\"system.ui.permission.button.delete\",\"system.ui.menu.view\",\"system.ui.permission.pool.button.delete\",\"system.ui.cache.button.detail\",\"system.ui.user.button.edit\",\"system.ui.user.view\",\"system.ui.permission.pool.button.add\",\"system.ui.permission.view\",\"system.ui.permission.button.edit\",\"system.ui.auth-log.button.clear\",\"system.ui.cache.button.clear\",\"system.ui.config.view\",\"system.ui.dept.button.permission\",\"system.ui.role.view\",\"system.ui.session.view\",\"system.ui.dept.button.add\",\"system.ui.cache.view\",\"system.ui.config.button.delete\",\"system.ui.config.button.add\",\"system.ui.user.button.individual-perm\",\"system.ui.role.button.delete\",\"system.ui.dept.button.edit\",\"system.ui.cache.button.delete\",\"system.ui.dict.button.delete\",\"system.ui.dept.button.delete\",\"system.ui.permission.button.add\",\"system.ui.user.button.delete\",\"system.ui.user.button.add\",\"system.ui.menu.button.delete\",\"system.ui.role.button.add\",\"system.ui.oper-log.button.delete\",\"system.ui.permission-pool.button.status\"]', 'system', '2025-12-29 21:04:58', 'super_admin', '2026-02-11 21:59:28', '默认管理权限组');
 COMMIT;
 
 -- ----------------------------
@@ -468,7 +469,7 @@ CREATE TABLE `sys_permission` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统权限池（开发期与运维期的权限注册表）';
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统权限池（开发期与运维期的权限注册表）';
 
 -- ----------------------------
 -- Records of sys_permission
@@ -610,6 +611,7 @@ INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `crea
 INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (136, 'system.api.dict.update.data', '系统字典管理修改字典数据接口权限', 1, 'super_admin', '2026-02-11 18:09:11', NULL, NULL, NULL);
 INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (137, 'system.api.dict.delete.data.code', '系统字典管理删除字典数据接口权限', 1, 'super_admin', '2026-02-11 18:09:54', NULL, NULL, NULL);
 INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (138, 'system.api.dict.delete.code.batch', '系统字典管理批量删除字典数据接口权限', 1, 'super_admin', '2026-02-11 18:10:27', NULL, NULL, NULL);
+INSERT INTO `sys_permission` (`id`, `permission`, `description`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (139, 'system.ui.info.view', '系统信息页面权限', 1, 'super_admin', '2026-02-11 21:56:35', NULL, NULL, NULL);
 COMMIT;
 
 -- ----------------------------
