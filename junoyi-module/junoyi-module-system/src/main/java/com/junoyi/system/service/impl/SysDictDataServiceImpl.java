@@ -8,6 +8,7 @@ import com.junoyi.framework.core.utils.StringUtils;
 import com.junoyi.framework.log.core.JunoYiLog;
 import com.junoyi.framework.log.core.JunoYiLogFactory;
 import com.junoyi.framework.security.utils.SecurityUtils;
+import com.junoyi.system.api.SysDictApiImpl;
 import com.junoyi.system.convert.SysDictDataConverter;
 import com.junoyi.system.domain.dto.SysDictDataDTO;
 import com.junoyi.system.domain.dto.SysDictDataQueryDTO;
@@ -19,7 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 字典数据服务实现类
@@ -33,6 +36,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
     private final JunoYiLog log = JunoYiLogFactory.getLogger(SysDictDataServiceImpl.class);
     private final SysDictDataMapper sysDictDataMapper;
     private final SysDictDataConverter sysDictDataConverter;
+    private final SysDictApiImpl sysDictApi;
 
     /**
      * 分页查询字典数据列表
@@ -111,6 +115,9 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
         sysDictDataMapper.insert(dictData);
 
         log.info("DictData", "添加字典数据: {} - {}", dictData.getDictType(), dictData.getDictLabel());
+
+        // 刷新缓存
+        sysDictApi.refreshDictCache(dictData.getDictType());
     }
 
     /**
@@ -145,6 +152,14 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
         sysDictDataMapper.updateById(dictData);
 
         log.info("DictData", "更新字典数据: {} - {}", dictData.getDictType(), dictData.getDictLabel());
+
+        // 刷新缓存 - 如果字典类型改变了，需要刷新两个类型的缓存
+        Set<String> typesToRefresh = new HashSet<>();
+        typesToRefresh.add(oldDictData.getDictType());
+        if (dictData.getDictType() != null && !dictData.getDictType().equals(oldDictData.getDictType())) {
+            typesToRefresh.add(dictData.getDictType());
+        }
+        typesToRefresh.forEach(sysDictApi::refreshDictCache);
     }
 
     /**
@@ -160,9 +175,13 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
             throw new RuntimeException("字典数据不存在");
         }
 
+        String dictType = dictData.getDictType();
         sysDictDataMapper.deleteById(dictCode);
 
         log.info("DictData", "删除字典数据: {} - {}", dictData.getDictType(), dictData.getDictLabel());
+
+        // 刷新缓存
+        sysDictApi.refreshDictCache(dictType);
     }
 
     /**
@@ -173,11 +192,21 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteDictDataList(List<Long> dictCodes) {
+        // 收集需要刷新缓存的字典类型
+        Set<String> typesToRefresh = new HashSet<>();
+        
         // 批量删除
         for (Long dictCode : dictCodes) {
-            sysDictDataMapper.deleteById(dictCode);
+            SysDictData dictData = sysDictDataMapper.selectById(dictCode);
+            if (dictData != null) {
+                typesToRefresh.add(dictData.getDictType());
+                sysDictDataMapper.deleteById(dictCode);
+            }
         }
 
         log.info("DictData", "批量删除字典数据: {} 条", dictCodes.size());
+
+        // 刷新所有相关字典类型的缓存
+        typesToRefresh.forEach(sysDictApi::refreshDictCache);
     }
 }

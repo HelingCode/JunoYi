@@ -8,6 +8,7 @@ import com.junoyi.framework.permission.annotation.Permission;
 import com.junoyi.framework.security.annotation.PlatformScope;
 import com.junoyi.framework.security.enums.PlatformType;
 import com.junoyi.framework.web.domain.BaseController;
+import com.junoyi.system.api.SysDictApiImpl;
 import com.junoyi.system.domain.dto.SysDictTypeDTO;
 import com.junoyi.system.domain.dto.SysDictTypeQueryDTO;
 import com.junoyi.system.domain.vo.SysDictTypeVO;
@@ -35,6 +36,7 @@ public class SysDictTypeController extends BaseController {
 
     private final JunoYiLog log = JunoYiLogFactory.getLogger(SysDictTypeController.class);
     private final ISysDictTypeService dictTypeService;
+    private final SysDictApiImpl sysDictApi;
 
     /**
      * 分页查询字典类型列表
@@ -115,5 +117,31 @@ public class SysDictTypeController extends BaseController {
     public R<Void> deleteDictTypes(@RequestBody List<Long> dictIds) {
         dictTypeService.deleteDictTypes(dictIds);
         return R.ok();
+    }
+
+    /**
+     * 刷新指定字典类型的缓存
+     */
+    @Operation(summary = "刷新字典缓存", description = "刷新指定字典类型的Redis缓存")
+    @PostMapping("/refresh/{dictType}")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(value = {"system.ui.dict.view", "system.api.dict.update"})
+    public R<Void> refreshDictCache(@Parameter(description = "字典类型") @PathVariable("dictType") String dictType) {
+        sysDictApi.refreshDictCache(dictType);
+        log.info("DictCache", "手动刷新字典缓存: {}", dictType);
+        return R.ok("字典缓存刷新成功");
+    }
+
+    /**
+     * 刷新所有字典缓存
+     */
+    @Operation(summary = "刷新所有字典缓存", description = "刷新所有字典类型的Redis缓存")
+    @PostMapping("/refresh/all")
+    @PlatformScope(PlatformType.ADMIN_WEB)
+    @Permission(value = {"system.ui.dict.view", "system.api.dict.update"})
+    public R<Void> refreshAllDictCache() {
+        sysDictApi.refreshAllDictCache();
+        log.info("DictCache", "手动刷新所有字典缓存");
+        return R.ok("所有字典缓存刷新成功");
     }
 }
