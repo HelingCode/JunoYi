@@ -28,11 +28,6 @@ public class SysPermGroupDTO {
     private String groupName;
 
     /**
-     * 父级权限组ID
-     */
-    private Long parentId;
-
-    /**
      * 优先级
      */
     private Integer priority;

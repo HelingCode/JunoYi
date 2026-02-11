@@ -33,11 +33,6 @@ public class SysPermGroup extends BaseEntity {
     private String groupName;
 
     /**
-     * 父级权限组ID，用于构建权限组层级关系
-     */
-    private Long parentId;
-
-    /**
      * 优先级，用于排序显示
      */
     private Integer priority;
