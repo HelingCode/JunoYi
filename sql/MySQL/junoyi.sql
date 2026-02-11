@@ -11,7 +11,7 @@
  Target Server Version : 80404 (8.4.4)
  File Encoding         : 65001
 
- Date: 07/02/2026 01:50:41
+ Date: 11/02/2026 15:33:36
 */
 
 SET NAMES utf8mb4;
@@ -43,7 +43,7 @@ CREATE TABLE `sys_auth_log` (
   KEY `idx_login_time` (`login_time`),
   KEY `idx_status` (`status`),
   KEY `idx_login_ip` (`login_ip`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统登录日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统登录日志表';
 
 -- ----------------------------
 -- Records of sys_auth_log
@@ -58,6 +58,9 @@ INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip
 INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (7, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '0e29b3591873473883a504002efb4fdc', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 21:18:54');
 INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (8, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', 'd24b959c69344fb0b6206827670a9a75', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 21:24:49');
 INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (9, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '52ed7e2efa1042918ff2f5b3a452dd97', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-06 21:25:10');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (10, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', 'f01d6d5e86af429b884c4a9dbd9002a3', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-07 01:51:44');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (11, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '7102f4031e73458e83755c4ab0dc1f41', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-07 02:53:39');
+INSERT INTO `sys_auth_log` (`id`, `user_id`, `user_name`, `nick_name`, `login_ip`, `ip_region`, `session_id`, `identity`, `login_type`, `browser`, `os`, `device_type`, `status`, `msg`, `login_time`) VALUES (12, 1, 'super_admin', '超级管理员', '127.0.0.1', '内网IP', '6aad1ce2e2344e9f9ed63ba8ee2f59c3', '超级管理员', 'password', 'Chrome 144', 'macOS 10.15.7', 'Desktop', 1, '登录成功', '2026-02-07 03:01:09');
 COMMIT;
 
 -- ----------------------------
@@ -158,9 +161,22 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_dict_data`;
 CREATE TABLE `sys_dict_data` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '字典数据主键ID',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统字典数据表';
+  `dict_code` bigint NOT NULL AUTO_INCREMENT COMMENT '字典编码',
+  `dict_sort` int DEFAULT '0' COMMENT '字典排序',
+  `dict_label` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '字典标签',
+  `dict_value` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '字典键值',
+  `dict_type` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '字典类型',
+  `css_class` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '样式属性（其他样式扩展）',
+  `list_class` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '表格回显样式',
+  `is_default` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT 'N' COMMENT '是否默认（Y是 N否）',
+  `status` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0' COMMENT '状态（0正常 1停用）',
+  `create_by` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `remark` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`dict_code`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='字典数据表';
 
 -- ----------------------------
 -- Records of sys_dict_data
@@ -173,9 +189,18 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_dict_type`;
 CREATE TABLE `sys_dict_type` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '字典类型主键ID',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统字典类型表';
+  `dict_id` bigint NOT NULL AUTO_INCREMENT COMMENT '字典主键',
+  `dict_name` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '字典名称',
+  `dict_type` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '字典类型',
+  `status` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0' COMMENT '状态（0正常 1停用）',
+  `create_by` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `remark` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`dict_id`) USING BTREE,
+  UNIQUE KEY `dict_type` (`dict_type`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='字典类型表';
 
 -- ----------------------------
 -- Records of sys_dict_type
@@ -231,7 +256,7 @@ INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`,
 INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (8, 5, 'UserCenter', 'user-center', '/system/user-center', 'menus.system.userCenter', 'ri:user-line', 1, 12, NULL, 1, 1, 1, 0, '', 0, 0, '', 0, '', 1, 'system', '2025-12-30 15:29:16', 'super_admin', '2026-02-06 12:24:17', '个人中心（隐藏）');
 INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (9, 5, 'Menus', 'menu', '/system/menu', 'menus.system.menu', 'ri:menu-search-line', 1, 7, 'system.ui.menu.view', 0, 0, 1, 0, '', 0, 0, '', 0, '', 1, 'system', '2025-12-30 15:29:16', 'super_admin', '2026-02-06 12:24:17', '菜单管理');
 INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (49, 0, 'Document', '', '', 'menus.document.title', 'ri:bill-line', 1, 5, '', 0, 0, 0, 0, 'https://doc.framework.junoyi.com/doc/what-is-junoyi', 0, 0, '', 0, '', 1, 'system', '2025-12-30 15:29:16', 'super_admin', '2026-02-06 12:24:17', '文档外链');
-INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (50, 0, 'ChangeLog', '/change/log', '/change/log', 'menus.plan.log', 'ri:gamepad-line', 1, 6, '', 0, 0, 1, 0, '', 0, 0, '', 0, 'v0.4.5-alpha', 1, 'system', '2025-12-30 15:29:16', 'super_admin', '2026-02-07 01:40:01', '更新日志');
+INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (50, 0, 'ChangeLog', '/change/log', '/change/log', 'menus.plan.log', 'ri:gamepad-line', 1, 6, '', 0, 0, 1, 0, '', 0, 0, '', 0, 'v0.4.6-beta', 1, 'system', '2025-12-30 15:29:16', 'super_admin', '2026-02-07 02:54:05', '更新日志');
 INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (93, 0, 'Monitor', '/monitor', '/index/index', 'menus.monitor.title', 'mdi:monitor-dashboard', 0, 3, '', 0, 0, 1, 0, '', 0, 0, '', 0, '', 1, 'system', '2025-12-31 13:13:18', 'super_admin', '2026-02-06 12:24:17', '');
 INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (94, 93, 'Cache', 'cache', '/system/cache', 'menus.monitor.cache', 'simple-icons:redis', 1, 2, 'system.ui.cache.view', 0, 0, 1, 0, '', 0, 0, '', 0, '', 1, 'system', '2025-12-31 13:13:18', 'super_admin', '2026-02-06 12:24:17', '');
 INSERT INTO `sys_menu` (`id`, `parent_id`, `name`, `path`, `component`, `title`, `icon`, `menu_type`, `sort`, `permission`, `is_hide`, `is_hide_tab`, `keep_alive`, `is_iframe`, `link`, `is_full_page`, `fixed_tab`, `active_path`, `show_badge`, `show_text_badge`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (95, 0, 'Operation', '/operation', '/index/index', 'menus.operation.title', 'mdi:toolbox', 0, 4, '', 0, 0, 1, 0, '', 0, 0, '', 0, '', 1, 'system', '2025-12-31 13:13:18', 'super_admin', '2026-02-06 12:24:17', '');
@@ -278,7 +303,7 @@ CREATE TABLE `sys_oper_log` (
   KEY `idx_level` (`level`),
   KEY `idx_target_id` (`target_id`),
   KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志表';
 
 -- ----------------------------
 -- Records of sys_oper_log
@@ -295,6 +320,7 @@ INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (9, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「系统信息」', '118', '系统信息', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-07 01:46:44');
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (10, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「文件管理」', '123', '文件管理', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-07 01:46:59');
 INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (11, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「menus.system.task」', '98', 'menus.system.task', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-07 01:47:05');
+INSERT INTO `sys_oper_log` (`id`, `level`, `action`, `module`, `user_id`, `user_name`, `nick_name`, `message`, `target_id`, `target_name`, `path`, `method`, `ip`, `raw_data`, `create_time`) VALUES (12, 'info', 'update', 'menu', 1, 'super_admin', '超级管理员', '更新了菜单「menus.plan.log」', '50', 'menus.plan.log', '/system/menu', 'PUT', '127.0.0.1', NULL, '2026-02-07 02:54:05');
 COMMIT;
 
 -- ----------------------------
@@ -552,7 +578,7 @@ CREATE TABLE `sys_user` (
 -- Records of sys_user
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_user` (`user_id`, `user_name`, `nick_name`, `avatar`, `email`, `phonenumber`, `sex`, `password`, `salt`, `status`, `del_flag`, `pwd_update_time`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 'super_admin', '超级管理员', NULL, 'exmple@junoyi.com', '18899887871', '1', 'm/ctuGNjUwrpOxdqrd2fQsfVN1Mnbu6EKwJWXN+P3W4=', '3dvSoCjGtCXZnSB+6ENWtQ==', 1, 0, NULL, 'system', '2025-12-05 08:13:00', 'super_admin', '2026-01-06 15:25:13', '');
+INSERT INTO `sys_user` (`user_id`, `user_name`, `nick_name`, `avatar`, `email`, `phonenumber`, `sex`, `password`, `salt`, `status`, `del_flag`, `pwd_update_time`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 'super_admin', '超级管理员', NULL, 'exmple@junoyi.com', '18899887871', '1', 'm/ctuGNjUwrpOxdqrd2fQsfVN1Mnbu6EKwJWXN+P3W4=', '3dvSoCjGtCXZnSB+6ENWtQ==', 1, 0, NULL, 'system', '2025-12-05 08:13:00', 'super_admin', '2026-02-07 02:34:47', '');
 INSERT INTO `sys_user` (`user_id`, `user_name`, `nick_name`, `avatar`, `email`, `phonenumber`, `sex`, `password`, `salt`, `status`, `del_flag`, `pwd_update_time`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, 'admin', '用户管理员', NULL, 'admin@junoyi.com', '18899887872', '1', 'm/ctuGNjUwrpOxdqrd2fQsfVN1Mnbu6EKwJWXN+P3W4=', '3dvSoCjGtCXZnSB+6ENWtQ==', 1, 0, NULL, 'super_admin', '2025-12-26 08:22:32', 'super_admin', '2026-01-02 22:08:40', '');
 INSERT INTO `sys_user` (`user_id`, `user_name`, `nick_name`, `avatar`, `email`, `phonenumber`, `sex`, `password`, `salt`, `status`, `del_flag`, `pwd_update_time`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (3, 'user1', '钧逸用户1', NULL, 'user1@junoyi.com', '18899887873', '1', 'm/ctuGNjUwrpOxdqrd2fQsfVN1Mnbu6EKwJWXN+P3W4=', '3dvSoCjGtCXZnSB+6ENWtQ==', 1, 0, NULL, 'admin', '2025-12-26 09:02:10', 'admin', '2025-12-26 09:02:15', '钧逸用户');
 INSERT INTO `sys_user` (`user_id`, `user_name`, `nick_name`, `avatar`, `email`, `phonenumber`, `sex`, `password`, `salt`, `status`, `del_flag`, `pwd_update_time`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4, 'user2', '钧逸用户2', NULL, 'user2@junoyi.com', '18822334459', '0', '2QEBgS3NRYr0BK1IDLbJBeu7N+4a/Dmqt+uk/OfLZKE=', '+/gh5ppNj92gnzr7nK4HpQ==', 1, 0, NULL, 'super_admin', '2026-01-02 20:54:39', 'super_admin', '2026-02-05 04:02:44', '');
