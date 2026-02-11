@@ -8,6 +8,8 @@ import com.junoyi.framework.core.utils.DateUtils;
 import com.junoyi.framework.event.core.EventBus;
 import com.junoyi.framework.json.utils.JsonUtils;
 import com.junoyi.framework.security.utils.SecurityUtils;
+import com.junoyi.system.api.SysDictApi;
+import com.junoyi.system.constant.DictTypeConstants;
 import com.junoyi.system.convert.SysPermGroupConverter;
 import com.junoyi.system.convert.SysRoleConverter;
 import com.junoyi.system.domain.dto.SysRoleDTO;
@@ -50,6 +52,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     private final SysPermGroupMapper sysPermGroupMapper;
     private final SysRoleConverter sysRoleConverter;
     private final SysPermGroupConverter sysPermGroupConverter;
+    private final SysDictApi sysDictApi;
 
     /**
      * 分页查询角色列表
@@ -69,7 +72,25 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 .orderByAsc(SysRole::getSort);
 
         Page<SysRole> resultPage = sysRoleMapper.selectPage(page, wrapper);
-        return PageResult.of(sysRoleConverter.toVoList(resultPage.getRecords()),
+        List<SysRoleVO> roleVOList = sysRoleConverter.toVoList(resultPage.getRecords());
+        
+        // 使用字典API翻译状态和数据范围标签
+        for (SysRoleVO roleVO : roleVOList) {
+            if (roleVO.getStatus() != null) {
+                roleVO.setStatusLabel(sysDictApi.getDictLabel(
+                    DictTypeConstants.SYS_ROLE_STATUS,
+                    String.valueOf(roleVO.getStatus())
+                ));
+            }
+            if (roleVO.getDataScope() != null) {
+                roleVO.setDataScopeLabel(sysDictApi.getDictLabel(
+                    DictTypeConstants.SYS_DATA_SCOPE,
+                    roleVO.getDataScope()
+                ));
+            }
+        }
+        
+        return PageResult.of(roleVOList,
                 resultPage.getTotal(),
                 (int) resultPage.getCurrent(),
                 (int) resultPage.getSize());

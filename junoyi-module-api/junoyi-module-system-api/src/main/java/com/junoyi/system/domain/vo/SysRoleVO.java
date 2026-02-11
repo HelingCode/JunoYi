@@ -38,9 +38,19 @@ public class SysRoleVO {
     private String dataScope;
 
     /**
+     * 数据范围标签（字典翻译）
+     */
+    private String dataScopeLabel;
+
+    /**
      * 状态
      */
     private Integer status;
+
+    /**
+     * 状态标签（字典翻译）
+     */
+    private String statusLabel;
 
     /**
      * 创建时间

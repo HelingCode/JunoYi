@@ -31,6 +31,11 @@ public class SysDeptVO {
 
     private Integer status;
 
+    /**
+     * 状态标签（字典翻译）
+     */
+    private String statusLabel;
+
     private Date createTime;
 
     private Date updateTime;

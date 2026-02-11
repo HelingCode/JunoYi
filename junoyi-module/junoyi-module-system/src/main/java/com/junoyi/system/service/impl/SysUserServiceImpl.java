@@ -10,6 +10,8 @@ import com.junoyi.framework.json.utils.JsonUtils;
 import com.junoyi.framework.security.utils.PasswordUtils;
 import com.junoyi.framework.security.utils.SecurityUtils;
 import com.junoyi.system.convert.SysDeptConverter;
+import com.junoyi.system.api.SysDictApi;
+import com.junoyi.system.constant.DictTypeConstants;
 import com.junoyi.system.convert.SysPermGroupConverter;
 import com.junoyi.system.convert.SysRoleConverter;
 import com.junoyi.system.convert.SysUserConverter;
@@ -74,6 +76,7 @@ public class SysUserServiceImpl implements ISysUserService {
     private final SysRoleConverter sysRoleConverter;
     private final SysDeptConverter sysDeptConverter;
     private final SysPermGroupConverter sysPermGroupConverter;
+    private final SysDictApi sysDictApi;
 
     /**
      * 获取用户列表，支持分页和多条件查询
@@ -110,8 +113,20 @@ public class SysUserServiceImpl implements ISysUserService {
                 .eq(SysUser::isDelFlag, false);
 
         Page<SysUser> resultPage = sysUserMapper.selectPage(page, wrapper);
+        List<SysUserVO> userVOList = sysUserConverter.toVoList(resultPage.getRecords());
+        
+        // 使用字典API翻译性别和状态标签
+        for (SysUserVO userVO : userVOList) {
+            if (userVO.getSex() != null) {
+                userVO.setSexLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_USER_SEX, userVO.getSex()));
+            }
+            if (userVO.getStatus() != null) {
+                userVO.setStatusLabel(sysDictApi.getDictLabel(DictTypeConstants.SYS_USER_STATUS, String.valueOf(userVO.getStatus())));
+            }
+        }
+        
         return PageResult.of(
-                sysUserConverter.toVoList(resultPage.getRecords()),
+                userVOList,
                 resultPage.getTotal(),
                 (int) resultPage.getCurrent(),
                 (int) resultPage.getSize()
